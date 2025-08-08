@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  vpnbot:
+    build: .
+    container_name: vpnbot
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_PATH=/app/data/database.db
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - vpnbot-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('Bot is running')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  vpnbot-network:
+    driver: bridge
+
+volumes:
+  vpnbot-data:
+    driver: local
