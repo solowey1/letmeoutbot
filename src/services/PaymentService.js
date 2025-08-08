@@ -13,7 +13,7 @@ class PaymentService {
             // Формируем invoice для Telegram Stars
             const invoice = {
                 title: plan.name,
-                description: plan.description,
+                description: plan.invoice,
                 payload: `payment_${paymentId}`,
                 provider_token: '', // Для Telegram Stars пустой
                 currency: 'XTR', // Telegram Stars

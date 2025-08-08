@@ -33,20 +33,24 @@ vpnbot/
 │
 └── 💾 Исходный код
     └── src/
-        ├── 📋 index.js                    # Точка входа (главный файл)
+        ├── 🚀 index.js                    # Минимальная точка входа (3 строки!)
+        │
+        ├── 🤖 bot/                        # Основной класс бота
+        │   └── VPNBot.js                  # Центральный компонент со всей логикой
         │
         ├── ⚙️ config/                     # Конфигурация
-        │   ├── constants.js               # Константы, тарифы, сообщения
+        │   ├── constants.js               # Константы, тарифы, уведомления
         │   └── database.js                # Настройки БД и приложения
         │
         ├── 🗄️ models/                     # Модели данных
-        │   └── Database.js                # Работа с SQLite базой
+        │   └── Database.js                # SQLite + таблица notifications
         │
-        ├── 🔧 services/                   # Бизнес-логика
-        │   ├── PlanService.js             # Управление тарифными планами
-        │   ├── PaymentService.js          # Обработка платежей Telegram Stars
-        │   ├── SubscriptionService.js     # Управление подписками и лимитами
-        │   └── OutlineService.js          # Интеграция с Outline Server API
+        ├── 🔧 services/                   # Модульные сервисы
+        │   ├── NotificationService.js     # 🆕 Сервис уведомлений
+        │   ├── PlanService.js             # Тарифы + локализация (plural)
+        │   ├── PaymentService.js          # Обработка платежей Stars
+        │   ├── SubscriptionService.js     # Подписки + мониторинг лимитов
+        │   └── OutlineService.js          # Outline API + retry механизм
         │
         ├── 🎮 handlers/                   # Обработчики событий
         │   └── callbackHandler.js         # Обработка inline кнопок
@@ -55,35 +59,35 @@ vpnbot/
             └── keyboards.js               # Создание inline клавиатур
 ```
 
-## 🏗️ Архитектура проекта
 
-### 📐 Паттерн MVC
+### 📐 Паттерн Service-Oriented Architecture
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Controllers   │    │    Services     │    │     Models      │
-│   (Handlers)    │───►│ (Business Logic)│───►│   (Database)    │
+│   VPNBot        │    │    Services     │    │     Models      │
+│ (Orchestrator)  │───►│  (Specialized)  │───►│   (Database)    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
         │                       │                       │
         ▼                       ▼                       ▼
-   User Interface          Payment Logic           Data Storage
-   (Keyboards)            (Subscriptions)            (SQLite)
+   Event Handlers         Business Logic          Data Storage
+  (CallbackHandler)      (5 специальных          (SQLite + 
+                          сервиса)               notifications)
 ```
 
-### 🔄 Поток данных
+### 🔄 Поток обработки уведомлений
 ```
-Telegram User
+CRON (каждые 30 мин)
      │
      ▼
-┌─────────────┐    ┌──────────────┐    ┌─────────────┐
-│    Bot      │───►│ CallbackQuery │───►│  Handlers   │
-│  (index.js) │    │   Router      │    │             │
-└─────────────┘    └──────────────┘    └─────────────┘
-     │                                         │
-     ▼                                         ▼
-┌─────────────┐    ┌──────────────┐    ┌─────────────┐
-│  Services   │◄───│  Database    │◄───│ Outline API │
-│             │    │              │    │             │
-└─────────────┘    └──────────────┘    └─────────────┘
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│ SubscriptionSvc │───►│ NotificationSvc  │───►│ Telegram User   │
+│ (monitoring)    │    │ (smart alerts)   │    │ (receives msg)  │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+     ▲                           │
+     │                           ▼
+┌─────────────────┐    ┌──────────────────┐
+│   OutlineAPI    │    │    Database      │
+│ (usage stats)   │    │ (anti-spam)      │
+└─────────────────┘    └──────────────────┘
 ```
 
 ## 📂 Детальное описание папок
@@ -114,18 +118,18 @@ Telegram User
 
 ### 💻 Исходный код (src/)
 
-#### 📋 index.js - Точка входа
-- Инициализация бота
-- Настройка обработчиков
-- Управление жизненным циклом
-- CRON задачи для мониторинга
+#### 📋 index.js - Минимальная точка входа
+- Всего 3 строки кода
+- Импорт и запуск VPNBot класса
+- Вся логика вынесена в VPNBot.js
 
-#### ⚙️ config/ - Конфигурация
+###### ⚙️ config/ - Конфигурация
 ```javascript
 // constants.js - Все константы проекта
-- PLANS: Тарифные планы с ценами
+- PLANS: Тарифные планы с ценами (включая TEST план для админов)
 - SUBSCRIPTION_STATUS: Статусы подписок
 - PAYMENT_STATUS: Статусы платежей
+- NOTIFICATION_TYPES: 🆕 6 типов уведомлений
 - MESSAGES: Шаблоны сообщений
 - CALLBACK_ACTIONS: Действия кнопок
 
@@ -145,25 +149,32 @@ Telegram User
 
 #### 🔧 services/ - Бизнес-логика
 ```javascript
-// PlanService.js - Управление тарифами
-- Форматирование планов
-- Расчет скидок
-- Валидация тарифов
+// NotificationService.js - 🆕 Уведомления
+- 6 типов уведомлений (трафик 5%, 1%, время 3 дня, 1 день + исчерпание)
+- Защита от спама (7 дней)
+- Админ уведомления
+- Массовые рассылки
+
+// PlanService.js - Тарифы + локализация
+- Форматирование планов с русской pluralization
+- Отображение в МБ для значений <1ГБ
+- Фильтрация тестовых планов для админов
 
 // PaymentService.js - Платежи
 - Создание инвойсов Telegram Stars
-- Обработка успешных платежей
+- Обработка успешных платежей с retry логикой
 - Управление возвратами
 
-// SubscriptionService.js - Подписки
+// SubscriptionService.js - Подписки + мониторинг
 - Создание и активация подписок
-- Мониторинг лимитов
+- Автоматический мониторинг лимитов (каждые 30 мин)
+- Система threshold уведомлений
 - Блокировка при превышении
 
-// OutlineService.js - Outline API
-- Создание VPN ключей
+// OutlineService.js - Outline API + retry
+- Создание VPN ключей с retry механизмом (3 попытки)
 - Установка лимитов трафика
-- Мониторинг использования
+- Мониторинг использования в реальном времени
 ```
 
 #### 🎮 handlers/ - Обработчики
@@ -236,6 +247,11 @@ usage_logs (логи использования)
 ├── id, subscription_id
 ├── data_used, logged_at
 └── ...
+
+notifications (🆕 уведомления)
+├── id, user_id, subscription_id
+├── type, sent_at
+└── ... (защита от спама)
 ```
 
 ### Связи между таблицами

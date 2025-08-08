@@ -1,4 +1,4 @@
-const { SUBSCRIPTION_STATUS } = require('../config/constants');
+const { SUBSCRIPTION_STATUS, NOTIFICATION_TYPES } = require('../config/constants');
 const PlanService = require('./PlanService');
 const moment = require('moment');
 
@@ -305,15 +305,169 @@ class SubscriptionService {
     // Метод для массовой проверки всех активных подписок (для cron задач)
     async checkAllActiveSubscriptions() {
         try {
-            // Здесь можно добавить логику для получения всех активных подписок
-            // и проверки их лимитов
-            console.log('Проверка всех активных подписок...');
-            // TODO: Реализовать массовую проверку
+            console.log('🔄 Проверка всех активных подписок...');
+            
+            const activeSubscriptions = await this.db.getAllActiveSubscriptions();
+            console.log(`📊 Найдено ${activeSubscriptions.length} активных подписок`);
+            
+            let notificationsSent = 0;
+            let subscriptionsBlocked = 0;
+
+            for (const subscription of activeSubscriptions) {
+                try {
+                    // Обновляем статистику использования
+                    if (subscription.outline_key_id) {
+                        const actualUsage = await this.outlineService.getKeyDataUsage(subscription.outline_key_id);
+                        if (actualUsage > subscription.data_used) {
+                            await this.db.updateSubscription(subscription.id, {
+                                data_used: actualUsage
+                            });
+                            subscription.data_used = actualUsage;
+                        }
+                    }
+
+                    // Проверяем пороговые значения и отправляем уведомления
+                    const notificationsNeeded = await this.checkSubscriptionThresholds(subscription);
+                    
+                    if (notificationsNeeded.length > 0) {
+                        for (const notification of notificationsNeeded) {
+                            await this.sendNotificationToUser(subscription.telegram_id, notification);
+                            notificationsSent++;
+                        }
+                    }
+
+                    // Проверяем, нужно ли заблокировать подписку
+                    const shouldBlock = await this.checkSubscriptionLimits(subscription.id);
+                    if (shouldBlock) {
+                        subscriptionsBlocked++;
+                    }
+
+                } catch (subscriptionError) {
+                    console.error(`❌ Ошибка проверки подписки ${subscription.id}:`, subscriptionError.message);
+                }
+            }
+
+            console.log(`✅ Проверка завершена: отправлено ${notificationsSent} уведомлений, заблокировано ${subscriptionsBlocked} подписок`);
             return true;
+
         } catch (error) {
-            console.error('Ошибка массовой проверки подписок:', error);
+            console.error('❌ Ошибка массовой проверки подписок:', error);
             return false;
         }
+    }
+
+    // Проверяет пороговые значения и возвращает необходимые уведомления
+    async checkSubscriptionThresholds(subscription) {
+        const notifications = [];
+        const now = moment();
+        const expiryDate = moment(subscription.expires_at);
+        const daysRemaining = expiryDate.diff(now, 'days');
+        
+        const usagePercentage = (subscription.data_used / subscription.data_limit) * 100;
+        const remainingPercentage = 100 - usagePercentage;
+
+        // Проверяем временные пороги
+        if (daysRemaining <= 3 && daysRemaining > 1) {
+            const alreadySent = await this.db.checkNotificationSent(
+                subscription.id, 
+                NOTIFICATION_TYPES.TIME_WARNING_3, 
+                3
+            );
+            if (!alreadySent) {
+                notifications.push({
+                    type: NOTIFICATION_TYPES.TIME_WARNING_3,
+                    threshold: 3,
+                    data: { daysRemaining, usagePercentage: Math.round(usagePercentage) }
+                });
+            }
+        }
+
+        if (daysRemaining <= 1 && daysRemaining > 0) {
+            const alreadySent = await this.db.checkNotificationSent(
+                subscription.id,
+                NOTIFICATION_TYPES.TIME_WARNING_1,
+                1
+            );
+            if (!alreadySent) {
+                notifications.push({
+                    type: NOTIFICATION_TYPES.TIME_WARNING_1,
+                    threshold: 1,
+                    data: { daysRemaining, usagePercentage: Math.round(usagePercentage) }
+                });
+            }
+        }
+
+        if (daysRemaining <= 0) {
+            const alreadySent = await this.db.checkNotificationSent(
+                subscription.id,
+                NOTIFICATION_TYPES.TIME_EXPIRED,
+                0
+            );
+            if (!alreadySent) {
+                notifications.push({
+                    type: NOTIFICATION_TYPES.TIME_EXPIRED,
+                    threshold: 0,
+                    data: { daysRemaining, usagePercentage: Math.round(usagePercentage) }
+                });
+            }
+        }
+
+        // Проверяем пороги трафика
+        if (remainingPercentage <= 5 && remainingPercentage > 1) {
+            const alreadySent = await this.db.checkNotificationSent(
+                subscription.id,
+                NOTIFICATION_TYPES.TRAFFIC_WARNING_5,
+                5
+            );
+            if (!alreadySent) {
+                notifications.push({
+                    type: NOTIFICATION_TYPES.TRAFFIC_WARNING_5,
+                    threshold: 5,
+                    data: { remainingPercentage: Math.round(remainingPercentage), daysRemaining }
+                });
+            }
+        }
+
+        if (remainingPercentage <= 1 && remainingPercentage > 0) {
+            const alreadySent = await this.db.checkNotificationSent(
+                subscription.id,
+                NOTIFICATION_TYPES.TRAFFIC_WARNING_1,
+                1
+            );
+            if (!alreadySent) {
+                notifications.push({
+                    type: NOTIFICATION_TYPES.TRAFFIC_WARNING_1,
+                    threshold: 1,
+                    data: { remainingPercentage: Math.round(remainingPercentage), daysRemaining }
+                });
+            }
+        }
+
+        if (usagePercentage >= 100) {
+            const alreadySent = await this.db.checkNotificationSent(
+                subscription.id,
+                NOTIFICATION_TYPES.TRAFFIC_EXHAUSTED,
+                100
+            );
+            if (!alreadySent) {
+                notifications.push({
+                    type: NOTIFICATION_TYPES.TRAFFIC_EXHAUSTED,
+                    threshold: 100,
+                    data: { usagePercentage: Math.round(usagePercentage), daysRemaining }
+                });
+            }
+        }
+
+        // Записываем отправляемые уведомления в БД
+        for (const notification of notifications) {
+            await this.db.createNotification(
+                subscription.id,
+                notification.type,
+                notification.threshold
+            );
+        }
+
+        return notifications;
     }
 }
 

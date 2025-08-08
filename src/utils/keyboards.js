@@ -11,34 +11,18 @@ class KeyboardUtils {
         ]);
     }
 
-    static createPlansKeyboard() {
-        const plans = PlanService.getAllPlans();
+    static createPlansKeyboard(isAdmin = false) {
+        const plans = PlanService.getAllPlans(isAdmin);
         const buttons = [];
 
-        // Группируем кнопки по 2 в ряд для лучшего отображения
-        for (let i = 0; i < plans.length; i += 2) {
-            const row = [];
-            
-            const plan1 = plans[i];
-            if (plan1) {
-                const formatted1 = PlanService.formatPlanForDisplay(plan1);
-                row.push(Markup.button.callback(
-                    `${formatted1.displayName} - ${formatted1.displayPrice}`,
-                    `${CALLBACK_ACTIONS.BUY_PLAN}_${plan1.id}`
-                ));
-            }
-
-            const plan2 = plans[i + 1];
-            if (plan2) {
-                const formatted2 = PlanService.formatPlanForDisplay(plan2);
-                row.push(Markup.button.callback(
-                    `${formatted2.displayName} - ${formatted2.displayPrice}`,
-                    `${CALLBACK_ACTIONS.BUY_PLAN}_${plan2.id}`
-                ));
-            }
-
-            buttons.push(row);
-        }
+        plans.forEach(plan => {
+            const formatted = PlanService.formatPlanForDisplay(plan);
+            // Each plan gets its own row with checkout button
+            buttons.push([Markup.button.callback(
+                `${formatted.displayName} - ${formatted.displayPrice}`,
+                `checkout_${plan.id}`
+            )]);
+        });
 
         buttons.push([Markup.button.callback('◀️ Назад в меню', CALLBACK_ACTIONS.BACK_TO_MENU)]);
         
@@ -97,6 +81,13 @@ class KeyboardUtils {
         ]);
     }
 
+    static createDirectCheckoutKeyboard(planId) {
+        return Markup.inlineKeyboard([
+            [Markup.button.callback('✅ Оплатить', `confirm_payment_${planId}`)],
+            [Markup.button.callback('◀️ Назад', CALLBACK_ACTIONS.BUY_PLAN)]
+        ]);
+    }
+
     static createAdminKeyboard() {
         return Markup.inlineKeyboard([
             [
@@ -132,6 +123,9 @@ class KeyboardUtils {
 
     static createAppsDownloadKeyboard() {
         return Markup.inlineKeyboard([
+            [
+                Markup.button.url('🌐 С официального сайта', 'https://getoutline.org/ru/get-started/#step-3'),
+            ],
             [
                 Markup.button.url('📱 Android', 'https://play.google.com/store/apps/details?id=org.outline.android.client'),
                 Markup.button.url('📱 iOS', 'https://apps.apple.com/app/outline-app/id1356177741')

@@ -79,10 +79,22 @@ class Database {
             )
         `;
 
+        const createNotificationsTable = `
+            CREATE TABLE IF NOT EXISTS notifications (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                subscription_id INTEGER NOT NULL,
+                notification_type TEXT NOT NULL,
+                threshold_value REAL NOT NULL,
+                sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (subscription_id) REFERENCES subscriptions (id)
+            )
+        `;
+
         this.db.run(createUsersTable);
         this.db.run(createSubscriptionsTable);
         this.db.run(createPaymentsTable);
         this.db.run(createUsageLogsTable);
+        this.db.run(createNotificationsTable);
     }
 
     // Методы для работы с пользователями
@@ -298,6 +310,61 @@ class Database {
                 LIMIT ? OFFSET ?
             `;
             this.db.all(query, [limit, offset], (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+    }
+
+    // Методы для работы с уведомлениями
+    async createNotification(subscriptionId, notificationType, thresholdValue) {
+        return new Promise((resolve, reject) => {
+            const query = `
+                INSERT INTO notifications (subscription_id, notification_type, threshold_value)
+                VALUES (?, ?, ?)
+            `;
+            this.db.run(query, [subscriptionId, notificationType, thresholdValue], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(this.lastID);
+                }
+            });
+        });
+    }
+
+    async checkNotificationSent(subscriptionId, notificationType, thresholdValue) {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT COUNT(*) as count 
+                FROM notifications 
+                WHERE subscription_id = ? AND notification_type = ? AND threshold_value = ?
+                AND sent_at > datetime('now', '-7 days')
+            `;
+            this.db.get(query, [subscriptionId, notificationType, thresholdValue], (err, row) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(row.count > 0);
+                }
+            });
+        });
+    }
+
+    async getAllActiveSubscriptions() {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT s.*, u.telegram_id 
+                FROM subscriptions s 
+                JOIN users u ON s.user_id = u.id 
+                WHERE s.status = 'active' 
+                AND s.expires_at > datetime('now')
+                ORDER BY s.created_at DESC
+            `;
+            this.db.all(query, [], (err, rows) => {
                 if (err) {
                     reject(err);
                 } else {

@@ -31,6 +31,9 @@ class CallbackHandler {
             } else if (callbackData.startsWith('confirm_payment_')) {
                 const planId = callbackData.split('_').slice(2).join('_');
                 await this.handleCreateInvoice(ctx, planId);
+            } else if (callbackData.startsWith('checkout_')) {
+                const planId = callbackData.split('_').slice(1).join('_');
+                await this.handleDirectCheckout(ctx, planId);
             } else if (callbackData === CALLBACK_ACTIONS.MY_SUBSCRIPTIONS) {
                 await this.handleMySubscriptions(ctx);
             } else if (callbackData.startsWith('sub_details_')) {
@@ -70,16 +73,19 @@ class CallbackHandler {
     }
 
     async handleShowPlans(ctx) {
-        const plans = PlanService.getAllPlans();
-        const keyboard = KeyboardUtils.createPlansKeyboard();
+        const isAdmin = ADMIN_IDS.includes(ctx.from.id);
+        const plans = PlanService.getAllPlans(isAdmin);
+        const keyboard = KeyboardUtils.createPlansKeyboard(isAdmin);
         
         let message = '💎 <b>Выберите тарифный план:</b>\n\n';
         
         plans.forEach(plan => {
             const formatted = PlanService.formatPlanForDisplay(plan);
-            message += `${formatted.displayName}\n`;
+            message += `<b>${formatted.displayName}</b>\n`;
             message += `${formatted.fullDescription}\n\n`;
         });
+
+        message += `💳 Нажмите на нужный тариф для мгновенной покупки`;
 
         await ctx.editMessageText(message, {
             ...keyboard,
@@ -97,8 +103,8 @@ class CallbackHandler {
         const formatted = PlanService.formatPlanForDisplay(plan);
         const savings = PlanService.calculateSavings(plan);
         
-        let message = `${formatted.displayName}\n\n`;
-        message += `📦 <b>Что включено:</b>\n`;
+        let message = `<b>${formatted.displayName}</b>\n\n`;
+        message += `📦 Что включено:\n`;
         message += `• Объем данных: ${formatted.displayDescription.split(' на ')[0]}\n`;
         message += `• Период действия: ${formatted.displayDescription.split(' на ')[1]}\n`;
         message += `• Безлимитная скорость\n`;
@@ -106,11 +112,11 @@ class CallbackHandler {
         message += `• Техническая поддержка\n\n`;
         
         if (savings > 0) {
-            message += `💰 <b>Экономия: ${savings} ⭐</b>\n\n`;
+            message += `💰 <i>Экономия: ${savings}</i> ⭐\n\n`;
         }
         
         message += `💵 <b>Стоимость: ${formatted.displayPrice}</b>\n\n`;
-        message += `${plan.description}`;
+        message += `<i>${plan.description}</i>`;
 
         const keyboard = KeyboardUtils.createPlanDetailsKeyboard(planId);
         
@@ -138,6 +144,42 @@ class CallbackHandler {
         message += `⭐ Оплата происходит через Telegram Stars`;
 
         const keyboard = KeyboardUtils.createPaymentConfirmationKeyboard(planId);
+        
+        await ctx.editMessageText(message, {
+            ...keyboard,
+            parse_mode: 'HTML'
+        });
+    }
+
+    async handleDirectCheckout(ctx, planId) {
+        const plan = PlanService.getPlanById(planId);
+        if (!plan) {
+            await ctx.editMessageText('❌ План не найден', KeyboardUtils.createBackToMenuKeyboard());
+            return;
+        }
+
+        const formatted = PlanService.formatPlanForDisplay(plan);
+        const savings = PlanService.calculateSavings(plan);
+        
+        let message = `💳 <b>Оформление покупки</b>\n\n`;
+        message = `<b>${formatted.displayName}</b>\n\n`;
+        message += `📦 Что включено:\n`;
+        message += `• Объем данных: ${formatted.displayDescription.split(' на ')[0]}\n`;
+        message += `• Период действия: ${formatted.displayDescription.split(' на ')[1]}\n`;
+        message += `• Безлимитная скорость\n`;
+        message += `• Поддержка всех устройств\n`;
+        message += `• Техническая поддержка\n\n`;
+        
+        if (savings > 0) {
+            message += `💰 <i>Экономия: ${savings}</i> ⭐\n\n`;
+        }
+        
+        message += `💵 <b>Стоимость: ${formatted.displayPrice}</b>\n\n`;
+        message += `<i>${plan.description}</i>\n\n`;
+        message += `После оплаты вы мгновенно получите VPN ключ для подключения.\n\n`;
+        message += `⭐ Оплата происходит через Telegram Stars`;
+
+        const keyboard = KeyboardUtils.createDirectCheckoutKeyboard(planId);
         
         await ctx.editMessageText(message, {
             ...keyboard,

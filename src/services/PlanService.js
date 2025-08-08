@@ -2,8 +2,12 @@ const { PLANS } = require('../config/constants');
 const moment = require('moment');
 
 class PlanService {
-    static getAllPlans() {
-        return Object.values(PLANS);
+    static getAllPlans(includeTestPlans = false) {
+        const plans = Object.values(PLANS);
+        if (includeTestPlans) {
+            return plans;
+        }
+        return plans.filter(plan => plan.id !== 'test_100mb');
     }
 
     static getPlanById(planId) {
@@ -15,21 +19,37 @@ class PlanService {
     }
 
     static formatDataLimit(bytes) {
-        const gb = bytes / (1024 * 1024 * 1024);
+        const mb = bytes / (1024 * 1024);
+        const gb = mb / 1024;
+        
         if (gb >= 1024) {
             return `${(gb / 1024).toFixed(0)} ТБ`;
         }
-        return `${gb.toFixed(0)} ГБ`;
+        if (gb >= 1) {
+            return `${gb.toFixed(0)} ГБ`;
+        }
+        return `${mb.toFixed(0)} МБ`;
+    }
+
+    static getPlural(n, form1, form2, form5 = '') {
+        if (!form5) form5 = form2;
+        let nAbs = Math.abs(n) % 100;
+        let n1 = n % 10;
+        if (nAbs > 10 && nAbs < 20) return form5;
+        if (n1 > 1 && n1 < 5) return form2;
+        if (n1 == 1) return form1;
+        return form5;
     }
 
     static formatDuration(days) {
         if (days >= 365) {
-            return `${Math.floor(days / 365)} год`;
+            const years = Math.floor(days / 365);
+            return `${years} ${this.getPlural(years, 'год', 'года', 'лет')}`;
         } else if (days >= 30) {
             const months = Math.floor(days / 30);
-            return `${months} ${months === 6 ? 'месяцев' : 'месяц'}`;
+            return `${months} ${this.getPlural(months, 'месяц', 'месяца', 'месяцев')}`;
         }
-        return `${days} дней`;
+        return `${days} ${this.getPlural(days, 'день', 'дня', 'дней')}`;
     }
 
     static calculateExpiryDate(plan) {
@@ -60,7 +80,7 @@ class PlanService {
         // Возвращаем наиболее популярные планы
         return [
             PLANS.BASIC_30GB,
-            PLANS.STANDARD_100GB,
+            PLANS.BASIC_100GB,
             PLANS.PREMIUM_250GB
         ];
     }

@@ -11,37 +11,56 @@ class OutlineService {
     }
 
     async createAccessKey(name = '', dataLimit = null) {
-        try {
-            const response = await axios.post(
-                `${this.apiUrl}/access-keys`,
-                {},
-                {
-                    httpsAgent: this.agent,
-                    headers: {
-                        'Content-Type': 'application/json'
+        const maxRetries = 3;
+        let lastError;
+
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                console.log(`🔄 Попытка ${attempt}/${maxRetries} создания ключа доступа...`);
+                
+                const response = await axios.post(
+                    `${this.apiUrl}/access-keys`,
+                    {},
+                    {
+                        httpsAgent: this.agent,
+                        timeout: 15000, // 15 секунд
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
                     }
+                );
+
+                const keyData = response.data;
+                
+                // Устанавливаем имя ключа если указано
+                if (name) {
+                    await this.renameAccessKey(keyData.id, name);
+                    keyData.name = name;
                 }
-            );
 
-            const keyData = response.data;
-            
-            // Устанавливаем имя ключа если указано
-            if (name) {
-                await this.renameAccessKey(keyData.id, name);
-                keyData.name = name;
+                // Устанавливаем лимит данных если указан
+                if (dataLimit) {
+                    await this.setDataLimit(keyData.id, dataLimit);
+                    keyData.dataLimit = dataLimit;
+                }
+
+                console.log(`✅ Ключ создан успешно на попытке ${attempt}`);
+                return keyData;
+                
+            } catch (error) {
+                lastError = error;
+                console.error(`❌ Попытка ${attempt} неудачна:`, error.message);
+                
+                if (attempt < maxRetries) {
+                    const delay = attempt * 2000; // 2, 4, 6 секунд
+                    console.log(`⏳ Ждем ${delay}ms перед следующей попыткой...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
             }
-
-            // Устанавливаем лимит данных если указан
-            if (dataLimit) {
-                await this.setDataLimit(keyData.id, dataLimit);
-                keyData.dataLimit = dataLimit;
-            }
-
-            return keyData;
-        } catch (error) {
-            console.error('Ошибка при создании ключа доступа:', error.message);
-            throw error;
         }
+        
+        console.error('❌ Все попытки создания ключа исчерпаны');
+        throw lastError;
     }
 
     async getAccessKey(keyId) {
