@@ -206,7 +206,7 @@ class VPNBot {
             }
 
             console.log('✅ Платеж обновлен:', completedPayment);
-            console.log('📝 Создаем подписку...');
+            console.log('📝 Создаем ключ...');
 
             const subscriptionId = await this.subscriptionService.createSubscription(
                 completedPayment.user_id,
@@ -214,15 +214,15 @@ class VPNBot {
                 paymentId
             );
 
-            console.log('✅ Подписка создана с ID:', subscriptionId);
-            console.log('🔑 Активируем подписку и создаем VPN ключ...');
+            console.log('✅ Ключ создан с ID:', subscriptionId);
+            console.log('🔑 Активируем ключ...');
 
             const activationResult = await this.subscriptionService.activateSubscription(
                 subscriptionId,
                 ctx.from.first_name
             );
 
-            console.log('✅ Подписка активирована:', activationResult);
+            console.log('✅ Ключ активирован:', activationResult);
             console.log('📤 Отправляем сообщение пользователю...');
 
             await this.sendAccessKeyMessage(ctx, completedPayment, activationResult);
@@ -230,12 +230,12 @@ class VPNBot {
             console.log('✅ Процесс завершен успешно!');
 
         } catch (error) {
-            console.error('❌ Ошибка активации подписки:', error);
+            console.error('❌ Ошибка активации ключа:', error);
             console.error('❌ Stack trace:', error.stack);
-            
+
             await this.paymentService.processFailedPayment(paymentId, error.message);
-            
-            await ctx.reply(`❌ Ошибка активации подписки: ${error.message}\n\nОбратитесь в поддержку для решения проблемы.`);
+
+            await ctx.reply(`❌ Ошибка активации ключа: ${error.message}\n\nОбратитесь в поддержку для решения проблемы.`);
         }
     }
 
@@ -243,7 +243,7 @@ class VPNBot {
         const { subscription, accessUrl } = activationResult;
         
         let message = `✅ <b>Платёж успешно обработан!</b>\n\n`;
-        message += `🎉 Ваша VPN подписка активирована!\n\n`;
+        message += `🎉 Ваш VPN ключ активирован!\n\n`;
         message += `🔑 <b>Ключ доступа:</b>\n`;
         message += `<code>${accessUrl}</code>\n\n`;
         message += `📱 <b>Как подключиться:</b>\n`;

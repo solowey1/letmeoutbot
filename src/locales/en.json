@@ -1,0 +1,184 @@
+{
+  "welcome": {
+    "title": "Welcome to Let me Out VPN!",
+    "description": "Here you can purchase access to secure and fast VPN via Outline.",
+    "payment": "Payment via Telegram Stars",
+    "instant": "Instant activation after purchase",
+    "security": "Complete anonymity and security",
+    "choose_plan": "Choose a suitable plan:"
+  },
+  "help": {
+    "title": "Bot Help",
+    "steps": [
+      "Choose a plan",
+      "Pay via Telegram Stars",
+      "Get instant VPN access",
+      "Use the key in Outline app"
+    ],
+    "apps_title": "Outline Apps:",
+    "official_site": "Official Website"
+  },
+  "buttons": {
+    "buy_vpn": "💎 Buy VPN",
+    "my_keys": "📋 My Keys",
+    "help": "ℹ️ Help",
+    "back_to_menu": "◀️ Back to Menu",
+    "main_menu": "🏠 Main Menu",
+    "buy_more": "➕ Buy More",
+    "buy_first": "💎 Buy First VPN",
+    "stats": "📊 Statistics",
+    "download_apps": "📱 Download Apps",
+    "support": "🆘 Support",
+    "confirm_purchase": "✅ Confirm Purchase",
+    "pay": "✅ Pay",
+    "cancel": "❌ Cancel",
+    "back": "◀️ Back",
+    "settings": "⚙️ Settings",
+    "language": "🌐 Language"
+  },
+  "keys": {
+    "no_active": "You don't have any active keys yet.\n\nChoose a plan to purchase VPN access.",
+    "active_list": "Your active keys:",
+    "status_active": "🟢 Active",
+    "status_inactive": "🔴 Inactive",
+    "used": "Used",
+    "of": "of",
+    "days_left": "Days left",
+    "valid_until": "Valid until",
+    "details_title": "Key Details",
+    "plan": "Plan",
+    "status": "Status",
+    "usage_title": "Usage:",
+    "limit": "Limit",
+    "remaining": "Remaining",
+    "days_until_expiry": "Days until expiry",
+    "access_key_title": "Access Key:",
+    "how_to_connect": "How to connect:",
+    "connect_steps": [
+      "Download Outline Client",
+      "Copy the key above",
+      "Add the key to the app"
+    ],
+    "check_stats_hint": "You can check usage statistics in the \"My Keys\" section"
+  },
+  "plans": {
+    "choose": "Choose a plan:",
+    "checkout_hint": "Click on the desired plan for instant purchase",
+    "whats_included": "What's included:",
+    "data_volume": "Data volume",
+    "validity_period": "Validity period",
+    "unlimited_speed": "Unlimited speed",
+    "all_devices": "All devices supported",
+    "support": "Technical support",
+    "savings": "Savings",
+    "price": "Price"
+  },
+  "payment": {
+    "confirmation_title": "Purchase Confirmation",
+    "checkout_title": "Checkout",
+    "to_pay": "To pay",
+    "after_payment": "After payment you will instantly receive a VPN key for connection.",
+    "via_stars": "Payment via Telegram Stars",
+    "invoice_sent": "Invoice sent! Click \"Pay\" to complete the purchase.",
+    "success_title": "Payment successful!",
+    "key_activated": "Your VPN key is activated!",
+    "connect_instructions": "How to connect:",
+    "connect_steps": [
+      "Download Outline Client app",
+      "Copy the access key above",
+      "Add the key to the app",
+      "Enjoy secure internet!"
+    ]
+  },
+  "stats": {
+    "title": "Usage Statistics",
+    "used": "Used",
+    "limit": "Limit",
+    "remaining": "Remaining",
+    "days_left": "Days until expiry",
+    "over_limit": "Limit exceeded! Access suspended.",
+    "warning_traffic": "Warning! Traffic running out.",
+    "key_expired": "Key expired! Buy a new one to continue.",
+    "key_expiring_soon": "Key expiring soon! We recommend buying a new one."
+  },
+  "notifications": {
+    "traffic_warning_5": {
+      "title": "Traffic running out!",
+      "message": "Only {{percentage}}% of traffic remaining.\nDays left: {{days}}\n\n💡 We recommend buying a new key to avoid losing VPN access!"
+    },
+    "traffic_warning_1": {
+      "title": "CRITICAL: Traffic almost gone!",
+      "message": "Only {{percentage}}% of traffic left!\nDays left: {{days}}\n\n⚡ Urgently buy a new key, or access will be blocked!"
+    },
+    "traffic_exhausted": {
+      "title": "Traffic exhausted!",
+      "message": "All traffic used ({{percentage}}%).\nVPN access blocked.\n\n🔄 Buy a new plan to restore access."
+    },
+    "time_warning_3": {
+      "title": "Key expiring soon!",
+      "message": "{{days}} days left until expiry.\nTraffic used: {{percentage}}%\n\n💡 Perfect time to buy a new key at a great price!"
+    },
+    "time_warning_1": {
+      "title": "WARNING: Key expires tomorrow!",
+      "message": "Only {{days}} day left!\nTraffic used: {{percentage}}%\n\n⚡ Buy a new one now to avoid losing VPN access!"
+    },
+    "time_expired": {
+      "title": "Key expired!",
+      "message": "VPN validity period ended.\nAccess blocked.\n\n🛒 Buy a new key to continue using VPN."
+    },
+    "default": "Notification about your VPN key status."
+  },
+  "support": {
+    "title": "Support",
+    "intro": "If you're experiencing issues:",
+    "steps": [
+      "Check the access key is correct",
+      "Make sure Outline app is updated",
+      "Try reconnecting",
+      "Check key traffic availability"
+    ],
+    "contact": "For technical support, contact the administrator."
+  },
+  "apps": {
+    "title": "Download Outline Client:",
+    "description": "Choose the app for your operating system:",
+    "platforms": {
+      "android": "Android - Google Play Store",
+      "ios": "iOS - App Store",
+      "windows": "Windows - Direct link",
+      "macos": "macOS - Direct link"
+    },
+    "hint": "After installation, add your access key to the app."
+  },
+  "admin": {
+    "panel_title": "Admin Panel",
+    "choose_section": "Choose a section to manage:",
+    "users_title": "Users (last 10):",
+    "user_keys": "Keys",
+    "registration": "Registration",
+    "stats_title": "Bot Statistics:",
+    "total_users": "Total users",
+    "active_keys": "Active keys",
+    "total_revenue": "Total revenue",
+    "successful_payments": "Successful payments",
+    "no_access": "You don't have access to the admin panel."
+  },
+  "settings": {
+    "title": "⚙️ Settings",
+    "language_title": "Choose language / Выберите язык:",
+    "language_changed": "Language changed to English 🇬🇧",
+    "current_language": "Current language: English 🇬🇧"
+  },
+  "errors": {
+    "generic": "❌ An error occurred. Please try again later.",
+    "plan_not_found": "❌ Plan not found",
+    "key_not_found": "❌ Key not found",
+    "no_keys": "❌ You don't have any active keys",
+    "payment_failed": "❌ Payment error. Please try again later.",
+    "key_activation_failed": "❌ Key activation error: {{error}}\n\nContact support to resolve this issue.",
+    "stats_unavailable": "❌ Statistics unavailable",
+    "loading_error": "❌ Loading error",
+    "unknown_command": "❌ Unknown command",
+    "admin_error": "❌ Admin panel error."
+  }
+}

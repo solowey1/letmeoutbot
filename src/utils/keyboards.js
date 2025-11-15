@@ -68,8 +68,6 @@ class KeyboardUtils {
     static createSubscriptionDetailsKeyboard(subscriptionId) {
         return Markup.inlineKeyboard([
             [Markup.button.callback('📊 Статистика', `sub_stats_${subscriptionId}`)],
-            [Markup.button.callback('🔄 Продлить', `${CALLBACK_ACTIONS.EXTEND_SUBSCRIPTION}_${subscriptionId}`)],
-            [Markup.button.callback('◀️ К подпискам', CALLBACK_ACTIONS.MY_KEYS)],
             [Markup.button.callback('🏠 Главное меню', CALLBACK_ACTIONS.BACK_TO_MENU)]
         ]);
     }

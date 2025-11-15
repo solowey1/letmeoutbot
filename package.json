@@ -8,19 +8,27 @@
     "dev": "nodemon src/index.js",
     "test": "jest"
   },
-  "keywords": ["telegram", "bot", "vpn", "outline", "payment", "stars"],
+  "keywords": [
+    "telegram",
+    "bot",
+    "vpn",
+    "outline",
+    "payment",
+    "stars"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "telegraf": "^4.15.0",
-    "sqlite3": "^5.1.6",
     "axios": "^1.6.2",
-    "dotenv": "^16.3.1",
     "cron": "^3.1.6",
-    "moment": "^2.29.4"
+    "dotenv": "^16.3.1",
+    "i18n": "^0.15.3",
+    "moment": "^2.29.4",
+    "sqlite3": "^5.1.6",
+    "telegraf": "^4.15.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2",
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2"
   }
 }

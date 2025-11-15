@@ -29,6 +29,7 @@ class Database {
                 first_name TEXT,
                 last_name TEXT,
                 role TEXT DEFAULT 'user',
+                language TEXT DEFAULT 'ru',
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )

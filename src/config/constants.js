@@ -71,7 +71,7 @@ const PLANS = {
   },
 };
 
-const SUBSCRIPTION_STATUS = {
+const KEY_STATUS = {
   ACTIVE: 'active',
   EXPIRED: 'expired',
   SUSPENDED: 'suspended',
@@ -102,7 +102,7 @@ const CALLBACK_ACTIONS = {
   CONFIRM_PURCHASE: 'confirm_purchase',
   CHECKOUT: 'checkout',
   MY_KEYS: 'my_keys',
-  EXTEND_SUBSCRIPTION: 'extend_sub',
+  EXTEND_KEY: 'extend_key',
   BACK_TO_MENU: 'back_menu',
   ADMIN_PANEL: 'admin_panel',
   ADMIN_USERS: 'admin_users',
@@ -160,7 +160,8 @@ const ADMIN_IDS = process.env.ADMIN_IDS ? process.env.ADMIN_IDS.split(',').map(i
 
 module.exports = {
   PLANS,
-  SUBSCRIPTION_STATUS,
+  KEY_STATUS,
+  SUBSCRIPTION_STATUS: KEY_STATUS, // Backward compatibility
   PAYMENT_STATUS,
   USER_ROLES,
   BOT_COMMANDS,

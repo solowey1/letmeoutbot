@@ -256,14 +256,14 @@ class CallbackHandler {
                 return;
             }
 
-            let message = '📋 <b>Ваши активные подписки:</b>\n\n';
+            let message = '📋 <b>Ваши активные ключи:</b>\n\n';
             
             for (let i = 0; i < subscriptions.length; i++) {
                 const sub = subscriptions[i];
                 const usage = await this.subscriptionService.getUsageStats(sub.id);
                 
                 message += `${i + 1}. ${sub.plan.displayName}\n`;
-                message += `   • Статус: ${sub.status === 'active' ? '🟢 Активна' : '🔴 Неактивна'}\n`;
+                message += `   • Статус: ${sub.status === 'active' ? '🟢 Активен' : '🔴 Неактивен'}\n`;
                 
                 if (usage) {
                     message += `   • Использовано: ${usage.formattedUsed} из ${usage.formattedLimit} (${usage.usagePercentage}%)\n`;
@@ -280,8 +280,8 @@ class CallbackHandler {
                 parse_mode: 'HTML'
             });
         } catch (error) {
-            console.error('Ошибка получения подписок:', error);
-            await ctx.editMessageText('❌ Ошибка загрузки подписок', 
+            console.error('Ошибка получения ключей:', error);
+            await ctx.editMessageText('❌ У вас нет действующих ключей',
                 KeyboardUtils.createBackToMenuKeyboard());
         }
     }
@@ -290,14 +290,14 @@ class CallbackHandler {
         try {
             const subscription = await this.subscriptionService.getSubscriptionDetails(subscriptionId, true);
             if (!subscription) {
-                await ctx.editMessageText('❌ Подписка не найдена', 
+                await ctx.editMessageText('❌ Ключ не найден',
                     KeyboardUtils.createBackToMenuKeyboard());
                 return;
             }
 
-            let message = `🔑 <b>Детали подписки</b>\n\n`;
+            let message = `🔑 <b>Детали ключа</b>\n\n`;
             message += `📦 Тариф: ${subscription.plan.displayName}\n`;
-            message += `🟢 Статус: ${subscription.status === 'active' ? 'Активна' : 'Неактивна'}\n\n`;
+            message += `🟢 Статус: ${subscription.status === 'active' ? 'Активен' : 'Неактивен'}\n\n`;
             
             if (subscription.usage) {
                 const usage = subscription.usage;
@@ -324,8 +324,8 @@ class CallbackHandler {
                 parse_mode: 'HTML'
             });
         } catch (error) {
-            console.error('Ошибка получения деталей подписки:', error);
-            await ctx.editMessageText('❌ Ошибка загрузки деталей подписки', 
+            console.error('Ошибка получения деталей ключа:', error);
+            await ctx.editMessageText('❌ Ошибка загрузки деталей ключа',
                 KeyboardUtils.createBackToMenuKeyboard());
         }
     }
@@ -357,9 +357,9 @@ class CallbackHandler {
             }
             
             if (usage.isExpired) {
-                message += `\n🕐 <b>Подписка истекла!</b> Продлите для продолжения использования.`;
+                message += `\n🕐 <b>Ключ истёк!</b> Купите новый для продолжения использования.`;
             } else if (usage.daysRemaining <= 3) {
-                message += `\n⏰ <b>Подписка скоро истекает!</b> Рекомендуем продлить.`;
+                message += `\n⏰ <b>Ключ скоро истекает!</b> Рекомендуем купить новый.`;
             }
 
             const keyboard = KeyboardUtils.createSubscriptionDetailsKeyboard(subscriptionId);
@@ -405,7 +405,7 @@ class CallbackHandler {
                        `1. Проверьте правильность ключа доступа\n` +
                        `2. Убедитесь, что приложение Outline обновлено\n` +
                        `3. Попробуйте переподключиться\n` +
-                       `4. Проверьте наличие трафика в подписке\n\n` +
+                       `4. Проверьте наличие трафика у ключа\n\n` +
                        `📧 Для технической поддержки обратитесь к администратору.`;
         
         const keyboard = KeyboardUtils.createBackToMenuKeyboard();
@@ -447,7 +447,7 @@ class CallbackHandler {
                 const registrationDate = new Date(user.created_at).toLocaleDateString('ru-RU');
                 message += `${index + 1}. <b>${user.first_name}</b> (@${user.username || 'без username'})\n`;
                 message += `   ID: ${user.telegram_id}\n`;
-                message += `   Подписок: ${user.subscription_count}\n`;
+                message += `   Ключей: ${user.subscription_count}\n`;
                 message += `   Регистрация: ${registrationDate}\n\n`;
             });
 
@@ -475,7 +475,7 @@ class CallbackHandler {
             
             let message = `📊 <b>Статистика бота:</b>\n\n`;
             message += `👥 Всего пользователей: ${stats.totalUsers}\n`;
-            message += `🔑 Активных подписок: ${stats.activeSubscriptions}\n`;
+            message += `🔑 Активных ключей: ${stats.activeSubscriptions}\n`;
             message += `💰 Общая выручка: ${stats.totalRevenue} ⭐\n`;
             message += `💳 Успешных платежей: ${stats.totalPayments}\n`;
 
