@@ -34,7 +34,7 @@ class CallbackHandler {
             } else if (callbackData.startsWith('checkout_')) {
                 const planId = callbackData.split('_').slice(1).join('_');
                 await this.handleDirectCheckout(ctx, planId);
-            } else if (callbackData === CALLBACK_ACTIONS.MY_SUBSCRIPTIONS) {
+            } else if (callbackData === CALLBACK_ACTIONS.MY_KEYS) {
                 await this.handleMySubscriptions(ctx);
             } else if (callbackData.startsWith('sub_details_')) {
                 const subscriptionId = parseInt(callbackData.split('_')[2]);

@@ -6,7 +6,7 @@ class KeyboardUtils {
     static createMainMenu() {
         return Markup.inlineKeyboard([
             [Markup.button.callback('💎 Купить VPN', CALLBACK_ACTIONS.BUY_PLAN)],
-            [Markup.button.callback('📋 Мои подписки', CALLBACK_ACTIONS.MY_SUBSCRIPTIONS)],
+            [Markup.button.callback('📋 Мои ключи', CALLBACK_ACTIONS.MY_KEYS)],
             [Markup.button.callback('ℹ️ Помощь', 'help')],
         ]);
     }
@@ -69,7 +69,7 @@ class KeyboardUtils {
         return Markup.inlineKeyboard([
             [Markup.button.callback('📊 Статистика', `sub_stats_${subscriptionId}`)],
             [Markup.button.callback('🔄 Продлить', `${CALLBACK_ACTIONS.EXTEND_SUBSCRIPTION}_${subscriptionId}`)],
-            [Markup.button.callback('◀️ К подпискам', CALLBACK_ACTIONS.MY_SUBSCRIPTIONS)],
+            [Markup.button.callback('◀️ К подпискам', CALLBACK_ACTIONS.MY_KEYS)],
             [Markup.button.callback('🏠 Главное меню', CALLBACK_ACTIONS.BACK_TO_MENU)]
         ]);
     }

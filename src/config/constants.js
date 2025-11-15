@@ -101,7 +101,7 @@ const CALLBACK_ACTIONS = {
   BUY_PLAN: 'buy_plan',
   CONFIRM_PURCHASE: 'confirm_purchase',
   CHECKOUT: 'checkout',
-  MY_SUBSCRIPTIONS: 'my_subs',
+  MY_KEYS: 'my_keys',
   EXTEND_SUBSCRIPTION: 'extend_sub',
   BACK_TO_MENU: 'back_menu',
   ADMIN_PANEL: 'admin_panel',
@@ -110,7 +110,7 @@ const CALLBACK_ACTIONS = {
 };
 
 const MESSAGES = {
-  WELCOME: `🔐 <b>Let me Out(line) VPN приветствует вас!</b>
+  WELCOME: `🔐 <b>Let me Out VPN приветствует вас!</b>
 
 Здесь вы можете приобрести доступ к безопасному и быстрому VPN через Outline.
 
@@ -134,7 +134,7 @@ const MESSAGES = {
 • <a href="https://s3.amazonaws.com/outline-releases/client/windows/stable/Outline-Client.exe">Windows</a>
 • <a href="https://s3.amazonaws.com/outline-releases/client/macos/stable/Outline-Client.dmg">macOS</a>`,
 
-  NO_ACTIVE_SUBS: `📭 У вас пока нет активных подписок.
+  NO_ACTIVE_SUBS: `📭 У вас пока нет активных ключей.
 
 Выберите тарифный план для покупки доступа к VPN.`,
 
