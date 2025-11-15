@@ -3,7 +3,9 @@ const { Telegraf } = require('telegraf');
 const cron = require('cron');
 
 // Импорты сервисов и моделей
-const Database = require('../models/Database');
+const SQLiteDatabase = require('../models/Database');
+const PostgresDatabase = require('../models/PostgresDatabase');
+const SupabaseDatabase = require('../models/SupabaseDatabase');
 const OutlineService = require('../services/OutlineService');
 const PaymentService = require('../services/PaymentService');
 const SubscriptionService = require('../services/SubscriptionService');
@@ -26,7 +28,19 @@ class VPNBot {
 		this.bot = new Telegraf(config.telegram.token, config.telegram.options);
         
 		// Инициализируем базу данных и сервисы
-		this.db = new Database(config.database.path);
+		if (config.database.type === 'supabase') {
+			console.log('☁️  Используется Supabase (рекомендуется)');
+			this.db = new SupabaseDatabase(
+				config.database.supabase.url,
+				config.database.supabase.apiKey
+			);
+		} else if (config.database.type === 'postgres') {
+			console.log('🐘 Используется PostgreSQL Direct');
+			this.db = new PostgresDatabase(config.database.url);
+		} else {
+			console.log('📁 Используется SQLite');
+			this.db = new SQLiteDatabase(config.database.path);
+		}
 		this.i18nService = new I18nService();
 		this.outlineService = new OutlineService(config.outline.apiUrl);
 		this.paymentService = new PaymentService(this.db);
