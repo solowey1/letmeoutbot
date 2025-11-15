@@ -74,6 +74,8 @@ class CallbackHandler {
 				await this.adminCallbacks.handleAdminUsers(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN_STATS) {
 				await this.adminCallbacks.handleAdminStats(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN_PENDING_SUBS) {
+				await this.adminCallbacks.handleAdminPendingSubscriptions(ctx);
 			} else {
 				// Неизвестный callback
 				await ctx.editMessageText(t('errors.unknown_command'), KeyboardUtils.createBackToMenuKeyboard(t));

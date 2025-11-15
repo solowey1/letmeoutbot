@@ -83,6 +83,43 @@ class AdminCallbacks {
 				KeyboardUtils.createAdminKeyboard());
 		}
 	}
+
+	async handleAdminPendingSubscriptions(ctx) {
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery('❌ Недостаточно прав доступа');
+			return;
+		}
+
+		try {
+			const pendingSubs = await this.db.getPendingSubscriptions();
+
+			let message = '⏳ <b>Неактивированные подписки:</b>\n\n';
+
+			if (pendingSubs.length === 0) {
+				message += 'Все подписки успешно активированы ✅';
+			} else {
+				for (const sub of pendingSubs) {
+					const user = await this.db.getUserById(sub.user_id);
+					message += `📋 ID: ${sub.id}\n`;
+					message += `👤 Пользователь: ${user?.first_name || 'Неизвестен'} (@${user?.username || 'нет'})\n`;
+					message += `📦 План: ${sub.plan_id}\n`;
+					message += `🕐 Создан: ${new Date(sub.created_at).toLocaleString('ru-RU')}\n`;
+					message += `⚠️ Статус: ${sub.status}\n\n`;
+				}
+			}
+
+			const keyboard = KeyboardUtils.createAdminKeyboard();
+
+			await ctx.editMessageText(message, {
+				...keyboard,
+				parse_mode: 'HTML'
+			});
+		} catch (error) {
+			console.error('Ошибка получения pending подписок:', error);
+			await ctx.editMessageText('❌ Ошибка загрузки данных',
+				KeyboardUtils.createAdminKeyboard());
+		}
+	}
 }
 
 module.exports = AdminCallbacks;
