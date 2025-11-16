@@ -110,10 +110,15 @@ class TelegramBot {
 			console.log('✅ VPN Bot успешно запущен!');
             
 			// Устанавливаем команды бота
-			await this.bot.telegram.setMyCommands([
-				{ command: 'start', description: 'Начать работу с ботом' },
-				{ command: 'help', description: 'Помощь и информация' }
-			]);
+			// await this.bot.telegram.setMyCommands([
+			// 	{ command: 'start', description: 'Start working with the bot' },
+			// 	{ command: 'help', description: 'Help and information' }
+			// ]);
+			
+			// await this.bot.telegram.setMyCommands([
+			// 	{ command: 'start', description: 'Начать работу с ботом' },
+			// 	{ command: 'help', description: 'Помощь и информация' }
+			// ]);
 
 			// Graceful stop
 			process.once('SIGINT', () => {

@@ -18,17 +18,17 @@ class PlanService {
 		return `${price} ⭐`;
 	}
 
-	static formatDataLimit(bytes) {
+	static formatDataLimit(t, bytes) {
 		const mb = bytes / (1024 * 1024);
 		const gb = mb / 1024;
         
 		if (gb >= 1024) {
-			return `${(gb / 1024).toFixed(0)} ТБ`;
+			return `${(gb / 1024).toFixed(0)} ${t(`common.memory.tb`)}`;
 		}
 		if (gb >= 1) {
-			return `${gb.toFixed(0)} ГБ`;
+			return `${gb.toFixed(0)} ${t(`common.memory.gb`)}`;
 		}
-		return `${mb.toFixed(0)} МБ`;
+		return `${mb.toFixed(0)} ${t(`common.memory.mb`)}`;
 	}
 
 	static getPlural(n, form1, form2, form5 = '') {
@@ -41,30 +41,35 @@ class PlanService {
 		return form5;
 	}
 
-	static formatDuration(days) {
+	static formatDuration(t, days) {
 		if (days >= 365) {
+			const word = 'year';
 			const years = Math.floor(days / 365);
-			return `${years} ${this.getPlural(years, 'год', 'года', 'лет')}`;
+			return `${years} ${this.getPlural(years, t(`common.periods.${word}.one`), t(`common.periods.${word}.some`), t(`common.periods.${word}.many`))}`;
 		} else if (days >= 30) {
+			const word = 'month';
 			const months = Math.floor(days / 30);
-			return `${months} ${this.getPlural(months, 'месяц', 'месяца', 'месяцев')}`;
+			return `${months} ${this.getPlural(months, t(`common.periods.${word}.one`), t(`common.periods.${word}.some`), t(`common.periods.${word}.many`))}`;
 		}
-		return `${days} ${this.getPlural(days, 'день', 'дня', 'дней')}`;
+		const word = 'day';
+		return `${days} ${this.getPlural(days, t(`common.periods.${word}.one`), t(`common.periods.${word}.some`), t(`common.periods.${word}.many`))}`;
 	}
 
 	static calculateExpiryDate(plan) {
 		return moment().add(plan.duration, 'days').toDate();
 	}
 
-	static formatPlanForDisplay(plan) {
-		const dataLimitFormatted = this.formatDataLimit(plan.dataLimit);
-		const durationFormatted = this.formatDuration(plan.duration);
+	static formatPlanForDisplay(t, plan) {
+		const dataLimitFormatted = this.formatDataLimit(t, plan.dataLimit);
+		const durationFormatted = this.formatDuration(t, plan.duration);
 		const priceFormatted = this.formatPlanPrice(plan.price);
 
 		return {
 			...plan,
 			displayName: `${plan.emoji} ${plan.name}`,
-			displayDescription: `${dataLimitFormatted} на ${durationFormatted}`,
+			displayDescription: `${dataLimitFormatted} / ${durationFormatted}`,
+			displayDataLimit: dataLimitFormatted,
+			displayDuration: durationFormatted,
 			displayPrice: priceFormatted,
 			fullDescription: `${plan.description}\n💾 ${dataLimitFormatted}\n⏰ ${durationFormatted}\n💰 ${priceFormatted}`
 		};

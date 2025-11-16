@@ -165,7 +165,6 @@
   },
   "settings": {
     "title": "Settings",
-    "description": "Choose language / Выберите язык:",
     "language_changed": "Language changed to English 🇬🇧",
     "current_language": "Current language: English 🇬🇧"
   },
