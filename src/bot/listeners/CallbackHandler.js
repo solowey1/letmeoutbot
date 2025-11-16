@@ -78,7 +78,7 @@ class CallbackHandler {
 				await this.adminCallbacks.handleAdminPendingKeys(ctx);
 			} else {
 				// Неизвестный callback
-				await ctx.editMessageText(t('errors.unknown_command'), KeyboardUtils.createBackToMenuKeyboard(t));
+				await ctx.editMessageText(t('generic.unknown_command', { ns: 'error' }), KeyboardUtils.createBackToMenuKeyboard(t));
 			}
 		} catch (error) {
 			console.error('Ошибка обработки callback:', error);
