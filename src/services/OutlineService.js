@@ -219,20 +219,20 @@ class OutlineService {
 		}
 	}
 
-	// Метод для создания полного VPN доступа с учетом подписки
-	async createSubscriptionKey(subscription, userTID) {
+	// Метод для создания полного VPN ключа на основе данных о ключе
+	async createKey(keyData, userTID) {
 		try {
-			const keyName = `${userTID}_${subscription.plan_id.split('_')[1]}`;
+			const keyName = `${userTID}_${keyData.plan_id.split('_')[1]}`;
 
 			// Создаем ключ с лимитом данных
-			const keyData = await this.createAccessKey(keyName, subscription.data_limit);
+			const createdKey = await this.createAccessKey(keyName, keyData.data_limit);
 
 			// Добавляем имя ключа в URL для отображения в клиенте
-			const displayName = `LetMeOut_#${keyData.id}_${subscription.plan_id}`;
-			const accessUrlWithName = `${keyData.accessUrl}#${encodeURIComponent(displayName)}`;
+			const displayName = `LetMeOut_#${createdKey.id}_${keyData.plan_id}`;
+			const accessUrlWithName = `${createdKey.accessUrl}#${encodeURIComponent(displayName)}`;
 
 			return {
-				keyId: keyData.id,
+				keyId: createdKey.id,
 				accessUrl: accessUrlWithName,
 				name: keyName
 			};
@@ -243,7 +243,7 @@ class OutlineService {
 	}
 
 	// Метод для проверки и обновления использования данных
-	async checkAndUpdateUsage(subscriptionId, outlineKeyId, currentDataUsed = 0) {
+	async checkAndUpdateUsage(outlineKeyId, currentDataUsed = 0) {
 		try {
 			const actualUsage = await this.getKeyDataUsage(outlineKeyId);
             

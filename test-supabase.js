@@ -31,20 +31,20 @@ async function testSupabase() {
 		const users = await db.getAllUsers();
 		console.log(`   ✅ Найдено пользователей: ${users.length}`);
 
-		// Тест 3: Проверка таблицы subscriptions
-		console.log('\n3️⃣ Проверка таблицы subscriptions...');
-		const activeSubs = await db.getAllActiveSubscriptions();
-		console.log(`   ✅ Активных подписок: ${activeSubs.length}`);
+		// Тест 3: Проверка таблицы keys
+		console.log('\n3️⃣ Проверка таблицы keys...');
+		const activeKeys = await db.getActiveKeys();
+		console.log(`   ✅ Активных подписок: ${activeKeys.length}`);
 
-		const pendingSubs = await db.getPendingSubscriptions();
-		console.log(`   ✅ Pending подписок: ${pendingSubs.length}`);
+		const pendingKeys = await db.getPendingKeys();
+		console.log(`   ✅ Pending подписок: ${pendingKeys.length}`);
 
 		// Тест 4: Статистика
 		console.log('\n4️⃣ Получение статистики...');
 		const stats = await db.getStats();
 		console.log('   ✅ Статистика:');
 		console.log(`      - Всего пользователей: ${stats.total_users}`);
-		console.log(`      - Активных подписок: ${stats.active_subscriptions}`);
+		console.log(`      - Активных ключей: ${stats.active_keys}`);
 		console.log(`      - Завершённых платежей: ${stats.total_payments}`);
 		console.log(`      - Общий доход: ${stats.total_revenue} XTR`);
 

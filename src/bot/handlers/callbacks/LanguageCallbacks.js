@@ -1,10 +1,10 @@
-const KeyboardUtils = require('../../utils/keyboards');
+const KeyboardUtils = require('../../../utils/keyboards');
 
 class LanguageCallbacks {
-	constructor(database, paymentService, subscriptionService) {
+	constructor(database, paymentService, keysService) {
 		this.db = database;
 		this.paymentService = paymentService;
-		this.subscriptionService = subscriptionService;
+		this.keysService = keysService;
 	}
 
 	async handleChangeLanguage(ctx) {

@@ -1,25 +1,25 @@
-const { CALLBACK_ACTIONS } = require('../config/constants');
-const KeyboardUtils = require('../utils/keyboards');
+const { CALLBACK_ACTIONS } = require('../../config/constants');
+const KeyboardUtils = require('../../utils/keyboards');
 
 // Импортируем модульные обработчики
-const MenuCallbacks = require('./callbacks/MenuCallbacks');
-const PlanCallbacks = require('./callbacks/PlanCallbacks');
-const SubscriptionCallbacks = require('./callbacks/SubscriptionCallbacks');
-const LanguageCallbacks = require('./callbacks/LanguageCallbacks');
-const AdminCallbacks = require('./callbacks/AdminCallbacks');
+const MenuCallbacks = require('../handlers/callbacks/MenuCallbacks');
+const PlanCallbacks = require('../handlers/callbacks/PlanCallbacks');
+const KeysCallbacks = require('../handlers/callbacks/KeysCallbacks');
+const LanguageCallbacks = require('../handlers/callbacks/LanguageCallbacks');
+const AdminCallbacks = require('../handlers/callbacks/AdminCallbacks');
 
 class CallbackHandler {
-	constructor(database, paymentService, subscriptionService) {
+	constructor(database, paymentService, keysService) {
 		this.db = database;
 		this.paymentService = paymentService;
-		this.subscriptionService = subscriptionService;
+		this.keysService = keysService;
 
 		// Инициализируем модульные обработчики
-		this.menuCallbacks = new MenuCallbacks(database, paymentService, subscriptionService);
-		this.planCallbacks = new PlanCallbacks(database, paymentService, subscriptionService);
-		this.subscriptionCallbacks = new SubscriptionCallbacks(database, paymentService, subscriptionService);
-		this.languageCallbacks = new LanguageCallbacks(database, paymentService, subscriptionService);
-		this.adminCallbacks = new AdminCallbacks(database, paymentService, subscriptionService);
+		this.menuCallbacks = new MenuCallbacks(database, paymentService, keysService);
+		this.planCallbacks = new PlanCallbacks(database, paymentService, keysService);
+		this.KeysCallbacks = new KeysCallbacks(database, paymentService, keysService);
+		this.languageCallbacks = new LanguageCallbacks(database, paymentService, keysService);
+		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService);
 	}
 
 	async handleCallback(ctx) {
@@ -48,13 +48,13 @@ class CallbackHandler {
 				const planId = callbackData.split('_').slice(1).join('_');
 				await this.planCallbacks.handleDirectCheckout(ctx, planId);
 			} else if (callbackData === CALLBACK_ACTIONS.MY_KEYS) {
-				await this.subscriptionCallbacks.handleMySubscriptions(ctx);
-			} else if (callbackData.startsWith('sub_details_')) {
-				const subscriptionId = parseInt(callbackData.split('_')[2]);
-				await this.subscriptionCallbacks.handleSubscriptionDetails(ctx, subscriptionId);
-			} else if (callbackData.startsWith('sub_stats_')) {
-				const subscriptionId = parseInt(callbackData.split('_')[2]);
-				await this.subscriptionCallbacks.handleSubscriptionStats(ctx, subscriptionId);
+				await this.KeysCallbacks.handleMyKeys(ctx);
+			} else if (callbackData.startsWith('key_details_')) {
+				const keyId = parseInt(callbackData.split('_')[2]);
+				await this.KeysCallbacks.handleKeyDetails(ctx, keyId);
+			} else if (callbackData.startsWith('key_stats_')) {
+				const keyId = parseInt(callbackData.split('_')[2]);
+				await this.KeysCallbacks.handleKeyStats(ctx, keyId);
 			} else if (callbackData === CALLBACK_ACTIONS.SETTINGS) {
 				await this.menuCallbacks.handleSettings(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.CHANGE_LANGUAGE) {
@@ -74,15 +74,15 @@ class CallbackHandler {
 				await this.adminCallbacks.handleAdminUsers(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN_STATS) {
 				await this.adminCallbacks.handleAdminStats(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.ADMIN_PENDING_SUBS) {
-				await this.adminCallbacks.handleAdminPendingSubscriptions(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN_PENDING_KEYS) {
+				await this.adminCallbacks.handleAdminPendingKeys(ctx);
 			} else {
 				// Неизвестный callback
 				await ctx.editMessageText(t('errors.unknown_command'), KeyboardUtils.createBackToMenuKeyboard(t));
 			}
 		} catch (error) {
 			console.error('Ошибка обработки callback:', error);
-			await ctx.answerCbQuery(t('errors.generic'));
+			await ctx.answerCbQuery(t('generic.default', { ns: 'error' }));
 		}
 	}
 

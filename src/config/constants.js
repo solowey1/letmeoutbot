@@ -85,18 +85,6 @@ const PAYMENT_STATUS = {
 	REFUNDED: 'refunded'
 };
 
-const USER_ROLES = {
-	USER: 'user',
-	ADMIN: 'admin',
-	MODERATOR: 'moderator'
-};
-
-const BOT_COMMANDS = {
-	START: 'start',
-	HELP: 'help',
-	ADMIN: 'admin'
-};
-
 const CALLBACK_ACTIONS = {
 	BUY_PLAN: 'buy_plan',
 	CONFIRM_PURCHASE: 'confirm_purchase',
@@ -107,48 +95,10 @@ const CALLBACK_ACTIONS = {
 	ADMIN_PANEL: 'admin_panel',
 	ADMIN_USERS: 'admin_users',
 	ADMIN_STATS: 'admin_stats',
-	ADMIN_PENDING_SUBS: 'admin_pending_subs',
+	ADMIN_PENDING_KEYS: 'admin_pending_keys',
 	SETTINGS: 'settings',
 	CHANGE_LANGUAGE: 'change_lang',
 	SET_LANGUAGE: 'set_lang' // set_lang_ru, set_lang_en
-};
-
-const MESSAGES = {
-	WELCOME: `🔐 <b>Let me Out VPN приветствует вас!</b>
-
-Здесь вы можете приобрести доступ к безопасному и быстрому VPN через Outline.
-
-💰 Оплата происходит через Telegram Stars
-🚀 Мгновенная активация после покупки
-🔒 Полная анонимность и безопасность
-
-Выберите подходящий тарифный план:`,
-
-	HELP: `ℹ️ <b>Справка по боту</b>
-
-🔹 Выберите тарифный план
-🔹 Оплатите через Telegram Stars  
-🔹 Получите мгновенный доступ к VPN
-🔹 Используйте ключ в приложении Outline
-
-📱 <b>Приложения Outline:</b>
-• <a href="https://getoutline.org/ru/get-started/#step-3">Официальный сайт</a>
-• <a href="https://play.google.com/store/apps/details?id=org.outline.android.client">Android</a>
-• <a href="https://apps.apple.com/app/outline-app/id1356177741">iOS</a>
-• <a href="https://s3.amazonaws.com/outline-releases/client/windows/stable/Outline-Client.exe">Windows</a>
-• <a href="https://s3.amazonaws.com/outline-releases/client/macos/stable/Outline-Client.dmg">macOS</a>`,
-
-	NO_ACTIVE_SUBS: `📭 У вас пока нет активных ключей.
-
-Выберите тарифный план для покупки доступа к VPN.`,
-
-	PAYMENT_SUCCESS: `✅ <b>Платёж успешно обработан!</b>
-
-Ваш VPN ключ создан и готов к использованию.`,
-
-	PAYMENT_FAILED: `❌ <b>Ошибка оплаты</b>
-
-Попробуйте еще раз или обратитесь в поддержку.`
 };
 
 const NOTIFICATION_TYPES = {
@@ -165,7 +115,6 @@ const ADMIN_IDS = process.env.ADMIN_IDS ? process.env.ADMIN_IDS.split(',').map(i
 module.exports = {
 	PLANS,
 	KEY_STATUS,
-	SUBSCRIPTION_STATUS: KEY_STATUS, // Backward compatibility
 	PAYMENT_STATUS,
 	USER_ROLES,
 	BOT_COMMANDS,

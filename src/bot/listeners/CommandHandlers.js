@@ -1,5 +1,5 @@
 const KeyboardUtils = require('../../utils/keyboards');
-const { MenuMessages } = require('../../services/messages');
+const { MenuMessages, AdminMessages } = require('../../services/messages');
 const { ADMIN_IDS } = require('../../config/constants');
 
 class CommandHandlers {
@@ -52,14 +52,15 @@ class CommandHandlers {
 	}
 
 	async handleAdmin(ctx) {
+		const t = ctx.i18n.t;
+
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			const t = ctx.i18n.t;
-			await ctx.reply(t('errors.no_admin_access'));
+			const message = AdminMessages.accessDenied(t);
+			await ctx.reply(message);
 			return;
 		}
 
-		const t = ctx.i18n.t;
-		const message = '⚙️ <b>' + t('admin.panel_title') + '</b>\n\n' + t('admin.choose_section');
+		const message = AdminMessages.adminPanel(t);
 		const keyboard = KeyboardUtils.createAdminKeyboard(t);
 
 		await ctx.reply(message, {
@@ -88,7 +89,7 @@ class CommandHandlers {
 			} catch (error) {
 				console.error('Ошибка в команде /start:', error);
 				const t = ctx.i18n?.t || ((key) => key);
-				await ctx.reply(t('errors.generic'));
+				await ctx.reply(t('generic.default', { ns: 'error' }));
 			}
 		});
 
@@ -98,7 +99,7 @@ class CommandHandlers {
 			} catch (error) {
 				console.error('Ошибка в команде /help:', error);
 				const t = ctx.i18n?.t || ((key) => key);
-				await ctx.reply(t('errors.generic'));
+				await ctx.reply(t('generic.default', { ns: 'error' }));
 			}
 		});
 
@@ -108,7 +109,7 @@ class CommandHandlers {
 			} catch (error) {
 				console.error('Ошибка в команде /admin:', error);
 				const t = ctx.i18n?.t || ((key) => key);
-				await ctx.reply(t('errors.admin_panel'));
+				await ctx.reply(t('admin.default', { ns: 'error' }));
 			}
 		});
 	}

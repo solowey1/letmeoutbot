@@ -107,11 +107,11 @@ class SupabaseDatabase {
 		return data || [];
 	}
 
-	// ============== SUBSCRIPTIONS ==============
+	// ============== KEYS ==============
 
-	async createSubscription(userId, planId, dataLimit, expiresAt) {
+	async createKey(userId, planId, dataLimit, expiresAt) {
 		const { data, error } = await this.supabase
-			.from('subscriptions')
+			.from('keys')
 			.insert([{
 				user_id: userId,
 				plan_id: planId,
@@ -126,11 +126,11 @@ class SupabaseDatabase {
 		return data.id;
 	}
 
-	async getSubscription(subscriptionId) {
+	async getKey(keyId) {
 		const { data, error } = await this.supabase
-			.from('subscriptions')
+			.from('keys')
 			.select('*')
-			.eq('id', subscriptionId)
+			.eq('id', keyId)
 			.single();
 
 		if (error) {
@@ -141,18 +141,18 @@ class SupabaseDatabase {
 		return data;
 	}
 
-	async updateSubscription(subscriptionId, updates) {
+	async updateKey(keyId, updates) {
 		const { error } = await this.supabase
-			.from('subscriptions')
+			.from('keys')
 			.update(updates)
-			.eq('id', subscriptionId);
+			.eq('id', keyId);
 
 		if (error) throw error;
 	}
 
-	async getActiveSubscriptions(userId) {
+	async getActiveKeys(userId) {
 		const { data, error } = await this.supabase
-			.from('subscriptions')
+			.from('keys')
 			.select('*')
 			.eq('user_id', userId)
 			.eq('status', 'active')
@@ -163,9 +163,9 @@ class SupabaseDatabase {
 		return data || [];
 	}
 
-	async getAllUserSubscriptions(userId) {
+	async getAllUserKeys(userId) {
 		const { data, error } = await this.supabase
-			.from('subscriptions')
+			.from('keys')
 			.select('*')
 			.eq('user_id', userId)
 			.order('created_at', { ascending: false });
@@ -174,9 +174,9 @@ class SupabaseDatabase {
 		return data || [];
 	}
 
-	async getPendingSubscriptions(limit = 20) {
+	async getPendingKeys(limit = 20) {
 		const { data, error } = await this.supabase
-			.from('subscriptions')
+			.from('keys')
 			.select('*')
 			.eq('status', 'pending')
 			.order('created_at', { ascending: false })
@@ -186,9 +186,9 @@ class SupabaseDatabase {
 		return data || [];
 	}
 
-	async getAllActiveSubscriptions() {
+	async getAllActiveKeys() {
 		const { data, error } = await this.supabase
-			.from('subscriptions')
+			.from('keys')
 			.select('*')
 			.eq('status', 'active')
 			.gt('expires_at', new Date().toISOString());
@@ -263,22 +263,22 @@ class SupabaseDatabase {
 
 	// ============== USAGE LOGS ==============
 
-	async createUsageLog(subscriptionId, dataUsed) {
+	async createUsageLog(keyId, dataUsed) {
 		const { error } = await this.supabase
 			.from('usage_logs')
 			.insert([{
-				subscription_id: subscriptionId,
+				key_id: keyId,
 				data_used: dataUsed
 			}]);
 
 		if (error) throw error;
 	}
 
-	async getUsageLogs(subscriptionId) {
+	async getUsageLogs(keyId) {
 		const { data, error } = await this.supabase
 			.from('usage_logs')
 			.select('*')
-			.eq('subscription_id', subscriptionId)
+			.eq('key_id', keyId)
 			.order('logged_at', { ascending: false });
 
 		if (error) throw error;
@@ -287,11 +287,11 @@ class SupabaseDatabase {
 
 	// ============== NOTIFICATIONS ==============
 
-	async createNotification(subscriptionId, notificationType, thresholdValue) {
+	async createNotification(keyId, notificationType, thresholdValue) {
 		const { error } = await this.supabase
 			.from('notifications')
 			.insert([{
-				subscription_id: subscriptionId,
+				key_id: keyId,
 				notification_type: notificationType,
 				threshold_value: thresholdValue
 			}]);
@@ -299,22 +299,22 @@ class SupabaseDatabase {
 		if (error) throw error;
 	}
 
-	async getNotifications(subscriptionId) {
+	async getNotifications(keyId) {
 		const { data, error } = await this.supabase
 			.from('notifications')
 			.select('*')
-			.eq('subscription_id', subscriptionId)
+			.eq('key_id', keyId)
 			.order('sent_at', { ascending: false });
 
 		if (error) throw error;
 		return data || [];
 	}
 
-	async hasNotificationBeenSent(subscriptionId, notificationType, thresholdValue) {
+	async hasNotificationBeenSent(keyId, notificationType, thresholdValue) {
 		const { data, error } = await this.supabase
 			.from('notifications')
 			.select('id')
-			.eq('subscription_id', subscriptionId)
+			.eq('key_id', keyId)
 			.eq('notification_type', notificationType)
 			.eq('threshold_value', thresholdValue)
 			.limit(1);
@@ -327,10 +327,10 @@ class SupabaseDatabase {
 
 	async getStats() {
 		// Получаем статистику параллельно
-		const [usersResult, subsResult, paymentsResult, revenueResult] = await Promise.all([
+		const [usersResult, keysResult, paymentsResult, revenueResult] = await Promise.all([
 			this.supabase.from('users').select('count', { count: 'exact', head: true }),
 			this.supabase
-				.from('subscriptions')
+				.from('keys')
 				.select('count', { count: 'exact', head: true })
 				.eq('status', 'active')
 				.gt('expires_at', new Date().toISOString()),
@@ -346,7 +346,7 @@ class SupabaseDatabase {
 
 		// Проверяем ошибки
 		if (usersResult.error) throw usersResult.error;
-		if (subsResult.error) throw subsResult.error;
+		if (keysResult.error) throw keysResult.error;
 		if (paymentsResult.error) throw paymentsResult.error;
 		if (revenueResult.error) throw revenueResult.error;
 
@@ -355,7 +355,7 @@ class SupabaseDatabase {
 
 		return {
 			total_users: usersResult.count || 0,
-			active_subscriptions: subsResult.count || 0,
+			active_keys: keysResult.count || 0,
 			total_payments: paymentsResult.count || 0,
 			total_revenue: totalRevenue
 		};

@@ -1,17 +1,20 @@
 const KeyboardUtils = require('../../utils/keyboards');
+const { PlanMessages } = require('../../services/messages');
 
 class PaymentHandlers {
-	constructor(paymentService, subscriptionService) {
+	constructor(paymentService, keysService) {
 		this.paymentService = paymentService;
-		this.subscriptionService = subscriptionService;
+		this.keysService = keysService;
 	}
 
 	async handlePreCheckoutQuery(ctx) {
+		const t = ctx.i18n?.t || ((key) => key);
+
 		try {
 			await ctx.answerPreCheckoutQuery(true);
 		} catch (error) {
 			console.error('Ошибка пре-чекаута:', error);
-			await ctx.answerPreCheckoutQuery(false, 'Произошла ошибка валидации платежа');
+			await ctx.answerPreCheckoutQuery(false, t('generic.default', { ns: 'error' }));
 		}
 	}
 
@@ -34,7 +37,7 @@ class PaymentHandlers {
 		if (!paymentId) {
 			console.error('❌ Не удалось извлечь ID платежа из payload:', payloadData);
 			const t = ctx.i18n?.t || ((key) => key);
-			await ctx.reply(t('errors.payment_processing'));
+			await ctx.reply(t('generic.default', { ns: 'error' }));
 			return;
 		}
 
@@ -56,17 +59,17 @@ class PaymentHandlers {
 			console.log('✅ Платеж обновлен:', completedPayment);
 			console.log('📝 Создаем ключ...');
 
-			const subscriptionId = await this.subscriptionService.createSubscription(
+			const keyId = await this.keysService.createKey(
 				completedPayment.user_id,
 				completedPayment.plan_id,
 				paymentId
 			);
 
-			console.log('✅ Ключ создан с ID:', subscriptionId);
+			console.log('✅ Ключ создан с ID:', keyId);
 			console.log('🔑 Активируем ключ...');
 
-			const activationResult = await this.subscriptionService.activateSubscription(
-				subscriptionId,
+			const activationResult = await this.keysService.activateKey(
+				keyId,
 				ctx.from.id
 			);
 
@@ -84,7 +87,7 @@ class PaymentHandlers {
 			await this.paymentService.processFailedPayment(paymentId, error.message);
 
 			const t = ctx.i18n?.t || ((key) => key);
-			await ctx.reply(t('errors.key_activation', { error: error.message }));
+			await ctx.reply(PlanMessages.keyActivationError(t, error.message));
 		}
 	}
 
@@ -92,17 +95,7 @@ class PaymentHandlers {
 		const { accessUrl } = activationResult;
 		const t = ctx.i18n?.t || ((key) => key);
 
-		let message = '✅ <b>' + t('payment.success_title') + '</b>\n\n';
-		message += '🎉 ' + t('payment.key_activated') + '\n\n';
-		message += '🔑 <b>' + t('payment.access_key') + ':</b>\n';
-		message += `<code>${accessUrl}</code>\n\n`;
-		message += '📱 <b>' + t('payment.how_to_connect') + ':</b>\n';
-		message += '1. ' + t('payment.step1') + '\n';
-		message += '2. ' + t('payment.step2') + '\n';
-		message += '3. ' + t('payment.step3') + '\n';
-		message += '4. ' + t('payment.step4') + '\n\n';
-		message += '📊 ' + t('payment.check_stats');
-
+		const message = PlanMessages.paymentSuccess(t, accessUrl);
 		const keyboard = KeyboardUtils.createAppsDownloadKeyboard(t);
 
 		await ctx.reply(message, {
@@ -124,7 +117,7 @@ class PaymentHandlers {
 			} catch (error) {
 				console.error('Ошибка обработки платежа:', error);
 				const t = ctx.i18n?.t || ((key) => key);
-				await ctx.reply(t('errors.payment_processing'));
+				await ctx.reply(t('generic.default', { ns: 'error' }));
 			}
 		});
 	}

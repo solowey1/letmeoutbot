@@ -33,7 +33,7 @@ class MessageHandlers {
 			} catch (error) {
 				console.error('Ошибка обработки сообщения:', error);
 				const t = ctx.i18n?.t || ((key) => key);
-				await ctx.reply(t('errors.generic'));
+				await ctx.reply(t('generic.default', { ns: 'error' }));
 			}
 		});
 	}

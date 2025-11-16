@@ -8,19 +8,19 @@ const PostgresDatabase = require('../models/PostgresDatabase');
 const SupabaseDatabase = require('../models/SupabaseDatabase');
 const OutlineService = require('../services/OutlineService');
 const PaymentService = require('../services/PaymentService');
-const SubscriptionService = require('../services/SubscriptionService');
+const KeysService = require('../services/KeysService');
 const NotificationService = require('../services/NotificationService');
 const I18nService = require('../services/I18nService');
 
 // Импорты обработчиков
-const CallbackHandler = require('../handlers/callbackHandler');
-const CommandHandlers = require('../handlers/listeners/CommandHandlers');
-const PaymentHandlers = require('../handlers/listeners/PaymentHandlers');
-const MessageHandlers = require('../handlers/listeners/MessageHandlers');
+const CallbackHandler = require('./listeners/CallbackHandler');
+const CommandHandlers = require('./listeners/CommandHandlers');
+const PaymentHandlers = require('./listeners/PaymentHandlers');
+const MessageHandlers = require('./listeners/MessageHandlers');
 const I18nMiddleware = require('../middleware/i18nMiddleware');
 
 // Импорты конфигурации
-const config = require('../config/database');
+const config = require('../config');
 
 class VPNBot {
 	constructor() {
@@ -44,13 +44,13 @@ class VPNBot {
 		this.i18nService = new I18nService();
 		this.outlineService = new OutlineService(config.outline.apiUrl);
 		this.paymentService = new PaymentService(this.db);
-		this.subscriptionService = new SubscriptionService(this.db, this.outlineService);
+		this.keysService = new KeysService(this.db, this.outlineService);
 		this.notificationService = new NotificationService(this.bot, this.i18nService, this.db);
 
 		// Инициализируем обработчики
-		this.callbackHandler = new CallbackHandler(this.db, this.paymentService, this.subscriptionService);
+		this.CallbackHandler = new CallbackHandler(this.db, this.paymentService, this.keysService);
 		this.commandHandlers = new CommandHandlers(this.db);
-		this.paymentHandlers = new PaymentHandlers(this.paymentService, this.subscriptionService);
+		this.paymentHandlers = new PaymentHandlers(this.paymentService, this.keysService);
 		this.messageHandlers = new MessageHandlers(this.db);
 
 		// Подключаем i18n middleware
@@ -61,8 +61,8 @@ class VPNBot {
 		this.setupHandlers();
 		this.setupCronJobs();
         
-		// Передаем ссылку на сервис уведомлений в SubscriptionService
-		this.subscriptionService.sendNotificationToUser = this.notificationService.sendNotificationToUser.bind(this.notificationService);
+		// Передаем ссылку на сервис уведомлений в KeysService
+		this.keysService.sendNotificationToUser = this.notificationService.sendNotificationToUser.bind(this.notificationService);
 	}
 
 	setupHandlers() {
@@ -77,7 +77,7 @@ class VPNBot {
 
 		// Обработка callback запросов
 		this.bot.on('callback_query', async (ctx) => {
-			await this.callbackHandler.handleCallback(ctx);
+			await this.CallbackHandler.handleCallback(ctx);
 		});
 
 		// Обработка ошибок
@@ -88,11 +88,11 @@ class VPNBot {
 
 
 	setupCronJobs() {
-		// Проверяем лимиты подписок каждые 30 минут
+		// Проверяем лимиты ключей каждые 30 минут
 		const limitsCheckJob = new cron.CronJob('*/30 * * * *', async () => {
 			try {
-				console.log('Запуск проверки лимитов подписок...');
-				await this.subscriptionService.checkAllActiveSubscriptions();
+				console.log('Запуск проверки лимитов ключей...');
+				await this.keysService.checkAllActiveKeys();
 			} catch (error) {
 				console.error('Ошибка в cron задаче проверки лимитов:', error);
 			}

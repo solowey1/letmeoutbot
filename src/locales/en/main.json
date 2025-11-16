@@ -1,0 +1,62 @@
+{
+  "buttons": {
+    "buy": {
+      "first": "💎 Buy First Key",
+      "key": "💎 Buy a key",
+      "more": "➕ Buy More"
+    },
+    "my_keys": "📋 My Keys",
+    "help": "ℹ️ Help",
+    "back_to_menu": "◀️ Back to Menu",
+    "main_menu": "🏠 Main Menu",
+    "stats": "📊 Statistics",
+    "download_apps": "📱 Download Apps",
+    "support": "🆘 Support",
+    "confirm_purchase": "✅ Confirm Purchase",
+    "pay": "✅ Pay",
+    "cancel": "❌ Cancel",
+    "back": "◀️ Back",
+    "settings": "⚙️ Settings",
+    "language": "🌐 Language",
+    "retry": "🔄 Try Again",
+    "admin": {
+      "users": "👥 Users",
+      "stats": "📊 Statistics",
+      "payments": "💰 Payments",
+      "keys": "🔑 Keys",
+      "pending_keys": "⏳ Pending Keys",
+      "broadcast": "📢 Broadcast",
+      "settings": "⚙️ Settings"
+    },
+    "apps": {
+      "website": "🌐 Website",
+      "android": "📱 Android",
+      "ios": "📱 iOS",
+      "windows": "💻 Windows",
+      "macos": "💻 macOS"
+    },
+    "languages": {
+      "russian": "🇷🇺 Русский",
+      "english": "🇬🇧 English"
+    },
+    "pagination": {
+      "prev": "◀️",
+      "next": "▶️"
+    }
+  },
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "user": "User",
+    "plan": "Plan",
+    "status": "Status",
+    "used": "Used",
+    "limit": "Limit",
+    "remaining": "Remaining",
+    "expires": "Expires",
+    "of": "of",
+    "days_left": "Days left",
+    "valid_until": "Valid until",
+    "registration": "Registration"
+  }
+}

@@ -34,8 +34,8 @@ class Database {
             )
         `;
 
-		const createSubscriptionsTable = `
-            CREATE TABLE IF NOT EXISTS subscriptions (
+		const createKeysTable = `
+            CREATE TABLE IF NOT EXISTS keys (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 plan_id TEXT NOT NULL,
@@ -55,7 +55,7 @@ class Database {
             CREATE TABLE IF NOT EXISTS payments (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
-                subscription_id INTEGER,
+                key_id INTEGER,
                 plan_id TEXT NOT NULL,
                 amount INTEGER NOT NULL,
                 currency TEXT DEFAULT 'XTR',
@@ -65,33 +65,33 @@ class Database {
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users (id),
-                FOREIGN KEY (subscription_id) REFERENCES subscriptions (id)
+                FOREIGN KEY (key_id) REFERENCES keys (id)
             )
         `;
 
 		const createUsageLogsTable = `
             CREATE TABLE IF NOT EXISTS usage_logs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                subscription_id INTEGER NOT NULL,
+                key_id INTEGER NOT NULL,
                 data_used INTEGER NOT NULL,
                 logged_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (subscription_id) REFERENCES subscriptions (id)
+                FOREIGN KEY (key_id) REFERENCES keys (id)
             )
         `;
 
 		const createNotificationsTable = `
             CREATE TABLE IF NOT EXISTS notifications (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                subscription_id INTEGER NOT NULL,
+                key_id INTEGER NOT NULL,
                 notification_type TEXT NOT NULL,
                 threshold_value REAL NOT NULL,
                 sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (subscription_id) REFERENCES subscriptions (id)
+                FOREIGN KEY (key_id) REFERENCES keys (id)
             )
         `;
 
 		this.db.run(createUsersTable);
-		this.db.run(createSubscriptionsTable);
+		this.db.run(createKeysTable);
 		this.db.run(createPaymentsTable);
 		this.db.run(createUsageLogsTable);
 		this.db.run(createNotificationsTable);
@@ -144,11 +144,11 @@ class Database {
 		});
 	}
 
-	// Методы для работы с подписками
-	async createSubscription(userId, planId, dataLimit, expiresAt) {
+	// Методы для работы с ключами
+	async createKey(userId, planId, dataLimit, expiresAt) {
 		return new Promise((resolve, reject) => {
 			const query = `
-                INSERT INTO subscriptions (user_id, plan_id, data_limit, expires_at) 
+                INSERT INTO keys (user_id, plan_id, data_limit, expires_at)
                 VALUES (?, ?, ?, ?)
             `;
 			this.db.run(query, [userId, planId, dataLimit, expiresAt], function(err) {
@@ -161,10 +161,10 @@ class Database {
 		});
 	}
 
-	async getActiveSubscriptions(userId) {
+	async getActiveKeys(userId) {
 		return new Promise((resolve, reject) => {
 			const query = `
-                SELECT * FROM subscriptions
+                SELECT * FROM keys
                 WHERE user_id = ? AND status = 'active' AND expires_at > datetime('now')
             `;
 			this.db.all(query, [userId], (err, rows) => {
@@ -177,10 +177,10 @@ class Database {
 		});
 	}
 
-	async getAllUserSubscriptions(userId) {
+	async getAllUserKeys(userId) {
 		return new Promise((resolve, reject) => {
 			const query = `
-                SELECT * FROM subscriptions
+                SELECT * FROM keys
                 WHERE user_id = ?
                 ORDER BY created_at DESC
             `;
@@ -194,10 +194,10 @@ class Database {
 		});
 	}
 
-	async getPendingSubscriptions() {
+	async getPendingKeys() {
 		return new Promise((resolve, reject) => {
 			const query = `
-                SELECT * FROM subscriptions
+                SELECT * FROM keys
                 WHERE status = 'pending'
                 ORDER BY created_at DESC
                 LIMIT 20
@@ -225,13 +225,13 @@ class Database {
 		});
 	}
 
-	async updateSubscription(id, updates) {
+	async updateKey(id, updates) {
 		return new Promise((resolve, reject) => {
 			const fields = Object.keys(updates).map(key => `${key} = ?`).join(', ');
 			const values = Object.values(updates);
 			values.push(id);
-            
-			const query = `UPDATE subscriptions SET ${fields}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
+
+			const query = `UPDATE keys SET ${fields}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
 			this.db.run(query, values, function(err) {
 				if (err) {
 					reject(err);
@@ -242,9 +242,9 @@ class Database {
 		});
 	}
 
-	async getSubscriptionById(id) {
+	async getKeyById(id) {
 		return new Promise((resolve, reject) => {
-			const query = 'SELECT * FROM subscriptions WHERE id = ?';
+			const query = 'SELECT * FROM keys WHERE id = ?';
 			this.db.get(query, [id], (err, row) => {
 				if (err) {
 					reject(err);
@@ -303,13 +303,13 @@ class Database {
 	}
 
 	// Методы для логирования использования
-	async logUsage(subscriptionId, dataUsed) {
+	async logUsage(keyId, dataUsed) {
 		return new Promise((resolve, reject) => {
 			const query = `
-                INSERT INTO usage_logs (subscription_id, data_used) 
+                INSERT INTO usage_logs (key_id, data_used)
                 VALUES (?, ?)
             `;
-			this.db.run(query, [subscriptionId, dataUsed], function(err) {
+			this.db.run(query, [keyId, dataUsed], function(err) {
 				if (err) {
 					reject(err);
 				} else {
@@ -324,12 +324,12 @@ class Database {
 		return new Promise((resolve, reject) => {
 			const queries = [
 				'SELECT COUNT(*) as total_users FROM users',
-				'SELECT COUNT(*) as active_subscriptions FROM subscriptions WHERE status = "active"',
+				'SELECT COUNT(*) as active_keys FROM keys WHERE status = "active"',
 				'SELECT SUM(amount) as total_revenue FROM payments WHERE status = "completed"',
 				'SELECT COUNT(*) as total_payments FROM payments WHERE status = "completed"'
 			];
 
-			Promise.all(queries.map(query => 
+			Promise.all(queries.map(query =>
 				new Promise((resolve, reject) => {
 					this.db.get(query, (err, row) => {
 						if (err) reject(err);
@@ -339,7 +339,7 @@ class Database {
 			)).then(results => {
 				resolve({
 					totalUsers: results[0].total_users,
-					activeSubscriptions: results[1].active_subscriptions,
+					activeKeys: results[1].active_keys,
 					totalRevenue: results[2].total_revenue || 0,
 					totalPayments: results[3].total_payments
 				});
@@ -350,11 +350,11 @@ class Database {
 	async getAllUsers(limit = 50, offset = 0) {
 		return new Promise((resolve, reject) => {
 			const query = `
-                SELECT u.*, COUNT(s.id) as subscription_count 
-                FROM users u 
-                LEFT JOIN subscriptions s ON u.id = s.user_id 
-                GROUP BY u.id 
-                ORDER BY u.created_at DESC 
+                SELECT u.*, COUNT(k.id) as key_count
+                FROM users u
+                LEFT JOIN keys k ON u.id = k.user_id
+                GROUP BY u.id
+                ORDER BY u.created_at DESC
                 LIMIT ? OFFSET ?
             `;
 			this.db.all(query, [limit, offset], (err, rows) => {
@@ -368,13 +368,13 @@ class Database {
 	}
 
 	// Методы для работы с уведомлениями
-	async createNotification(subscriptionId, notificationType, thresholdValue) {
+	async createNotification(keyId, notificationType, thresholdValue) {
 		return new Promise((resolve, reject) => {
 			const query = `
-                INSERT INTO notifications (subscription_id, notification_type, threshold_value)
+                INSERT INTO notifications (key_id, notification_type, threshold_value)
                 VALUES (?, ?, ?)
             `;
-			this.db.run(query, [subscriptionId, notificationType, thresholdValue], function(err) {
+			this.db.run(query, [keyId, notificationType, thresholdValue], function(err) {
 				if (err) {
 					reject(err);
 				} else {
@@ -384,15 +384,15 @@ class Database {
 		});
 	}
 
-	async checkNotificationSent(subscriptionId, notificationType, thresholdValue) {
+	async checkNotificationSent(keyId, notificationType, thresholdValue) {
 		return new Promise((resolve, reject) => {
 			const query = `
-                SELECT COUNT(*) as count 
-                FROM notifications 
-                WHERE subscription_id = ? AND notification_type = ? AND threshold_value = ?
+                SELECT COUNT(*) as count
+                FROM notifications
+                WHERE key_id = ? AND notification_type = ? AND threshold_value = ?
                 AND sent_at > datetime('now', '-7 days')
             `;
-			this.db.get(query, [subscriptionId, notificationType, thresholdValue], (err, row) => {
+			this.db.get(query, [keyId, notificationType, thresholdValue], (err, row) => {
 				if (err) {
 					reject(err);
 				} else {
@@ -402,15 +402,15 @@ class Database {
 		});
 	}
 
-	async getAllActiveSubscriptions() {
+	async getAllActiveKeys() {
 		return new Promise((resolve, reject) => {
 			const query = `
-                SELECT s.*, u.telegram_id 
-                FROM subscriptions s 
-                JOIN users u ON s.user_id = u.id 
-                WHERE s.status = 'active' 
-                AND s.expires_at > datetime('now')
-                ORDER BY s.created_at DESC
+                SELECT k.*, u.telegram_id
+                FROM keys k
+                JOIN users u ON k.user_id = u.id
+                WHERE k.status = 'active'
+                AND k.expires_at > datetime('now')
+                ORDER BY k.created_at DESC
             `;
 			this.db.all(query, [], (err, rows) => {
 				if (err) {
