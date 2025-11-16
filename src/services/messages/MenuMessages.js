@@ -8,15 +8,18 @@ class MenuMessages {
 	 * @returns {string}
 	 */
 	static welcome(t) {
+		const steps = t('welcome.steps', { ns: 'message' });
+		const stepsList = Array.isArray(steps) ? steps : [steps];
+
 		return [
 			`<b>${t('welcome.title', { ns: 'message' })}</b>`,
 			t('welcome.description', { ns: 'message' }),
 			'',
-			...t('welcome.steps', { ns: 'message' }),
+			...stepsList,
 			'',
 			t('welcome.action_text', { ns: 'message' })
 		].join('\n');
-	}
+	};
 
 	/**
 	 * Справка (помощь)
@@ -24,13 +27,18 @@ class MenuMessages {
 	 * @returns {string}
 	 */
 	static help(t) {
+		const steps = t('help.steps', { ns: 'message' });
+		const stepsList = Array.isArray(steps)
+			? steps.map(item => `🔹 ${item}`)
+			: [`🔹 ${steps}`];
+
 		return [
 			`ℹ️ <b>${t('help.title', { ns: 'message' })}</b>`,
 			'',
-			...t('help.steps', { ns: 'message' }).map(item => `🔹 ${item}`),
+			...stepsList,
 			'',
 			`📱 <b>${t('help.action_text.title', { ns: 'message' })}</b>`,
-			...t('help.action_text.steps', { ns: 'message' }),
+			...t('help.action_text.steps', { ns: 'message' }) || [] // защита от null/undefined
 		].join('\n');
 	}
 
@@ -40,11 +48,14 @@ class MenuMessages {
 	 * @returns {string}
 	 */
 	static downloadApps(t) {
+		const steps = t('download.apps.steps', { ns: 'message' });
+		const stepsList = Array.isArray(steps) ? steps : [steps];
+
 		return [
 			`<b>${t('download.apps.title', { ns: 'message' })}</b>`,
 			t('download.apps.description', { ns: 'message' }),
 			'',
-			...t('download.apps.steps', { ns: 'message' }),
+			...stepsList,
 			'',
 			t('download.apps.action_text', { ns: 'message' })
 		].join('\n');
@@ -56,11 +67,16 @@ class MenuMessages {
 	 * @returns {string}
 	 */
 	static support(t) {
+		const steps = t('support.steps', { ns: 'message' });
+		const stepsList = Array.isArray(steps)
+			? steps.map((item, i) => `${i + 1}. ${item}`)
+			: [`1. ${steps}`];
+
 		return [
 			`🆘 <b>${t('support.title', { ns: 'message' })}</b>`,
 			t('support.description', { ns: 'message' }),
 			'',
-			...t('support.steps', { ns: 'message' }).map((item, i) => `${i + 1}. ${item}`),
+			...stepsList,
 			'',
 			`📧 ${t('support.action_text', { ns: 'message' })}`,
 		].join('\n');
@@ -74,7 +90,6 @@ class MenuMessages {
 	static settings(t) {
 		return [
 			`⚙️ <b>${t('settings.title', { ns: 'message' })}</b>`,
-			t('settings.description', { ns: 'message' }),
 		].join('\n');
 	}
 

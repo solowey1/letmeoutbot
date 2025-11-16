@@ -55,8 +55,31 @@
     "remaining": "Remaining",
     "expires": "Expires",
     "of": "of",
+    "periods": {
+      "day": {
+        "one": "day",
+        "some": "days",
+        "many": "days"
+      },
+      "month": {
+        "one": "month",
+        "some": "months",
+        "many": "months"
+      },
+      "year": {
+        "one": "year",
+        "some": "years",
+        "many": "years"
+      }
+    },
     "days_left": "Days left",
     "valid_until": "Valid until",
-    "registration": "Registration"
+    "registration": "Registration",
+    "memory": {
+      "kb": "Kb",
+      "mb": "Mb",
+      "gb": "Gb",
+      "tb": "Tb"
+    }
   }
 }

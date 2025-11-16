@@ -42,7 +42,7 @@ class PlanCallbacks {
 			return;
 		}
 
-		const formatted = PlanService.formatPlanForDisplay(plan);
+		const formatted = PlanService.formatPlanForDisplay(t, plan);
 		const savings = PlanService.calculateSavings(plan);
 
 		const message = PlanMessages.planDetails(t, plan, { ...formatted, savings });
@@ -96,7 +96,7 @@ class PlanCallbacks {
 			return;
 		}
 
-		const formatted = PlanService.formatPlanForDisplay(plan);
+		const formatted = PlanService.formatPlanForDisplay(t, plan);
 		const savings = PlanService.calculateSavings(plan);
 
 		const message = PlanMessages.planDetails(t, plan, { ...formatted, savings });

@@ -1,3 +1,4 @@
+const { MenuMessages } = require('../../../services/messages');
 const KeyboardUtils = require('../../../utils/keyboards');
 
 class LanguageCallbacks {
@@ -21,10 +22,12 @@ class LanguageCallbacks {
 
 	async handleSetLanguage(ctx, lang) {
 		await ctx.i18n.setLocale(lang);
-		const t = ctx.i18n.t; // Обновляем функцию перевода
+		const t = ctx.i18n.t;
+		const message = MenuMessages.languageChanged(t);
+		const keyboard = KeyboardUtils.createMainMenu(t);
 
-		await ctx.editMessageText(t('settings.language_changed'), {
-			...KeyboardUtils.createMainMenu(t),
+		await ctx.editMessageText(message, {
+			...keyboard,
 			parse_mode: 'HTML'
 		});
 	}
