@@ -17,7 +17,7 @@ class KeyboardUtils {
 		const buttons = [];
 
 		plans.forEach(plan => {
-			const formatted = PlanService.formatPlanForDisplay(plan);
+			const formatted = PlanService.formatPlanForDisplay(t, plan);
 			buttons.push([Markup.button.callback(
 				`${formatted.displayName} - ${formatted.displayPrice}`,
 				`checkout_${plan.id}`
@@ -44,7 +44,7 @@ class KeyboardUtils {
 			keys.forEach((sub) => {
 				const plan = PlanService.getPlanById(sub.plan_id);
 				if (plan) {
-					const formatted = PlanService.formatPlanForDisplay(plan);
+					const formatted = PlanService.formatPlanForDisplay(t, plan);
 					const status = sub.status === 'active' ? '🟢' : '🔴';
 					buttons.push([
 						Markup.button.callback(

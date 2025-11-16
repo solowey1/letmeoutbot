@@ -30,7 +30,10 @@ class MenuMessages {
 		const steps = t('help.steps', { ns: 'message' });
 		const stepsList = Array.isArray(steps)
 			? steps.map(item => `🔹 ${item}`)
-			: [`🔹 ${steps}`];
+			: [`🔹 ${steps || 'Не указано'}`];
+
+		const actionSteps = t('help.action_text.steps', { ns: 'message' });
+		const actionStepsList = Array.isArray(actionSteps) ? actionSteps : [];
 
 		return [
 			`ℹ️ <b>${t('help.title', { ns: 'message' })}</b>`,
@@ -38,9 +41,10 @@ class MenuMessages {
 			...stepsList,
 			'',
 			`📱 <b>${t('help.action_text.title', { ns: 'message' })}</b>`,
-			...t('help.action_text.steps', { ns: 'message' }) || [] // защита от null/undefined
+			...actionStepsList
 		].join('\n');
 	}
+	
 
 	/**
 	 * Скачивание приложений

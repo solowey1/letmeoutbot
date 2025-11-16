@@ -23,7 +23,7 @@ class KeysCallbacks {
 				return;
 			}
 
-			const keys = await this.keyService.getUserActiveKeys(user.id);
+			const keys = await this.keyService.getUserActiveKeys(t, user.id);
 
 			if (keys.length === 0) {
 				const message = KeysMessages.myKeys(t, []);
@@ -71,7 +71,7 @@ class KeysCallbacks {
 		const t = ctx.i18n.t;
 
 		try {
-			const key = await this.keyService.getKeyDetails(keyId, true);
+			const key = await this.keyService.getKeyDetails(t, keyId, true);
 			if (!key) {
 				await ctx.editMessageText(
 					t('key.not_found', { ns: 'error' }),

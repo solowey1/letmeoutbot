@@ -19,7 +19,7 @@ class PlanCallbacks {
 		let message = PlanMessages.choosePlan(t) + '\n';
 
 		plans.forEach(plan => {
-			const formatted = PlanService.formatPlanForDisplay(plan);
+			const formatted = PlanService.formatPlanForDisplay(t, plan);
 			message += `<b>${formatted.displayName}</b>\n`;
 			message += `${formatted.fullDescription}\n\n`;
 		});
@@ -66,7 +66,7 @@ class PlanCallbacks {
 			return;
 		}
 
-		const formatted = PlanService.formatPlanForDisplay(plan);
+		const formatted = PlanService.formatPlanForDisplay(t, plan);
 
 		let message = `🛒 <b>${t('payment.confirmation_title', { ns: 'message' })}</b>\n\n`;
 		message += `📦 ${t('common.plan')}: ${formatted.displayName}\n`;
