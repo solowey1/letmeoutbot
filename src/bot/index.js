@@ -22,7 +22,7 @@ const I18nMiddleware = require('../middleware/i18nMiddleware');
 // Импорты конфигурации
 const config = require('../config');
 
-class VPNBot {
+class TelegramBot {
 	constructor() {
 		// Инициализируем Telegraf бота
 		this.bot = new Telegraf(config.telegram.token, config.telegram.options);
@@ -153,4 +153,4 @@ class VPNBot {
 	}
 }
 
-module.exports = VPNBot;
+module.exports = TelegramBot;
