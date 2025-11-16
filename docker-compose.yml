@@ -3,16 +3,16 @@ version: '3.8'
 services:
   vpnbot:
     build: .
-    container_name: vpnbot
+    container_name: vpnbot-dev
     restart: unless-stopped
     environment:
-      - NODE_ENV=production
-      - DATABASE_PATH=/app/data/database.db
+      - NODE_ENV=development
     env_file:
       - .env
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
+      - ./src:/app/src  # Hot reload для разработки
     networks:
       - vpnbot-network
     healthcheck:
