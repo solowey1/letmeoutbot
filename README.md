@@ -48,12 +48,12 @@
 src/
 ├── index.js                    # Точка входа приложения
 ├── bot/
-│   └── VPNBot.js              # Основной класс бота
+│   └── index.js              # Основной класс бота
 ├── handlers/
-│   └── callbackHandler.js     # Обработчик callback'ов
+│   └── CallbackHandler.js     # Обработчик callback'ов
 ├── services/
 │   ├── PaymentService.js      # Сервис платежей
-│   ├── SubscriptionService.js # Сервис ключей + мониторинг лимитов
+│   ├── KeysService.js # Сервис ключей + мониторинг лимитов
 │   ├── OutlineService.js      # Сервис Outline VPN API + retry логика
 │   ├── PlanService.js         # Сервис тарифных планов + локализация
 │   └── NotificationService.js # Сервис уведомлений (NEW!)
@@ -192,10 +192,10 @@ pm2 startup && pm2 save
 
 ### Таблицы
 - `users` - пользователи бота
-- `subscriptions` - активные ключи
+- `keys` - выданные ключи
 - `payments` - история платежей
 - `usage_logs` - логи использования трафика
-- `notifications` - **NEW!** история уведомлений для защиты от спама
+- `notifications` - история уведомлений
 
 ### Автоматическое создание
 База данных и таблицы создаются автоматически при первом запуске.
@@ -223,11 +223,11 @@ npm test
 ```
 
 ### Структура сервисов
-- **VPNBot**: Основной класс бота (в `bot/VPNBot.js`)
+- **index**: Основной класс бота (в `bot/index.js`)
 - **NotificationService**: **NEW!** Сервис уведомлений и массовых рассылок
 - **PlanService**: Управление тарифными планами с локализацией
 - **PaymentService**: Обработка платежей и инвойсов
-- **SubscriptionService**: Управление ключами + автоматический мониторинг
+- **KeysService**: Управление ключами + автоматический мониторинг
 - **OutlineService**: Интеграция с Outline Server API + retry механизм
 
 ### Добавление новых функций

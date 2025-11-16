@@ -1,3 +1,3 @@
-const VPNBot = require('./bot/VPNBot');
-const bot = new VPNBot();
+const TelegramBot = require('./bot/index');
+const bot = new TelegramBot();
 bot.start();
