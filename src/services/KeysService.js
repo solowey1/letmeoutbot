@@ -68,7 +68,7 @@ class KeysService {
 		}
 	}
 
-	async getUserActiveKeys(userId) {
+	async getUserActiveKeys(t, userId) {
 		try {
 			const keys = await this.db.getActiveKeys(userId);
 
@@ -77,7 +77,7 @@ class KeysService {
 				const plan = PlanService.getPlanById(key.plan_id);
 				return {
 					...key,
-					plan: plan ? PlanService.formatPlanForDisplay(plan) : null
+					plan: plan ? PlanService.formatPlanForDisplay(t, plan) : null
 				};
 			});
 		} catch (error) {
@@ -86,7 +86,7 @@ class KeysService {
 		}
 	}
 
-	async getKeyDetails(keyId, withUsageStats = true) {
+	async getKeyDetails(t, keyId, withUsageStats = true) {
 		try {
 			const key = await this.db.getKeyById(keyId);
 			if (!key) {
@@ -102,7 +102,7 @@ class KeysService {
 
 			return {
 				...key,
-				plan: plan ? PlanService.formatPlanForDisplay(plan) : null,
+				plan: plan ? PlanService.formatPlanForDisplay(t, plan) : null,
 				usage: usageStats
 			};
 		} catch (error) {
