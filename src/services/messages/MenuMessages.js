@@ -34,8 +34,8 @@ class MenuMessages {
 
 		const actionSteps = t('help.action_text.steps', { ns: 'message' });
 		const actionStepsList = Array.isArray(actionSteps)
-			? actionSteps.map(item => `• ${item}`)
-			: [`• ${actionSteps}` || ''];
+			? actionSteps.map(item => `•  ${item}`)
+			: [`•  ${actionSteps || ''}`];
 
 		return [
 			`ℹ️ <b>${t('help.title', { ns: 'message' })}</b>`,
@@ -56,7 +56,7 @@ class MenuMessages {
 	static downloadApps(t) {
 		const steps = t('download.apps.steps', { ns: 'message' });
 		const stepsList = Array.isArray(steps)
-			? steps.map(item => `• ${item}`)
+			? steps.map(item => `•  ${item}`)
 			: [steps];
 
 		return [

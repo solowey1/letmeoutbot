@@ -336,7 +336,7 @@ class KeysService {
 					}
 
 					// Проверяем, нужно ли заблокировать ключ
-					const shouldBlock = await this.checkKeyLimits(key.id);
+					const shouldBlock = await this.checkLimits(key.id);
 					if (shouldBlock) {
 						keysBlocked++;
 					}
