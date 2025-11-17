@@ -117,6 +117,9 @@ class PlanCallbacks {
 				throw new Error(t('keys.plan_not_found', { ns: 'error' }));
 			}
 
+			// Получаем локализованную версию плана
+			const localizedPlan = PlanService.formatPlanForDisplay(t, plan);
+
 			// Получаем или создаем пользователя
 			let user = await this.db.getUser(ctx.from.id);
 			if (!user) {
@@ -124,8 +127,8 @@ class PlanCallbacks {
 				user = await this.db.getUser(ctx.from.id);
 			}
 
-			// Создаем инвойс
-			const { paymentId, invoice } = await this.paymentService.createInvoice(user.id, plan);
+			// Создаем инвойс с локализованным планом
+			const { paymentId, invoice } = await this.paymentService.createInvoice(user.id, localizedPlan);
 
 			// Отправляем инвойс пользователю
 			const invoiceMessage = await ctx.replyWithInvoice({

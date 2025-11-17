@@ -64,14 +64,20 @@ class PlanService {
 		const durationFormatted = this.formatDuration(t, plan.duration);
 		const priceFormatted = this.formatPlanPrice(plan.price);
 
+		// Получаем локализованные тексты из переводов
+		const description = t(`plans.${plan.id}.description`);
+		const invoice = t(`plans.${plan.id}.invoice`);
+
 		return {
 			...plan,
+			description, // Добавляем локализованное описание
+			invoice, // Добавляем локализованный текст инвойса
 			displayName: `${plan.emoji} ${plan.name}`,
 			displayDescription: `${dataLimitFormatted} / ${durationFormatted}`,
 			displayDataLimit: dataLimitFormatted,
 			displayDuration: durationFormatted,
 			displayPrice: priceFormatted,
-			fullDescription: `${plan.description}\n💾 ${dataLimitFormatted}\n⏰ ${durationFormatted}\n💰 ${priceFormatted}`
+			fullDescription: `${description}\n💾 ${dataLimitFormatted}\n⏰ ${durationFormatted}\n💰 ${priceFormatted}`
 		};
 	}
 

@@ -81,5 +81,35 @@
       "gb": "Gb",
       "tb": "Tb"
     }
+  },
+  "plans": {
+    "test_100mb": {
+      "description": "Perfect for testing the service",
+      "invoice": "Outline VPN key with 100MB limit for 1 day"
+    },
+    "basic_10gb": {
+      "description": "Ideal for basic usage",
+      "invoice": "Outline VPN key with 10GB limit for 1 month"
+    },
+    "basic_50gb": {
+      "description": "Popular choice for daily use",
+      "invoice": "Outline VPN key with 50GB limit for 1 month"
+    },
+    "standard_100gb": {
+      "description": "For active usage",
+      "invoice": "Outline VPN key with 100GB limit for 1 month"
+    },
+    "standard_300gb": {
+      "description": "Great value plan for 3 months",
+      "invoice": "Outline VPN key with 300GB limit for 3 months"
+    },
+    "pro_600gb": {
+      "description": "Annual plan with maximum savings",
+      "invoice": "Outline VPN key with 600GB limit for 1 year"
+    },
+    "pro_1200gb": {
+      "description": "Maximum plan for those who want to download the entire internet",
+      "invoice": "Outline VPN key with 1200GB limit for 1 year"
+    }
   }
 }

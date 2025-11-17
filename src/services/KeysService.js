@@ -202,6 +202,8 @@ class KeysService {
 			const isOverLimit = key.data_used >= key.data_limit;
 
 			if (isExpired || isOverLimit) {
+				console.log(`🚫 Блокировка ключа ${keyId}: истёк=${isExpired}, лимит=${isOverLimit}`);
+
 				// Блокируем ключ
 				if (key.outline_key_id) {
 					await this.outlineService.suspendKey(key.outline_key_id);
@@ -211,6 +213,29 @@ class KeysService {
 				await this.db.updateKey(keyId, {
 					status: KEY_STATUS.SUSPENDED
 				});
+
+				// Отправляем уведомление о блокировке
+				if (this.sendNotificationToUser) {
+					try {
+						const notificationType = isExpired
+							? NOTIFICATION_TYPES.TIME_EXPIRED
+							: NOTIFICATION_TYPES.TRAFFIC_EXHAUSTED;
+
+						const usagePercentage = Math.round((key.data_used / key.data_limit) * 100);
+
+						await this.sendNotificationToUser(key.telegram_id, {
+							type: notificationType,
+							data: {
+								usagePercentage,
+								daysRemaining: 0
+							}
+						});
+
+						console.log(`📧 Уведомление о блокировке отправлено пользователю ${key.telegram_id}`);
+					} catch (notifyError) {
+						console.error('⚠️ Ошибка отправки уведомления о блокировке:', notifyError.message);
+					}
+				}
 
 				return true; // Ключ заблокирован
 			}
@@ -322,6 +347,8 @@ class KeysService {
 								data_used: actualUsage
 							});
 							key.data_used = actualUsage;
+							const usagePercent = ((actualUsage / key.data_limit) * 100).toFixed(1);
+							console.log(`📊 Ключ ${key.id}: использовано ${usagePercent}% (${this.formatBytes(actualUsage)} из ${this.formatBytes(key.data_limit)})`);
 						}
 					}
 
@@ -329,6 +356,7 @@ class KeysService {
 					const notificationsNeeded = await this.checkKeyThresholds(key);
 
 					if (notificationsNeeded.length > 0) {
+						console.log(`⚠️ Ключ ${key.id}: требуется ${notificationsNeeded.length} уведомлений`);
 						for (const notification of notificationsNeeded) {
 							await this.sendNotificationToUser(key.telegram_id, notification);
 							notificationsSent++;

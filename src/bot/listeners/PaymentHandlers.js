@@ -1,10 +1,13 @@
 const KeyboardUtils = require('../../utils/keyboards');
 const { PlanMessages, KeyMessages } = require('../../services/messages');
+const PlanService = require('../../services/PlanService');
 
 class PaymentHandlers {
-	constructor(paymentService, keysService) {
+	constructor(paymentService, keysService, database, adminNotificationService = null) {
 		this.paymentService = paymentService;
 		this.keysService = keysService;
+		this.db = database;
+		this.adminNotificationService = adminNotificationService;
 	}
 
 	async handlePreCheckoutQuery(ctx) {
@@ -96,6 +99,23 @@ class PaymentHandlers {
 
 			await this.sendAccessKeyMessage(ctx, completedPayment, result);
 
+			// Уведомляем администраторов об успешной покупке
+			if (this.adminNotificationService) {
+				try {
+					const user = await this.db.getUser(ctx.from.id);
+					const plan = PlanService.getPlanById(completedPayment.plan_id);
+					await this.adminNotificationService.notifyNewPurchase(
+						completedPayment,
+						result.key,
+						user,
+						plan,
+						'success'
+					);
+				} catch (notifyError) {
+					console.error('⚠️ Ошибка отправки уведомления админам:', notifyError.message);
+				}
+			}
+
 			console.log('✅ Процесс завершен успешно!');
 
 		} catch (error) {
@@ -111,6 +131,25 @@ class PaymentHandlers {
 			const errorMsg = KeyMessages.activationPending(t);
 
 			await ctx.reply(errorMsg, { parse_mode: 'HTML' });
+
+			// Уведомляем администраторов об ошибке
+			if (this.adminNotificationService) {
+				try {
+					const completedPayment = await this.paymentService.getPaymentById(paymentId);
+					const user = await this.db.getUser(ctx.from.id);
+					const plan = PlanService.getPlanById(completedPayment.plan_id);
+					await this.adminNotificationService.notifyNewPurchase(
+						completedPayment,
+						null,
+						user,
+						plan,
+						'pending',
+						error.message
+					);
+				} catch (notifyError) {
+					console.error('⚠️ Ошибка отправки уведомления админам:', notifyError.message);
+				}
+			}
 		}
 	}
 

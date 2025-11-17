@@ -1,6 +1,5 @@
 require('dotenv').config();
 const { Telegraf } = require('telegraf');
-const cron = require('cron');
 
 // Импорты сервисов и моделей
 const SQLiteDatabase = require('../models/Database');
@@ -10,7 +9,11 @@ const OutlineService = require('../services/OutlineService');
 const PaymentService = require('../services/PaymentService');
 const KeysService = require('../services/KeysService');
 const NotificationService = require('../services/NotificationService');
+const AdminNotificationService = require('../services/AdminNotificationService');
 const I18nService = require('../services/I18nService');
+
+// Планировщики задач
+const SchedulerManager = require('../schedulers');
 
 // Импорты обработчиков
 const CallbackHandler = require('./listeners/CallbackHandler');
@@ -46,11 +49,23 @@ class TelegramBot {
 		this.paymentService = new PaymentService(this.db);
 		this.keysService = new KeysService(this.db, this.outlineService);
 		this.notificationService = new NotificationService(this.bot, this.i18nService, this.db);
+		this.adminNotificationService = new AdminNotificationService(this.bot, this.db);
+
+		// Инициализируем менеджер планировщиков
+		this.schedulerManager = new SchedulerManager(
+			this.keysService,
+			this.adminNotificationService
+		);
 
 		// Инициализируем обработчики
 		this.CallbackHandler = new CallbackHandler(this.db, this.paymentService, this.keysService);
 		this.commandHandlers = new CommandHandlers(this.db);
-		this.paymentHandlers = new PaymentHandlers(this.paymentService, this.keysService);
+		this.paymentHandlers = new PaymentHandlers(
+			this.paymentService,
+			this.keysService,
+			this.db,
+			this.adminNotificationService
+		);
 		this.messageHandlers = new MessageHandlers(this.db);
 
 		// Подключаем i18n middleware
@@ -88,18 +103,8 @@ class TelegramBot {
 
 
 	setupCronJobs() {
-		// Проверяем лимиты ключей каждые 30 минут
-		const limitsCheckJob = new cron.CronJob('*/30 * * * *', async () => {
-			try {
-				console.log('Запуск проверки лимитов ключей...');
-				await this.keysService.checkAllActiveKeys();
-			} catch (error) {
-				console.error('Ошибка в cron задаче проверки лимитов:', error);
-			}
-		});
-
-		limitsCheckJob.start();
-		console.log('✅ Cron задачи настроены');
+		// Запускаем все планировщики
+		this.schedulerManager.start();
 	}
 
 	async start() {
@@ -139,8 +144,11 @@ class TelegramBot {
 	}
 
 	stop() {
+		console.log('🛑 Остановка бота...');
+		this.schedulerManager.stop();
 		this.bot.stop('SIGINT');
 		this.db.close();
+		console.log('✅ Бот успешно остановлен');
 		process.exit(0);
 	}
 

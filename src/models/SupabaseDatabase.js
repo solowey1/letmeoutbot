@@ -361,6 +361,172 @@ class SupabaseDatabase {
 		};
 	}
 
+	// ============== ADMIN STATISTICS ==============
+
+	/**
+	 * Получить ключи, истекающие между двумя датами
+	 * @param {Date} startDate
+	 * @param {Date} endDate
+	 * @returns {Promise<Array>}
+	 */
+	async getKeysExpiringBetween(startDate, endDate) {
+		const { data, error } = await this.supabase
+			.from('keys')
+			.select('*, users!inner(telegram_id, username, first_name, last_name)')
+			.gte('expires_at', startDate.toISOString())
+			.lt('expires_at', endDate.toISOString())
+			.eq('status', 'active')
+			.order('expires_at', { ascending: true });
+
+		if (error) throw error;
+		return data || [];
+	}
+
+	/**
+	 * Статистика по платежам за период
+	 * @param {Date} startDate
+	 * @param {Date} endDate
+	 * @returns {Promise<Object>}
+	 */
+	async getPaymentStats(startDate, endDate) {
+		const { data, error } = await this.supabase
+			.from('payments')
+			.select('status, amount')
+			.gte('created_at', startDate.toISOString())
+			.lte('created_at', endDate.toISOString());
+
+		if (error) throw error;
+
+		const stats = {
+			total: data.length,
+			completed: 0,
+			pending: 0,
+			pending_activation: 0,
+			failed: 0,
+			totalRevenue: 0
+		};
+
+		data.forEach(payment => {
+			stats[payment.status] = (stats[payment.status] || 0) + 1;
+			if (payment.status === 'completed') {
+				stats.totalRevenue += payment.amount;
+			}
+		});
+
+		return stats;
+	}
+
+	/**
+	 * Статистика по ключам за период
+	 * @param {Date} startDate
+	 * @param {Date} endDate
+	 * @returns {Promise<Object>}
+	 */
+	async getKeyStats(startDate, endDate) {
+		// Ключи, созданные за период
+		const { data: createdKeys, error: createdError } = await this.supabase
+			.from('keys')
+			.select('id')
+			.gte('created_at', startDate.toISOString())
+			.lte('created_at', endDate.toISOString());
+
+		if (createdError) throw createdError;
+
+		// Активные ключи на данный момент
+		const { data: activeKeys, error: activeError } = await this.supabase
+			.from('keys')
+			.select('id')
+			.eq('status', 'active');
+
+		if (activeError) throw activeError;
+
+		// Истекшие ключи за период
+		const { data: expiredKeys, error: expiredError } = await this.supabase
+			.from('keys')
+			.select('id')
+			.eq('status', 'expired')
+			.gte('expires_at', startDate.toISOString())
+			.lte('expires_at', endDate.toISOString());
+
+		if (expiredError) throw expiredError;
+
+		return {
+			created: createdKeys.length,
+			active: activeKeys.length,
+			expired: expiredKeys.length
+		};
+	}
+
+	/**
+	 * Статистика по пользователям за период
+	 * @param {Date} startDate
+	 * @param {Date} endDate
+	 * @returns {Promise<Object>}
+	 */
+	async getUserStats(startDate, endDate) {
+		// Всего пользователей
+		const { count: totalUsers, error: totalError } = await this.supabase
+			.from('users')
+			.select('*', { count: 'exact', head: true });
+
+		if (totalError) throw totalError;
+
+		// Новые пользователи за период
+		const { count: newUsers, error: newError } = await this.supabase
+			.from('users')
+			.select('*', { count: 'exact', head: true })
+			.gte('created_at', startDate.toISOString())
+			.lte('created_at', endDate.toISOString());
+
+		if (newError) throw newError;
+
+		// Пользователи с активными ключами
+		const { data: usersWithKeys, error: keysError } = await this.supabase
+			.from('keys')
+			.select('user_id')
+			.eq('status', 'active');
+
+		if (keysError) throw keysError;
+
+		const uniqueUsersWithKeys = new Set(usersWithKeys.map(k => k.user_id)).size;
+
+		return {
+			total: totalUsers || 0,
+			newThisWeek: newUsers || 0,
+			withActiveKeys: uniqueUsersWithKeys
+		};
+	}
+
+	/**
+	 * Топ N популярных планов за период
+	 * @param {Date} startDate
+	 * @param {Date} endDate
+	 * @param {number} limit
+	 * @returns {Promise<Array>}
+	 */
+	async getTopPlans(startDate, endDate, limit = 5) {
+		const { data, error } = await this.supabase
+			.from('payments')
+			.select('plan_id')
+			.eq('status', 'completed')
+			.gte('created_at', startDate.toISOString())
+			.lte('created_at', endDate.toISOString());
+
+		if (error) throw error;
+
+		// Подсчитываем количество покупок каждого плана
+		const planCounts = data.reduce((acc, payment) => {
+			acc[payment.plan_id] = (acc[payment.plan_id] || 0) + 1;
+			return acc;
+		}, {});
+
+		// Сортируем и берём топ N
+		return Object.entries(planCounts)
+			.map(([plan_id, count]) => ({ plan_id, count }))
+			.sort((a, b) => b.count - a.count)
+			.slice(0, limit);
+	}
+
 	// ============== CLEANUP ==============
 
 	close() {
