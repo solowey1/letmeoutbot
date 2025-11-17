@@ -45,7 +45,7 @@ class PaymentService {
 
 			await this.db.updatePayment(paymentId, updates);
             
-			const payment = await this.db.getPaymentById(paymentId);
+			const payment = await this.db.getPayment(paymentId);
 			return payment;
 		} catch (error) {
 			console.error('Ошибка обработки успешного платежа:', error);
@@ -91,7 +91,7 @@ class PaymentService {
 
 	async getPaymentById(paymentId) {
 		try {
-			return await this.db.getPaymentById(paymentId);
+			return await this.db.getPayment(paymentId);
 		} catch (error) {
 			console.error('Ошибка получения платежа:', error);
 			throw error;

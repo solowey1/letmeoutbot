@@ -23,12 +23,12 @@ class PlanService {
 		const gb = mb / 1024;
         
 		if (gb >= 1024) {
-			return `${(gb / 1024).toFixed(0)} ${t(`common.memory.tb`)}`;
+			return `${(gb / 1024).toFixed(0)} ${t('common.memory.tb')}`;
 		}
 		if (gb >= 1) {
-			return `${gb.toFixed(0)} ${t(`common.memory.gb`)}`;
+			return `${gb.toFixed(0)} ${t('common.memory.gb')}`;
 		}
-		return `${mb.toFixed(0)} ${t(`common.memory.mb`)}`;
+		return `${mb.toFixed(0)} ${t('common.memory.mb')}`;
 	}
 
 	static getPlural(n, form1, form2, form5 = '') {

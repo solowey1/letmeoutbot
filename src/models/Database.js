@@ -242,7 +242,7 @@ class Database {
 		});
 	}
 
-	async getKeyById(id) {
+	async getKey(id) {
 		return new Promise((resolve, reject) => {
 			const query = 'SELECT * FROM keys WHERE id = ?';
 			this.db.get(query, [id], (err, row) => {
@@ -289,7 +289,7 @@ class Database {
 		});
 	}
 
-	async getPaymentById(id) {
+	async getPayment(id) {
 		return new Promise((resolve, reject) => {
 			const query = 'SELECT * FROM payments WHERE id = ?';
 			this.db.get(query, [id], (err, row) => {

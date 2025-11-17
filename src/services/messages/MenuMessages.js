@@ -19,7 +19,7 @@ class MenuMessages {
 			'',
 			t('welcome.action_text', { ns: 'message' })
 		].join('\n');
-	};
+	}
 
 	/**
 	 * Справка (помощь)

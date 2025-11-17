@@ -263,7 +263,7 @@ class SupabaseDatabase {
 
 	// ============== USAGE LOGS ==============
 
-	async createUsageLog(keyId, dataUsed) {
+	async logUsage(keyId, dataUsed) {
 		const { error } = await this.supabase
 			.from('usage_logs')
 			.insert([{
@@ -310,7 +310,7 @@ class SupabaseDatabase {
 		return data || [];
 	}
 
-	async hasNotificationBeenSent(keyId, notificationType, thresholdValue) {
+	async checkNotificationSent(keyId, notificationType, thresholdValue) {
 		const { data, error } = await this.supabase
 			.from('notifications')
 			.select('id')

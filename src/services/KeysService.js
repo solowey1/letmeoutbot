@@ -39,7 +39,7 @@ class KeysService {
 
 	async activateKey(keyId, userTID) {
 		try {
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key) {
 				throw new Error('Ключ не найден');
 			}
@@ -55,7 +55,7 @@ class KeysService {
 			});
 
 			return {
-				key: await this.db.getKeyById(keyId),
+				key: await this.db.getKey(keyId),
 				accessUrl: keyData.accessUrl
 			};
 		} catch (error) {
@@ -88,7 +88,7 @@ class KeysService {
 
 	async getKeyDetails(t, keyId, withUsageStats = true) {
 		try {
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key) {
 				throw new Error('Ключ не найден');
 			}
@@ -113,7 +113,7 @@ class KeysService {
 
 	async updateUsageStats(keyId) {
 		try {
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key || !key.outline_key_id) {
 				return false;
 			}
@@ -147,7 +147,7 @@ class KeysService {
 
 	async getUsageStats(keyId) {
 		try {
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key) {
 				return null;
 			}
@@ -161,7 +161,7 @@ class KeysService {
 			await this.updateUsageStats(keyId);
 
 			// Получаем обновленные данные
-			const updatedKey = await this.db.getKeyById(keyId);
+			const updatedKey = await this.db.getKey(keyId);
 
 			const usagePercentage = this.outlineService.calculateUsagePercentage(
 				updatedKey.data_used,
@@ -191,7 +191,7 @@ class KeysService {
 
 	async checkLimits(keyId) {
 		try {
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key || key.status !== KEY_STATUS.ACTIVE) {
 				return false;
 			}
@@ -224,7 +224,7 @@ class KeysService {
 
 	async extendKey(keyId, additionalDays, additionalData = 0) {
 		try {
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key) {
 				throw new Error('Ключ не найден');
 			}
@@ -245,7 +245,7 @@ class KeysService {
 				await this.outlineService.reactivateKey(key.outline_key_id, newDataLimit);
 			}
 
-			return await this.db.getKeyById(keyId);
+			return await this.db.getKey(keyId);
 		} catch (error) {
 			console.error('Ошибка продления ключа:', error);
 			throw error;
@@ -254,7 +254,7 @@ class KeysService {
 
 	async cancelKey(keyId, reason = 'User cancellation') {
 		try {
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key) {
 				throw new Error('Ключ не найден');
 			}
@@ -281,7 +281,7 @@ class KeysService {
 		try {
 			// Здесь можно реализовать получение детального отчета об использовании
 			// за указанное количество дней
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key) {
 				return null;
 			}

@@ -87,8 +87,7 @@ class AdminMessages {
 
 		payments.forEach((payment, index) => {
 			const date = new Date(payments.created_at).toLocaleString();
-			const status = payments.status === 'completed' ? '✅' :
-			               payments.status === 'pending' ? '⏳' : '❌';
+			const status = payments.status === 'completed' ? '✅' : payments.status === 'pending' ? '⏳' : '❌';
 
 			message.push(`${index + 1}. ${status} ${payments.amount} ⭐`);
 			message.push(`   ${t('users.user')}: ${payments.telegram_id}`);
