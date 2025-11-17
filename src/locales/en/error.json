@@ -9,13 +9,14 @@
     "no_access": "You do not have access to this section",
     "stats_unavailable": "❌ Statistics unavailable"
   },
-  "key": {
+  "keys": {
     "activation_failed": "❌ Key activation error: {{error}}\n\nContact support to resolve this issue.",
+    "creation_failed": "The service is temporarily unavailable. Try again later.",
     "not_found": "❌ Key not found",
     "no_keys": "❌ You don't have any active keys",
     "plan_not_found": "❌ Plan not found"
   },
-  "payment": {
+  "payments": {
     "failed": "❌ Payment error. Please try again later."
   }
 }

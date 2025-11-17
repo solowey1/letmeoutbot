@@ -5,9 +5,9 @@ const PlanService = require('../services/PlanService');
 class KeyboardUtils {
 	static createMainMenu(t) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.buy.key'), CALLBACK_ACTIONS.BUY_PLAN)],
-			[Markup.button.callback(t('buttons.my_keys'), CALLBACK_ACTIONS.MY_KEYS)],
-			[Markup.button.callback(t('buttons.settings'), CALLBACK_ACTIONS.SETTINGS)],
+			[Markup.button.callback(t('buttons.buy.key'), CALLBACK_ACTIONS.KEYS.BUY)],
+			[Markup.button.callback(t('buttons.my_keys'), CALLBACK_ACTIONS.KEYS.MENU)],
+			[Markup.button.callback(t('buttons.settings'), CALLBACK_ACTIONS.SETTINGS.MENU)],
 			[Markup.button.callback(t('buttons.help'), 'help')],
 		]);
 	}
@@ -24,16 +24,16 @@ class KeyboardUtils {
 			)]);
 		});
 
-		buttons.push([Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BACK_TO_MENU)]);
+		buttons.push([Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]);
 
 		return Markup.inlineKeyboard(buttons);
 	}
 
 	static createPlanDetailsKeyboard(t, planId) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.pay'), `${CALLBACK_ACTIONS.CONFIRM_PURCHASE}_${planId}`)],
-			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.BUY_PLAN)],
-			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BACK_TO_MENU)]
+			[Markup.button.callback(t('buttons.pay'), `${CALLBACK_ACTIONS.PAYMENT.CONFIRM}_${planId}`)],
+			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.KEYS.BUY)],
+			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
 		]);
 	}
 
@@ -55,12 +55,12 @@ class KeyboardUtils {
 				}
 			});
 
-			buttons.push([Markup.button.callback(t('buttons.buy.more'), CALLBACK_ACTIONS.BUY_PLAN)]);
+			buttons.push([Markup.button.callback(t('buttons.buy.more'), CALLBACK_ACTIONS.KEYS.BUY)]);
 		} else {
-			buttons.push([Markup.button.callback(t('buttons.buy.first'), CALLBACK_ACTIONS.BUY_PLAN)]);
+			buttons.push([Markup.button.callback(t('buttons.buy.first'), CALLBACK_ACTIONS.KEYS.BUY)]);
 		}
 
-		buttons.push([Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BACK_TO_MENU)]);
+		buttons.push([Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]);
 
 		return Markup.inlineKeyboard(buttons);
 	}
@@ -68,57 +68,57 @@ class KeyboardUtils {
 	static createKeyDetailsKeyboard(t, keyId) {
 		return Markup.inlineKeyboard([
 			[Markup.button.callback(t('buttons.stats'), `sub_stats_${keyId}`)],
-			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BACK_TO_MENU)]
+			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
 		]);
 	}
 
 	static createPaymentConfirmationKeyboard(t, planId) {
 		return Markup.inlineKeyboard([
 			[Markup.button.callback(t('buttons.confirm_purchase'), `confirm_payment_${planId}`)],
-			[Markup.button.callback(t('buttons.cancel'), CALLBACK_ACTIONS.BUY_PLAN)]
+			[Markup.button.callback(t('buttons.cancel'), CALLBACK_ACTIONS.KEYS.BUY)]
 		]);
 	}
 
 	static createDirectCheckoutKeyboard(t, planId) {
 		return Markup.inlineKeyboard([
 			[Markup.button.callback(t('buttons.pay'), `confirm_payment_${planId}`)],
-			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.BUY_PLAN)]
+			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.KEYS.BUY)]
 		]);
 	}
 
 	static createAdminKeyboard(t) {
 		return Markup.inlineKeyboard([
 			[
-				Markup.button.callback(t('buttons.admin.users'), CALLBACK_ACTIONS.ADMIN_USERS),
-				Markup.button.callback(t('buttons.admin.stats'), CALLBACK_ACTIONS.ADMIN_STATS)
+				Markup.button.callback(t('buttons.admin.users'), CALLBACK_ACTIONS.ADMIN.USERS.MENU),
+				Markup.button.callback(t('buttons.admin.stats'), CALLBACK_ACTIONS.ADMIN.STATS.MENU)
 			],
 			[
 				Markup.button.callback(t('buttons.admin.payments'), 'admin_payments'),
 				Markup.button.callback(t('buttons.admin.keys'), 'admin_keys')
 			],
 			[
-				Markup.button.callback(t('buttons.admin.pending_keys'), CALLBACK_ACTIONS.ADMIN_PENDING_KEYS),
+				Markup.button.callback(t('buttons.admin.pending_keys'), CALLBACK_ACTIONS.ADMIN.KEYS.PENDING),
 				Markup.button.callback(t('buttons.admin.broadcast'), 'admin_broadcast')
 			],
 			[
 				Markup.button.callback(t('buttons.admin.settings'), 'admin_settings')
 			],
-			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.BACK_TO_MENU)]
+			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
 		]);
 	}
 
 	static createBackToMenuKeyboard(t) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BACK_TO_MENU)]
+			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
 		]);
 	}
 
 	static createHelpKeyboard(t) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.buy.key'), CALLBACK_ACTIONS.BUY_PLAN)],
+			[Markup.button.callback(t('buttons.buy.key'), CALLBACK_ACTIONS.KEYS.BUY)],
 			[Markup.button.callback(t('buttons.download_apps'), 'download_apps')],
 			[Markup.button.callback(t('buttons.support'), 'support')],
-			[Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BACK_TO_MENU)]
+			[Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
 		]);
 	}
 
@@ -141,8 +141,8 @@ class KeyboardUtils {
 
 	static createSettingsKeyboard(t) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.language'), CALLBACK_ACTIONS.CHANGE_LANGUAGE)],
-			[Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BACK_TO_MENU)]
+			[Markup.button.callback(t('buttons.language'), CALLBACK_ACTIONS.SETTINGS.LANGUAGE.SET)],
+			[Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
 		]);
 	}
 
@@ -150,11 +150,11 @@ class KeyboardUtils {
 		return Markup.inlineKeyboard([
 			[Markup.button.callback(t('buttons.languages.russian'), 'set_lang_ru')],
 			[Markup.button.callback(t('buttons.languages.english'), 'set_lang_en')],
-			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.SETTINGS)]
+			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.SETTINGS.MENU)]
 		]);
 	}
 
-	static createErrorKeyboard(t, backAction = CALLBACK_ACTIONS.BACK_TO_MENU) {
+	static createErrorKeyboard(t, backAction = CALLBACK_ACTIONS.BASIC.BACK_TO_MENU) {
 		return Markup.inlineKeyboard([
 			[Markup.button.callback(t('buttons.retry'), 'retry')],
 			[Markup.button.callback(t('buttons.back'), backAction)]

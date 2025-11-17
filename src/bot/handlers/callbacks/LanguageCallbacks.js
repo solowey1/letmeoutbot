@@ -10,7 +10,7 @@ class LanguageCallbacks {
 
 	async handleChangeLanguage(ctx) {
 		const t = ctx.i18n.t;
-		const message = t('settings.language_title');
+		const message = MenuMessages.languageChanging(t);
 
 		const keyboard = KeyboardUtils.createLanguageKeyboard(t);
 

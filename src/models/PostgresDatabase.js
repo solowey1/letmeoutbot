@@ -130,7 +130,7 @@ class PostgresDatabase {
 		return result.rows;
 	}
 
-	async getKeyById(id) {
+	async getKey(id) {
 		const query = 'SELECT * FROM keys WHERE id = $1';
 		const result = await this.pool.query(query, [id]);
 		return result.rows[0];

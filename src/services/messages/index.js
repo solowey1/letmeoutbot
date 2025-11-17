@@ -2,7 +2,8 @@
  * Единая точка импорта всех сервисов сообщений
  */
 const MenuMessages = require('./MenuMessages');
-const KeysMessages = require('./KeysMessages');
+const KeyMessages = require('./KeyMessages');
+const PaymentMessages = require('./PaymentMessages');
 const PlanMessages = require('./PlanMessages');
 const AdminMessages = require('./AdminMessages');
 
@@ -13,7 +14,8 @@ const AdminMessages = require('./AdminMessages');
 class MessageService {
 	constructor() {
 		this.menu = MenuMessages;
-		this.key = KeysMessages;
+		this.key = KeyMessages;
+		this.payment = PaymentMessages;
 		this.plan = PlanMessages;
 		this.admin = AdminMessages;
 	}
@@ -29,7 +31,14 @@ class MessageService {
 	 * Быстрый доступ к сообщениям подписок
 	 */
 	static get Key() {
-		return KeysMessages;
+		return KeyMessages;
+	}
+
+	/**
+	 * Быстрый доступ к сообщениям платежей
+	 */
+	static get Payment() {
+		return PaymentMessages;
 	}
 
 	/**
@@ -49,6 +58,7 @@ class MessageService {
 
 module.exports = MessageService;
 module.exports.MenuMessages = MenuMessages;
-module.exports.KeysMessages = KeysMessages;
+module.exports.KeyMessages = KeyMessages;
+module.exports.PaymentMessages = PaymentMessages;
 module.exports.PlanMessages = PlanMessages;
 module.exports.AdminMessages = AdminMessages;

@@ -39,7 +39,7 @@ class KeysService {
 
 	async activateKey(keyId, userTID) {
 		try {
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key) {
 				throw new Error('Ключ не найден');
 			}
@@ -55,7 +55,7 @@ class KeysService {
 			});
 
 			return {
-				key: await this.db.getKeyById(keyId),
+				key: await this.db.getKey(keyId),
 				accessUrl: keyData.accessUrl
 			};
 		} catch (error) {
@@ -88,7 +88,7 @@ class KeysService {
 
 	async getKeyDetails(t, keyId, withUsageStats = true) {
 		try {
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key) {
 				throw new Error('Ключ не найден');
 			}
@@ -113,7 +113,7 @@ class KeysService {
 
 	async updateUsageStats(keyId) {
 		try {
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key || !key.outline_key_id) {
 				return false;
 			}
@@ -147,7 +147,7 @@ class KeysService {
 
 	async getUsageStats(keyId) {
 		try {
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key) {
 				return null;
 			}
@@ -161,7 +161,7 @@ class KeysService {
 			await this.updateUsageStats(keyId);
 
 			// Получаем обновленные данные
-			const updatedKey = await this.db.getKeyById(keyId);
+			const updatedKey = await this.db.getKey(keyId);
 
 			const usagePercentage = this.outlineService.calculateUsagePercentage(
 				updatedKey.data_used,
@@ -191,7 +191,7 @@ class KeysService {
 
 	async checkLimits(keyId) {
 		try {
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key || key.status !== KEY_STATUS.ACTIVE) {
 				return false;
 			}
@@ -202,6 +202,8 @@ class KeysService {
 			const isOverLimit = key.data_used >= key.data_limit;
 
 			if (isExpired || isOverLimit) {
+				console.log(`🚫 Блокировка ключа ${keyId}: истёк=${isExpired}, лимит=${isOverLimit}`);
+
 				// Блокируем ключ
 				if (key.outline_key_id) {
 					await this.outlineService.suspendKey(key.outline_key_id);
@@ -211,6 +213,31 @@ class KeysService {
 				await this.db.updateKey(keyId, {
 					status: KEY_STATUS.SUSPENDED
 				});
+
+				// Отправляем уведомление о блокировке
+				if (this.sendNotificationToUser) {
+					try {
+						const user = await this.db.getUserById(key.user_id);
+
+						const notificationType = isExpired
+							? NOTIFICATION_TYPES.TIME_EXPIRED
+							: NOTIFICATION_TYPES.TRAFFIC_EXHAUSTED;
+
+						const usagePercentage = Math.round((key.data_used / key.data_limit) * 100);
+
+						await this.sendNotificationToUser(user.telegram_id, {
+							type: notificationType,
+							data: {
+								usagePercentage,
+								daysRemaining: 0
+							}
+						});
+
+						console.log(`📧 Уведомление о блокировке отправлено пользователю ${user.telegram_id}`);
+					} catch (notifyError) {
+						console.error('⚠️ Ошибка отправки уведомления о блокировке:', notifyError.message);
+					}
+				}
 
 				return true; // Ключ заблокирован
 			}
@@ -224,7 +251,7 @@ class KeysService {
 
 	async extendKey(keyId, additionalDays, additionalData = 0) {
 		try {
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key) {
 				throw new Error('Ключ не найден');
 			}
@@ -245,7 +272,7 @@ class KeysService {
 				await this.outlineService.reactivateKey(key.outline_key_id, newDataLimit);
 			}
 
-			return await this.db.getKeyById(keyId);
+			return await this.db.getKey(keyId);
 		} catch (error) {
 			console.error('Ошибка продления ключа:', error);
 			throw error;
@@ -254,7 +281,7 @@ class KeysService {
 
 	async cancelKey(keyId, reason = 'User cancellation') {
 		try {
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key) {
 				throw new Error('Ключ не найден');
 			}
@@ -281,7 +308,7 @@ class KeysService {
 		try {
 			// Здесь можно реализовать получение детального отчета об использовании
 			// за указанное количество дней
-			const key = await this.db.getKeyById(keyId);
+			const key = await this.db.getKey(keyId);
 			if (!key) {
 				return null;
 			}
@@ -322,6 +349,8 @@ class KeysService {
 								data_used: actualUsage
 							});
 							key.data_used = actualUsage;
+							const usagePercent = ((actualUsage / key.data_limit) * 100).toFixed(1);
+							console.log(`📊 Ключ ${key.id}: использовано ${usagePercent}% (${this.formatBytes(actualUsage)} из ${this.formatBytes(key.data_limit)})`);
 						}
 					}
 
@@ -329,8 +358,10 @@ class KeysService {
 					const notificationsNeeded = await this.checkKeyThresholds(key);
 
 					if (notificationsNeeded.length > 0) {
+						console.log(`⚠️ Ключ ${key.id}: требуется ${notificationsNeeded.length} уведомлений`);
 						for (const notification of notificationsNeeded) {
-							await this.sendNotificationToUser(key.telegram_id, notification);
+							const user = await this.db.getUserById(key.user_id);
+							await this.sendNotificationToUser(user.telegram_id, notification);
 							notificationsSent++;
 						}
 					}
@@ -467,6 +498,62 @@ class KeysService {
 		}
 
 		return notifications;
+	}
+
+	/**
+	 * Проверка доступности Outline API
+	 * @returns {Promise<boolean>}
+	 */
+	async checkOutlineAvailability() {
+		try {
+			await this.outlineService.getServerInfo();
+			return true;
+		} catch (error) {
+			console.error('⚠️ Outline API недоступен:', error.message);
+			return false;
+		}
+	}
+
+	/**
+	 * Создание и активация ключа с retry-логикой
+	 * @param {number} userId - ID пользователя
+	 * @param {string} planId - ID плана
+	 * @param {number} paymentId - ID платежа
+	 * @param {number} userTID - Telegram ID пользователя
+	 * @param {number} maxRetries - Максимальное количество попыток
+	 * @returns {Promise<Object>}
+	 */
+	async createAndActivateKeyWithRetry(userId, planId, paymentId, userTID, maxRetries = 3) {
+		let lastError;
+
+		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+			try {
+				console.log(`🔄 Попытка ${attempt}/${maxRetries} создания ключа...`);
+
+				// Создаём ключ в БД
+				const keyId = await this.createKey(userId, planId, paymentId);
+
+				// Активируем через Outline API
+				const activationResult = await this.activateKey(keyId, userTID);
+
+				console.log(`✅ Ключ успешно создан с попытки ${attempt}`);
+				return { keyId, ...activationResult };
+
+			} catch (error) {
+				lastError = error;
+				console.error(`❌ Попытка ${attempt}/${maxRetries} не удалась:`, error.message);
+
+				if (attempt < maxRetries) {
+					// Экспоненциальная задержка: 1s, 2s, 4s
+					const delay = Math.pow(2, attempt - 1) * 1000;
+					console.log(`⏳ Ожидание ${delay}ms перед следующей попыткой...`);
+					await new Promise(resolve => setTimeout(resolve, delay));
+				}
+			}
+		}
+
+		// Все попытки исчерпаны
+		throw new Error(`Не удалось создать ключ после ${maxRetries} попыток: ${lastError.message}`);
 	}
 }
 

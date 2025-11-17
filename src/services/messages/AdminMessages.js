@@ -87,11 +87,10 @@ class AdminMessages {
 
 		payments.forEach((payment, index) => {
 			const date = new Date(payments.created_at).toLocaleString();
-			const status = payments.status === 'completed' ? '✅' :
-			               payments.status === 'pending' ? '⏳' : '❌';
+			const status = payments.status === 'completed' ? '✅' : payments.status === 'pending' ? '⏳' : '❌';
 
 			message.push(`${index + 1}. ${status} ${payments.amount} ⭐`);
-			message.push(`   ${t('users.user')}: ${payments.telegram_id}`);
+			message.push(`   ${t('users.user')}: ${payments.user_id}`);
 			message.push(`   ${date}`);
 			message.push('');
 		});
@@ -100,7 +99,7 @@ class AdminMessages {
 	}
 
 	/**
-	 * Список подписок (ключей)
+	 * Список ключей
 	 * @param {Function} t - Функция перевода
 	 * @param {Array} keys - Массив ключей
 	 * @returns {string}
@@ -118,13 +117,13 @@ class AdminMessages {
 			''
 		];
 
-		keys.forEach((sub, index) => {
-			const status = sub.status === 'active' ? '🟢' : '🔴';
-			const expiryDate = new Date(sub.expires_at).toLocaleDateString();
+		keys.forEach((key, index) => {
+			const status = key.status === 'active' ? '🟢' : '🔴';
+			const expiryDate = new Date(key.expires_at).toLocaleDateString();
 
-			message.push(`${index + 1}. ${status} ID: ${sub.id}`);
-			message.push(`   ${t('common.user')}: ${sub.telegram_id}`);
-			message.push(`   ${t('common.plan')}: ${sub.plan_name || 'Unknown'}`);
+			message.push(`${index + 1}. ${status} ID: ${key.id}`);
+			message.push(`   ${t('common.user')}: ${key.user_id}`);
+			message.push(`   ${t('common.plan')}: ${key.plan_name || 'Unknown'}`);
 			message.push(`   ${t('common.expires')}: ${expiryDate}`);
 			message.push('');
 		});

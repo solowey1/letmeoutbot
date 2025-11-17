@@ -45,7 +45,7 @@ class PaymentService {
 
 			await this.db.updatePayment(paymentId, updates);
             
-			const payment = await this.db.getPaymentById(paymentId);
+			const payment = await this.db.getPayment(paymentId);
 			return payment;
 		} catch (error) {
 			console.error('Ошибка обработки успешного платежа:', error);
@@ -63,6 +63,20 @@ class PaymentService {
 			console.log(`Платеж ${paymentId} помечен как неуспешный: ${reason}`);
 		} catch (error) {
 			console.error('Ошибка обработки неуспешного платежа:', error);
+			throw error;
+		}
+	}
+
+	async markPaymentPendingActivation(paymentId, reason = 'Key creation failed') {
+		try {
+			const updates = {
+				status: PAYMENT_STATUS.PENDING_ACTIVATION
+			};
+
+			await this.db.updatePayment(paymentId, updates);
+			console.log(`⏳ Платеж ${paymentId} помечен как "ожидает активации": ${reason}`);
+		} catch (error) {
+			console.error('Ошибка пометки платежа как pending_activation:', error);
 			throw error;
 		}
 	}
@@ -89,9 +103,18 @@ class PaymentService {
 		return match ? parseInt(match[1]) : null;
 	}
 
-	async getPaymentById(paymentId) {
+	async saveInvoiceMessageId(paymentId, messageId) {
 		try {
-			return await this.db.getPaymentById(paymentId);
+			await this.db.updatePayment(paymentId, { invoice_message_id: messageId });
+			console.log(`💾 Сохранен message_id инвойса: ${messageId} для платежа ${paymentId}`);
+		} catch (error) {
+			console.error('Ошибка сохранения message_id инвойса:', error);
+		}
+	}
+
+	async getPayment(paymentId) {
+		try {
+			return await this.db.getPayment(paymentId);
 		} catch (error) {
 			console.error('Ошибка получения платежа:', error);
 			throw error;
@@ -100,48 +123,6 @@ class PaymentService {
 
 	formatStarsAmount(amount) {
 		return `${amount} ⭐`;
-	}
-
-	generateReceiptMessage(payment, plan, keyInfo) {
-		const message = `
-🧾 <b>Чек об оплате</b>
-
-📋 <b>Детали заказа:</b>
-• Тариф: ${plan.name}
-• Объем: ${this.formatDataLimit(plan.dataLimit)}
-• Период: ${this.formatDuration(plan.duration)}
-
-💰 <b>Платеж:</b>
-• Сумма: ${this.formatStarsAmount(payment.amount)}
-• Статус: Оплачено ✅
-• Дата: ${new Date(payment.created_at).toLocaleString('ru-RU')}
-
-🔑 <b>VPN доступ:</b>
-• Статус: Активен
-• Действует до: ${new Date(keyInfo.expires_at).toLocaleString('ru-RU')}
-
-Спасибо за покупку! 🎉
-        `.trim();
-
-		return message;
-	}
-
-	formatDataLimit(bytes) {
-		const gb = bytes / (1024 * 1024 * 1024);
-		if (gb >= 1024) {
-			return `${(gb / 1024).toFixed(0)} ТБ`;
-		}
-		return `${gb.toFixed(0)} ГБ`;
-	}
-
-	formatDuration(days) {
-		if (days >= 365) {
-			return `${Math.floor(days / 365)} год`;
-		} else if (days >= 30) {
-			const months = Math.floor(days / 30);
-			return `${months} ${months === 6 ? 'месяцев' : 'месяц'}`;
-		}
-		return `${days} дней`;
 	}
 
 	async getPaymentStats() {

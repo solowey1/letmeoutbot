@@ -107,6 +107,33 @@ class KeyMessages {
 	}
 
 	/**
+	 * Невозможно создать ключ
+	 * @param {Function} t - Функция перевода
+	 * @returns {string}
+	 */
+	static creationFailed(t) {
+		return t('keys.creation_failed', { ns: 'error' });
+	}
+
+	/**
+	 * Оплата получена, но ключ не создан (ошибка активации)
+	 * @param {Function} t - Функция перевода
+	 * @returns {string}
+	 */
+	static activationPending(t) {
+		return [
+			`⚠️ <b>${t('keys.activation_pending.title', { ns: 'message' })}</b>`,
+			'',
+			t('keys.activation_pending.payment_received', { ns: 'message' }),
+			'',
+			`🔄 ${t('keys.activation_pending.auto_retry', { ns: 'message' })}`,
+			`📧 ${t('keys.activation_pending.will_notify', { ns: 'message' })}`,
+			'',
+			`💡 ${t('keys.activation_pending.support_hint', { ns: 'message' })}`
+		].join('\n');
+	}
+
+	/**
 	 * Форматирование байтов в читаемый вид
 	 * @param {number} bytes
 	 * @returns {string}

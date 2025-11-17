@@ -16,6 +16,7 @@
 		"quotes": ["error", "single"],
 		"semi": ["error", "always"],
 		"no-tabs": "off",
-		"no-mixed-spaces-and-tabs": "error"
+		"no-mixed-spaces-and-tabs": "error",
+		"no-unused-vars": "off"
 	}
 }

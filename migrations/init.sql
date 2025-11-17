@@ -1,42 +1,41 @@
--- =============================================
--- VPN Bot Database Schema
--- =============================================
--- This file contains the initial database schema
--- for PostgreSQL and Supabase installations
--- =============================================
+-- VPN Bot Database Schema for Supabase PostgreSQL
+-- Run this in Supabase SQL Editor: https://supabase.com/dashboard/project/_/sql
+
+-- Enable UUID extension (optional, for future use)
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     telegram_id BIGINT UNIQUE NOT NULL,
-    username VARCHAR(255),
-    first_name VARCHAR(255),
-    last_name VARCHAR(255),
+    username TEXT,
+    first_name TEXT,
+    last_name TEXT,
     role TEXT DEFAULT 'user',
     language TEXT DEFAULT 'ru',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create index on telegram_id for faster lookups
+-- Create index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_users_telegram_id ON users(telegram_id);
 
--- Keys table (previously subscriptions)
+-- Keys table (VPN keys issued to users)
 CREATE TABLE IF NOT EXISTS keys (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    plan_id VARCHAR(50),
+    plan_id TEXT NOT NULL,
     outline_key_id INTEGER,
     access_url TEXT,
-    data_limit BIGINT,  -- in bytes
-    data_used BIGINT DEFAULT 0,  -- in bytes
-    expires_at TIMESTAMP,
-    status VARCHAR(50) DEFAULT 'pending',  -- pending, active, expired, suspended
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    data_limit BIGINT NOT NULL,
+    data_used BIGINT DEFAULT 0,
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'active', 'suspended', 'expired')),
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create indexes for keys table
+-- Create indexes for keys
 CREATE INDEX IF NOT EXISTS idx_keys_user_id ON keys(user_id);
 CREATE INDEX IF NOT EXISTS idx_keys_status ON keys(status);
 CREATE INDEX IF NOT EXISTS idx_keys_expires_at ON keys(expires_at);
@@ -45,71 +44,90 @@ CREATE INDEX IF NOT EXISTS idx_keys_expires_at ON keys(expires_at);
 CREATE TABLE IF NOT EXISTS payments (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    plan_id VARCHAR(50),
-    amount INTEGER NOT NULL,  -- в Telegram Stars
-    currency VARCHAR(10) DEFAULT 'XTR',  -- Telegram Stars
-    telegram_payment_charge_id VARCHAR(255) UNIQUE,
-    status VARCHAR(50) DEFAULT 'pending',  -- pending, completed, failed, refunded
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    key_id INTEGER REFERENCES keys(id) ON DELETE SET NULL,
+    plan_id TEXT NOT NULL,
+    amount INTEGER NOT NULL,
+    currency TEXT DEFAULT 'XTR',
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'failed', 'refunded', 'pending_activation')),
+    telegram_payment_charge_id TEXT,
+    provider_payment_charge_id TEXT,
+    invoice_message_id BIGINT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create indexes for payments table
+-- Create indexes for payments
 CREATE INDEX IF NOT EXISTS idx_payments_user_id ON payments(user_id);
 CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
-CREATE INDEX IF NOT EXISTS idx_payments_telegram_payment_charge_id ON payments(telegram_payment_charge_id);
+CREATE INDEX IF NOT EXISTS idx_payments_telegram_charge_id ON payments(telegram_payment_charge_id);
+CREATE INDEX IF NOT EXISTS idx_payments_invoice_message_id ON payments(invoice_message_id);
 
--- Usage logs table (для отслеживания использования трафика)
+-- Usage logs table
 CREATE TABLE IF NOT EXISTS usage_logs (
     id SERIAL PRIMARY KEY,
     key_id INTEGER NOT NULL REFERENCES keys(id) ON DELETE CASCADE,
-    data_used BIGINT NOT NULL,  -- bytes used at this checkpoint
-    logged_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    data_used BIGINT NOT NULL,
+    logged_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Create index for usage logs
 CREATE INDEX IF NOT EXISTS idx_usage_logs_key_id ON usage_logs(key_id);
 CREATE INDEX IF NOT EXISTS idx_usage_logs_logged_at ON usage_logs(logged_at);
 
--- Notifications table (для отслеживания отправленных уведомлений)
+-- Notifications table
 CREATE TABLE IF NOT EXISTS notifications (
     id SERIAL PRIMARY KEY,
     key_id INTEGER NOT NULL REFERENCES keys(id) ON DELETE CASCADE,
-    notification_type VARCHAR(50) NOT NULL,  -- expiry_warning, limit_warning, etc.
-    threshold_value INTEGER,  -- например, 80 для 80% лимита
-    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    notification_type TEXT NOT NULL,
+    threshold_value INTEGER NOT NULL,
+    sent_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create indexes for notifications table
+-- Create index for notifications
 CREATE INDEX IF NOT EXISTS idx_notifications_key_id ON notifications(key_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_sent_at ON notifications(sent_at);
 
--- Create updated_at trigger function
+-- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
+    NEW.updated_at = NOW();
     RETURN NEW;
 END;
 $$ language 'plpgsql';
 
--- Apply updated_at triggers
-DROP TRIGGER IF EXISTS update_users_updated_at ON users;
+-- Triggers for auto-updating updated_at
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-DROP TRIGGER IF EXISTS update_keys_updated_at ON keys;
 CREATE TRIGGER update_keys_updated_at BEFORE UPDATE ON keys
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-DROP TRIGGER IF EXISTS update_payments_updated_at ON payments;
 CREATE TRIGGER update_payments_updated_at BEFORE UPDATE ON payments
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- =============================================
--- Sample Data (Optional - for testing)
--- =============================================
--- Uncomment to insert sample data for testing
+-- Create a view for active keys with user info (optional, for easier queries)
+CREATE OR REPLACE VIEW active_keys_view AS
+SELECT
+    k.id as key_id,
+    k.plan_id,
+    k.status,
+    k.data_used,
+    k.data_limit,
+    k.expires_at,
+    k.access_url,
+    u.id as user_id,
+    u.telegram_id,
+    u.username,
+    u.first_name,
+    u.language
+FROM keys k
+JOIN users u ON k.user_id = u.id
+WHERE k.status = 'active' AND k.expires_at > NOW();
 
--- INSERT INTO users (telegram_id, username, first_name, language_code) 
--- VALUES (123456789, 'testuser', 'Test User', 'en');
+-- Grant permissions (Supabase handles this automatically, but good to be explicit)
+-- GRANT ALL ON ALL TABLES IN SCHEMA public TO postgres;
+-- GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO postgres;
+
+-- Success message
+SELECT 'VPN Bot schema created successfully!' as message;

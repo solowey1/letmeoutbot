@@ -31,14 +31,14 @@ class CallbackHandler {
 			await ctx.answerCbQuery();
 
 			// Роутинг callback'ов к соответствующим модулям
-			if (callbackData === CALLBACK_ACTIONS.BACK_TO_MENU) {
+			if (callbackData === CALLBACK_ACTIONS.BASIC.BACK_TO_MENU) {
 				await this.menuCallbacks.handleBackToMenu(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.BUY_PLAN) {
+			} else if (callbackData === CALLBACK_ACTIONS.KEYS.BUY) {
 				await this.planCallbacks.handleShowPlans(ctx);
-			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.BUY_PLAN}_`)) {
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.KEYS.BUY}_`)) {
 				const planId = callbackData.split('_').slice(2).join('_');
 				await this.planCallbacks.handleShowPlanDetails(ctx, planId);
-			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.CONFIRM_PURCHASE}_`)) {
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.PAYMENT.CONFIRM}_`)) {
 				const planId = callbackData.split('_').slice(2).join('_');
 				await this.planCallbacks.handleConfirmPurchase(ctx, planId);
 			} else if (callbackData.startsWith('confirm_payment_')) {
@@ -47,7 +47,7 @@ class CallbackHandler {
 			} else if (callbackData.startsWith('checkout_')) {
 				const planId = callbackData.split('_').slice(1).join('_');
 				await this.planCallbacks.handleDirectCheckout(ctx, planId);
-			} else if (callbackData === CALLBACK_ACTIONS.MY_KEYS) {
+			} else if (callbackData === CALLBACK_ACTIONS.KEYS.MENU) {
 				await this.KeysCallbacks.handleMyKeys(ctx);
 			} else if (callbackData.startsWith('key_details_')) {
 				const keyId = parseInt(callbackData.split('_')[2]);
@@ -55,9 +55,9 @@ class CallbackHandler {
 			} else if (callbackData.startsWith('key_stats_')) {
 				const keyId = parseInt(callbackData.split('_')[2]);
 				await this.KeysCallbacks.handleKeyStats(ctx, keyId);
-			} else if (callbackData === CALLBACK_ACTIONS.SETTINGS) {
+			} else if (callbackData === CALLBACK_ACTIONS.SETTINGS.MENU) {
 				await this.menuCallbacks.handleSettings(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.CHANGE_LANGUAGE) {
+			} else if (callbackData === CALLBACK_ACTIONS.SETTINGS.LANGUAGE.SET) {
 				await this.languageCallbacks.handleChangeLanguage(ctx);
 			} else if (callbackData.startsWith('set_lang_')) {
 				const lang = callbackData.split('_')[2];
@@ -68,13 +68,13 @@ class CallbackHandler {
 				await this.menuCallbacks.handleDownloadApps(ctx);
 			} else if (callbackData === 'support') {
 				await this.menuCallbacks.handleSupport(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.ADMIN_PANEL) {
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.MENU) {
 				await this.adminCallbacks.handleAdminPanel(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.ADMIN_USERS) {
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.USERS.MENU) {
 				await this.adminCallbacks.handleAdminUsers(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.ADMIN_STATS) {
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.STATS.MENU) {
 				await this.adminCallbacks.handleAdminStats(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.ADMIN_PENDING_KEYS) {
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.KEYS.PENDING) {
 				await this.adminCallbacks.handleAdminPendingKeys(ctx);
 			} else {
 				// Неизвестный callback

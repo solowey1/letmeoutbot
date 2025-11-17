@@ -1,16 +1,32 @@
 const KeyboardUtils = require('../../utils/keyboards');
-const { PlanMessages } = require('../../services/messages');
+const { PlanMessages, KeyMessages } = require('../../services/messages');
+const PlanService = require('../../services/PlanService');
 
 class PaymentHandlers {
-	constructor(paymentService, keysService) {
+	constructor(paymentService, keysService, database, adminNotificationService = null) {
 		this.paymentService = paymentService;
 		this.keysService = keysService;
+		this.db = database;
+		this.adminNotificationService = adminNotificationService;
 	}
 
 	async handlePreCheckoutQuery(ctx) {
 		const t = ctx.i18n?.t || ((key) => key);
 
 		try {
+			// Проверяем возможность создания ключа (валидация Outline API)
+			const canCreateKey = await this.keysService.checkOutlineAvailability();
+
+			if (!canCreateKey) {
+				console.error('❌ Outline API недоступен');
+				await ctx.answerPreCheckoutQuery(
+					false,
+					KeyMessages.creationFailed(t)
+				);
+				return;
+			}
+
+			// Разрешаем оплату
 			await ctx.answerPreCheckoutQuery(true);
 		} catch (error) {
 			console.error('Ошибка пре-чекаута:', error);
@@ -57,26 +73,48 @@ class PaymentHandlers {
 			}
 
 			console.log('✅ Платеж обновлен:', completedPayment);
-			console.log('📝 Создаем ключ...');
 
-			const keyId = await this.keysService.createKey(
+			// Удаляем сообщение с инвойсом, если оно было сохранено
+			if (completedPayment.invoice_message_id) {
+				try {
+					await ctx.telegram.deleteMessage(ctx.chat.id, completedPayment.invoice_message_id);
+					console.log(`🗑️ Удалено сообщение с инвойсом: ${completedPayment.invoice_message_id}`);
+				} catch (deleteError) {
+					console.warn('⚠️ Не удалось удалить сообщение с инвойсом:', deleteError.message);
+				}
+			}
+
+			console.log('📝 Создаем и активируем ключ с retry-логикой...');
+
+			const result = await this.keysService.createAndActivateKeyWithRetry(
 				completedPayment.user_id,
 				completedPayment.plan_id,
-				paymentId
+				paymentId,
+				ctx.from.id,
+				3 // максимум 3 попытки
 			);
 
-			console.log('✅ Ключ создан с ID:', keyId);
-			console.log('🔑 Активируем ключ...');
-
-			const activationResult = await this.keysService.activateKey(
-				keyId,
-				ctx.from.id
-			);
-
-			console.log('✅ Ключ активирован:', activationResult);
+			console.log('✅ Ключ создан и активирован:', result);
 			console.log('📤 Отправляем сообщение пользователю...');
 
-			await this.sendAccessKeyMessage(ctx, completedPayment, activationResult);
+			await this.sendAccessKeyMessage(ctx, completedPayment, result);
+
+			// Уведомляем администраторов об успешной покупке
+			if (this.adminNotificationService) {
+				try {
+					const user = await this.db.getUser(ctx.from.id);
+					const plan = PlanService.getPlanById(completedPayment.plan_id);
+					await this.adminNotificationService.notifyNewPurchase(
+						completedPayment,
+						result.key,
+						user,
+						plan,
+						'success'
+					);
+				} catch (notifyError) {
+					console.error('⚠️ Ошибка отправки уведомления админам:', notifyError.message);
+				}
+			}
 
 			console.log('✅ Процесс завершен успешно!');
 
@@ -84,10 +122,34 @@ class PaymentHandlers {
 			console.error('❌ Ошибка активации ключа:', error);
 			console.error('❌ Stack trace:', error.stack);
 
-			await this.paymentService.processFailedPayment(paymentId, error.message);
+			// Помечаем платёж как "ожидает активации" вместо "failed"
+			// Это позволит фоновой задаче повторить попытку создания ключа
+			await this.paymentService.markPaymentPendingActivation(paymentId, error.message);
 
+			// Уведомляем пользователя о проблеме
 			const t = ctx.i18n?.t || ((key) => key);
-			await ctx.reply(PlanMessages.keyActivationError(t, error.message));
+			const errorMsg = KeyMessages.activationPending(t);
+
+			await ctx.reply(errorMsg, { parse_mode: 'HTML' });
+
+			// Уведомляем администраторов об ошибке
+			if (this.adminNotificationService) {
+				try {
+					const completedPayment = await this.paymentService.getPayment(paymentId);
+					const user = await this.db.getUser(ctx.from.id);
+					const plan = PlanService.getPlanById(completedPayment.plan_id);
+					await this.adminNotificationService.notifyNewPurchase(
+						completedPayment,
+						null,
+						user,
+						plan,
+						'pending',
+						error.message
+					);
+				} catch (notifyError) {
+					console.error('⚠️ Ошибка отправки уведомления админам:', notifyError.message);
+				}
+			}
 		}
 	}
 

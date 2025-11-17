@@ -101,9 +101,9 @@ class I18nService {
 			}
 		}
 
-		// Если перевод - массив, соединяем элементы
+		// Если перевод - массив, возвращаем его как есть
 		if (Array.isArray(translation)) {
-			return translation.join('\n');
+			return translation;
 		}
 
 		// Если перевод не строка, возвращаем ключ

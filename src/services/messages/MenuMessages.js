@@ -19,7 +19,7 @@ class MenuMessages {
 			'',
 			t('welcome.action_text', { ns: 'message' })
 		].join('\n');
-	};
+	}
 
 	/**
 	 * Справка (помощь)
@@ -99,6 +99,15 @@ class MenuMessages {
 		return [
 			`⚙️ <b>${t('settings.title', { ns: 'message' })}</b>`,
 		].join('\n');
+	}
+
+	/**
+	 * Изменение языка
+	 * @param {Function} t - Функция перевода
+	 * @returns {string}
+	 */
+	static languageChanging(t) {
+		return t('settings.language_title', { ns: 'message' });
 	}
 
 	/**
