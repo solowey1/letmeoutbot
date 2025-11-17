@@ -82,7 +82,8 @@ const PAYMENT_STATUS = {
 	PENDING: 'pending',
 	COMPLETED: 'completed',
 	FAILED: 'failed',
-	REFUNDED: 'refunded'
+	REFUNDED: 'refunded',
+	PENDING_ACTIVATION: 'pending_activation' // Оплачено, но ключ не создан
 };
 
 const CALLBACK_ACTIONS = {

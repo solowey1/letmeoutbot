@@ -91,7 +91,14 @@
       "Copy the key above",
       "Add the key to the app"
     ],
-    "check_stats_hint": "You can check usage statistics in the \"My Keys\" section"
+    "check_stats_hint": "You can check usage statistics in the \"My Keys\" section",
+    "activation_pending": {
+      "title": "Payment received, but there was an issue",
+      "payment_received": "Your payment was successfully processed, but a temporary error occurred while creating the VPN key.",
+      "auto_retry": "We will automatically retry shortly.",
+      "will_notify": "You will receive the key once the system is restored.",
+      "support_hint": "If you don't receive the key within 30 minutes, please contact support."
+    }
   },
   "plans": {
     "choose": "Choose a plan:",
@@ -105,7 +112,7 @@
     "savings": "Savings",
     "price": "Price"
   },
-  "payment": {
+  "payments": {
     "confirmation_title": "Purchase Confirmation",
     "checkout_title": "Checkout",
     "to_pay": "To pay",

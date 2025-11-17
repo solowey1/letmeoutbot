@@ -468,6 +468,62 @@ class KeysService {
 
 		return notifications;
 	}
+
+	/**
+	 * Проверка доступности Outline API
+	 * @returns {Promise<boolean>}
+	 */
+	async checkOutlineAvailability() {
+		try {
+			await this.outlineService.getServerInfo();
+			return true;
+		} catch (error) {
+			console.error('⚠️ Outline API недоступен:', error.message);
+			return false;
+		}
+	}
+
+	/**
+	 * Создание и активация ключа с retry-логикой
+	 * @param {number} userId - ID пользователя
+	 * @param {string} planId - ID плана
+	 * @param {number} paymentId - ID платежа
+	 * @param {number} userTID - Telegram ID пользователя
+	 * @param {number} maxRetries - Максимальное количество попыток
+	 * @returns {Promise<Object>}
+	 */
+	async createAndActivateKeyWithRetry(userId, planId, paymentId, userTID, maxRetries = 3) {
+		let lastError;
+
+		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+			try {
+				console.log(`🔄 Попытка ${attempt}/${maxRetries} создания ключа...`);
+
+				// Создаём ключ в БД
+				const keyId = await this.createKey(userId, planId, paymentId);
+
+				// Активируем через Outline API
+				const activationResult = await this.activateKey(keyId, userTID);
+
+				console.log(`✅ Ключ успешно создан с попытки ${attempt}`);
+				return { keyId, ...activationResult };
+
+			} catch (error) {
+				lastError = error;
+				console.error(`❌ Попытка ${attempt}/${maxRetries} не удалась:`, error.message);
+
+				if (attempt < maxRetries) {
+					// Экспоненциальная задержка: 1s, 2s, 4s
+					const delay = Math.pow(2, attempt - 1) * 1000;
+					console.log(`⏳ Ожидание ${delay}ms перед следующей попыткой...`);
+					await new Promise(resolve => setTimeout(resolve, delay));
+				}
+			}
+		}
+
+		// Все попытки исчерпаны
+		throw new Error(`Не удалось создать ключ после ${maxRetries} попыток: ${lastError.message}`);
+	}
 }
 
 module.exports = KeysService;

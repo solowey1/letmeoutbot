@@ -36,7 +36,7 @@ class PlanCallbacks {
 
 		if (!plan) {
 			await ctx.editMessageText(
-				t('key.plan_not_found', { ns: 'error' }),
+				t('keys.plan_not_found', { ns: 'error' }),
 				KeyboardUtils.createBackToMenuKeyboard(t)
 			);
 			return;
@@ -60,7 +60,7 @@ class PlanCallbacks {
 
 		if (!plan) {
 			await ctx.editMessageText(
-				t('key.plan_not_found', { ns: 'error' }),
+				t('keys.plan_not_found', { ns: 'error' }),
 				KeyboardUtils.createBackToMenuKeyboard(t)
 			);
 			return;
@@ -68,13 +68,13 @@ class PlanCallbacks {
 
 		const formatted = PlanService.formatPlanForDisplay(t, plan);
 
-		let message = `🛒 <b>${t('payment.confirmation_title', { ns: 'message' })}</b>\n\n`;
+		let message = `🛒 <b>${t('payments.confirmation_title', { ns: 'message' })}</b>\n\n`;
 		message += `📦 ${t('common.plan')}: ${formatted.displayName}\n`;
 		message += `💾 ${t('plans.data_volume', { ns: 'message' })}: ${formatted.dataLimit}\n`;
 		message += `⏰ ${t('plans.validity_period', { ns: 'message' })}: ${formatted.duration}\n`;
-		message += `💰 ${t('payment.to_pay', { ns: 'message' })}: ${formatted.displayPrice}\n\n`;
-		message += `${t('payment.after_payment', { ns: 'message' })}\n\n`;
-		message += `⭐ ${t('payment.via_stars', { ns: 'message' })}`;
+		message += `💰 ${t('payments.to_pay', { ns: 'message' })}: ${formatted.displayPrice}\n\n`;
+		message += `${t('payments.after_payment', { ns: 'message' })}\n\n`;
+		message += `⭐ ${t('payments.via_stars', { ns: 'message' })}`;
 
 		const keyboard = KeyboardUtils.createPaymentConfirmationKeyboard(t, planId);
 
@@ -90,7 +90,7 @@ class PlanCallbacks {
 
 		if (!plan) {
 			await ctx.editMessageText(
-				t('key.plan_not_found', { ns: 'error' }),
+				t('keys.plan_not_found', { ns: 'error' }),
 				KeyboardUtils.createBackToMenuKeyboard(t)
 			);
 			return;
@@ -114,7 +114,7 @@ class PlanCallbacks {
 		try {
 			const plan = PlanService.getPlanById(planId);
 			if (!plan) {
-				throw new Error(t('key.plan_not_found', { ns: 'error' }));
+				throw new Error(t('keys.plan_not_found', { ns: 'error' }));
 			}
 
 			// Получаем или создаем пользователя
@@ -125,10 +125,10 @@ class PlanCallbacks {
 			}
 
 			// Создаем инвойс
-			const { invoice } = await this.paymentService.createInvoice(user.id, plan);
+			const { paymentId, invoice } = await this.paymentService.createInvoice(user.id, plan);
 
 			// Отправляем инвойс пользователю
-			await ctx.replyWithInvoice({
+			const invoiceMessage = await ctx.replyWithInvoice({
 				title: invoice.title,
 				description: invoice.description,
 				payload: invoice.payload,
@@ -147,6 +147,9 @@ class PlanCallbacks {
 				send_email_to_provider: false,
 				is_flexible: false
 			});
+
+			// Сохраняем message_id инвойса для последующего удаления
+			await this.paymentService.saveInvoiceMessageId(paymentId, invoiceMessage.message_id);
 
 			const message = PlanMessages.invoiceSent(t);
 			await ctx.editMessageText(message, KeyboardUtils.createBackToMenuKeyboard(t));

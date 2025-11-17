@@ -67,6 +67,20 @@ class PaymentService {
 		}
 	}
 
+	async markPaymentPendingActivation(paymentId, reason = 'Key creation failed') {
+		try {
+			const updates = {
+				status: PAYMENT_STATUS.PENDING_ACTIVATION
+			};
+
+			await this.db.updatePayment(paymentId, updates);
+			console.log(`⏳ Платеж ${paymentId} помечен как "ожидает активации": ${reason}`);
+		} catch (error) {
+			console.error('Ошибка пометки платежа как pending_activation:', error);
+			throw error;
+		}
+	}
+
 	async refundPayment(paymentId, reason = 'User refund request') {
 		try {
 			const updates = {
@@ -87,6 +101,15 @@ class PaymentService {
 		// Извлекаем ID платежа из payload
 		const match = payload.match(/payment_(\d+)/);
 		return match ? parseInt(match[1]) : null;
+	}
+
+	async saveInvoiceMessageId(paymentId, messageId) {
+		try {
+			await this.db.updatePayment(paymentId, { invoice_message_id: messageId });
+			console.log(`💾 Сохранен message_id инвойса: ${messageId} для платежа ${paymentId}`);
+		} catch (error) {
+			console.error('Ошибка сохранения message_id инвойса:', error);
+		}
 	}
 
 	async getPaymentById(paymentId) {

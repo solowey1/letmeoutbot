@@ -24,7 +24,7 @@ class PlanMessages {
 	 */
 	static planDetails(t, plan, formatted) {
 		const message = [
-			`<b>${t('payment.checkout_title', { ns: 'message' })}</b>`,
+			`<b>${t('payments.checkout_title', { ns: 'message' })}</b>`,
 			'',
 			`📦 <b>${formatted.displayName}</b>`,
 			'',
@@ -45,8 +45,8 @@ class PlanMessages {
 		message.push('');
 		message.push(`<b>${t('plans.price', { ns: 'message' })}:</b> ${formatted.displayPrice}`);
 		message.push('');
-		message.push(t('payment.after_payment', { ns: 'message' }));
-		message.push(`<i>${t('payment.via_stars', { ns: 'message' })}</i>`);
+		message.push(t('payments.after_payment', { ns: 'message' }));
+		message.push(`<i>${t('payments.via_stars', { ns: 'message' })}</i>`);
 
 		return message.join('\n');
 	}
@@ -57,7 +57,7 @@ class PlanMessages {
 	 * @returns {string}
 	 */
 	static invoiceSent(t) {
-		return `✅ ${t('payment.invoice_sent', { ns: 'message' })}`;
+		return `✅ ${t('payments.invoice_sent', { ns: 'message' })}`;
 	}
 
 	/**
@@ -68,15 +68,15 @@ class PlanMessages {
 	 */
 	static paymentSuccess(t, accessUrl) {
 		const message = [
-			`🎉 <b>${t('payment.success_title', { ns: 'message' })}</b>`,
+			`🎉 <b>${t('payments.success_title', { ns: 'message' })}</b>`,
 			'',
-			`✅ ${t('payment.key_activated', { ns: 'message' })}`,
+			`✅ ${t('payments.key_activated', { ns: 'message' })}`,
 			'',
 			`<b>🔑 ${t('keys.access_key_title', { ns: 'message' })}</b>`,
 			`<code>${accessUrl}</code>`,
 			'',
-			`<b>${t('payment.connect_instructions', { ns: 'message' })}</b>`,
-			...t('payment.connect_steps', { ns: 'message' }).map((step, i) => `${i + 1}. ${step}`),
+			`<b>${t('payments.connect_instructions', { ns: 'message' })}</b>`,
+			...t('payments.connect_steps', { ns: 'message' }).map((step, i) => `${i + 1}. ${step}`),
 			'',
 			t('keys.check_stats_hint', { ns: 'message' })
 		];
@@ -91,7 +91,7 @@ class PlanMessages {
 	 * @returns {string}
 	 */
 	static paymentError(t, errorMessage = null) {
-		const message = [t('payment.failed', { ns: 'error' })];
+		const message = [t('payments.failed', { ns: 'error' })];
 
 		if (errorMessage) {
 			message.push('');
@@ -108,7 +108,7 @@ class PlanMessages {
 	 * @returns {string}
 	 */
 	static keyActivationError(t, error) {
-		return t('key.activation_failed', { ns: 'error', error });
+		return t('keys.activation_failed', { ns: 'error', error });
 	}
 }
 

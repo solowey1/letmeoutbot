@@ -48,9 +48,10 @@ CREATE TABLE IF NOT EXISTS payments (
     plan_id TEXT NOT NULL,
     amount INTEGER NOT NULL,
     currency TEXT DEFAULT 'XTR',
-    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'failed', 'refunded')),
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'failed', 'refunded', 'pending_activation')),
     telegram_payment_charge_id TEXT,
     provider_payment_charge_id TEXT,
+    invoice_message_id BIGINT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -59,6 +60,7 @@ CREATE TABLE IF NOT EXISTS payments (
 CREATE INDEX IF NOT EXISTS idx_payments_user_id ON payments(user_id);
 CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
 CREATE INDEX IF NOT EXISTS idx_payments_telegram_charge_id ON payments(telegram_payment_charge_id);
+CREATE INDEX IF NOT EXISTS idx_payments_invoice_message_id ON payments(invoice_message_id);
 
 -- Usage logs table
 CREATE TABLE IF NOT EXISTS usage_logs (

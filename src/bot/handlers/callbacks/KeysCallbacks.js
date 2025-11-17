@@ -1,4 +1,4 @@
-const { KeysMessages } = require('../../../services/messages');
+const { KeyMessages } = require('../../../services/messages');
 const KeyboardUtils = require('../../../utils/keyboards');
 
 class KeysCallbacks {
@@ -14,7 +14,7 @@ class KeysCallbacks {
 		try {
 			let user = await this.db.getUser(ctx.from.id);
 			if (!user) {
-				const message = KeysMessages.myKeys(t, []);
+				const message = KeyMessages.myKeys(t, []);
 				const keyboard = KeyboardUtils.createMainMenu(t);
 				await ctx.editMessageText(message, {
 					...keyboard,
@@ -26,7 +26,7 @@ class KeysCallbacks {
 			const keys = await this.keyService.getUserActiveKeys(t, user.id);
 
 			if (keys.length === 0) {
-				const message = KeysMessages.myKeys(t, []);
+				const message = KeyMessages.myKeys(t, []);
 				const keyboard = KeyboardUtils.createKeysKeyboard(t, []);
 				await ctx.editMessageText(message, {
 					...keyboard,
@@ -61,7 +61,7 @@ class KeysCallbacks {
 		} catch (error) {
 			console.error('Ошибка получения ключей:', error);
 			await ctx.editMessageText(
-				t('key.no_keys', { ns: 'error' }),
+				t('keys.no_keys', { ns: 'error' }),
 				KeyboardUtils.createBackToMenuKeyboard(t)
 			);
 		}
@@ -74,7 +74,7 @@ class KeysCallbacks {
 			const key = await this.keyService.getKeyDetails(t, keyId, true);
 			if (!key) {
 				await ctx.editMessageText(
-					t('key.not_found', { ns: 'error' }),
+					t('keys.not_found', { ns: 'error' }),
 					KeyboardUtils.createBackToMenuKeyboard(t)
 				);
 				return;
