@@ -70,8 +70,8 @@ class NotificationService {
 
 			// Добавляем кнопки для всех типов уведомлений
 			keyboard = Markup.inlineKeyboard([
-				[Markup.button.callback(t('buttons.buy.key'), CALLBACK_ACTIONS.BUY_PLAN)],
-				[Markup.button.callback(t('buttons.my_keys'), CALLBACK_ACTIONS.MY_KEYS)]
+				[Markup.button.callback(t('buttons.buy.key'), CALLBACK_ACTIONS.KEYS.BUY)],
+				[Markup.button.callback(t('buttons.my_keys'), CALLBACK_ACTIONS.KEYS.MENU)]
 			]);
 
 			await this.bot.telegram.sendMessage(telegramId, message, {

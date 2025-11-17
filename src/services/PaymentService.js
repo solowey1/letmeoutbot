@@ -112,7 +112,7 @@ class PaymentService {
 		}
 	}
 
-	async getPaymentById(paymentId) {
+	async getPayment(paymentId) {
 		try {
 			return await this.db.getPayment(paymentId);
 		} catch (error) {
@@ -123,48 +123,6 @@ class PaymentService {
 
 	formatStarsAmount(amount) {
 		return `${amount} ⭐`;
-	}
-
-	generateReceiptMessage(payment, plan, keyInfo) {
-		const message = `
-🧾 <b>Чек об оплате</b>
-
-📋 <b>Детали заказа:</b>
-• Тариф: ${plan.name}
-• Объем: ${this.formatDataLimit(plan.dataLimit)}
-• Период: ${this.formatDuration(plan.duration)}
-
-💰 <b>Платеж:</b>
-• Сумма: ${this.formatStarsAmount(payment.amount)}
-• Статус: Оплачено ✅
-• Дата: ${new Date(payment.created_at).toLocaleString('ru-RU')}
-
-🔑 <b>VPN доступ:</b>
-• Статус: Активен
-• Действует до: ${new Date(keyInfo.expires_at).toLocaleString('ru-RU')}
-
-Спасибо за покупку! 🎉
-        `.trim();
-
-		return message;
-	}
-
-	formatDataLimit(bytes) {
-		const gb = bytes / (1024 * 1024 * 1024);
-		if (gb >= 1024) {
-			return `${(gb / 1024).toFixed(0)} ТБ`;
-		}
-		return `${gb.toFixed(0)} ГБ`;
-	}
-
-	formatDuration(days) {
-		if (days >= 365) {
-			return `${Math.floor(days / 365)} год`;
-		} else if (days >= 30) {
-			const months = Math.floor(days / 30);
-			return `${months} ${months === 6 ? 'месяцев' : 'месяц'}`;
-		}
-		return `${days} дней`;
 	}
 
 	async getPaymentStats() {

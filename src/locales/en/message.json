@@ -134,7 +134,13 @@
     "step2": "Copy the access key above",
     "step3": "Add the key to the app",
     "step4": "Enjoy secure internet!",
-    "check_stats": "You can check usage statistics in the \"My Keys\" section"
+    "check_stats": "You can check usage statistics in the \"My Keys\" section",
+    "receipt": {
+      "title": "Payment receipt",
+      "details": "Детали заказа:",
+      "vpn_key": "VPN key:",
+      "thanks": "Thank you for your purchase! 🎉"
+    }
   },
   "stats": {
     "title": "Usage Statistics",

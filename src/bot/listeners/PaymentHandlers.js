@@ -135,7 +135,7 @@ class PaymentHandlers {
 			// Уведомляем администраторов об ошибке
 			if (this.adminNotificationService) {
 				try {
-					const completedPayment = await this.paymentService.getPaymentById(paymentId);
+					const completedPayment = await this.paymentService.getPayment(paymentId);
 					const user = await this.db.getUser(ctx.from.id);
 					const plan = PlanService.getPlanById(completedPayment.plan_id);
 					await this.adminNotificationService.notifyNewPurchase(

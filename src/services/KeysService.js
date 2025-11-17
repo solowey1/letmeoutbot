@@ -217,13 +217,15 @@ class KeysService {
 				// Отправляем уведомление о блокировке
 				if (this.sendNotificationToUser) {
 					try {
+						const user = await this.db.getUserById(key.user_id);
+
 						const notificationType = isExpired
 							? NOTIFICATION_TYPES.TIME_EXPIRED
 							: NOTIFICATION_TYPES.TRAFFIC_EXHAUSTED;
 
 						const usagePercentage = Math.round((key.data_used / key.data_limit) * 100);
 
-						await this.sendNotificationToUser(key.telegram_id, {
+						await this.sendNotificationToUser(user.telegram_id, {
 							type: notificationType,
 							data: {
 								usagePercentage,
@@ -231,7 +233,7 @@ class KeysService {
 							}
 						});
 
-						console.log(`📧 Уведомление о блокировке отправлено пользователю ${key.telegram_id}`);
+						console.log(`📧 Уведомление о блокировке отправлено пользователю ${user.telegram_id}`);
 					} catch (notifyError) {
 						console.error('⚠️ Ошибка отправки уведомления о блокировке:', notifyError.message);
 					}
@@ -358,7 +360,8 @@ class KeysService {
 					if (notificationsNeeded.length > 0) {
 						console.log(`⚠️ Ключ ${key.id}: требуется ${notificationsNeeded.length} уведомлений`);
 						for (const notification of notificationsNeeded) {
-							await this.sendNotificationToUser(key.telegram_id, notification);
+							const user = await this.db.getUserById(key.user_id);
+							await this.sendNotificationToUser(user.telegram_id, notification);
 							notificationsSent++;
 						}
 					}

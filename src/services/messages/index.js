@@ -3,6 +3,7 @@
  */
 const MenuMessages = require('./MenuMessages');
 const KeyMessages = require('./KeyMessages');
+const PaymentMessages = require('./PaymentMessages');
 const PlanMessages = require('./PlanMessages');
 const AdminMessages = require('./AdminMessages');
 
@@ -14,6 +15,7 @@ class MessageService {
 	constructor() {
 		this.menu = MenuMessages;
 		this.key = KeyMessages;
+		this.payment = PaymentMessages;
 		this.plan = PlanMessages;
 		this.admin = AdminMessages;
 	}
@@ -30,6 +32,13 @@ class MessageService {
 	 */
 	static get Key() {
 		return KeyMessages;
+	}
+
+	/**
+	 * Быстрый доступ к сообщениям платежей
+	 */
+	static get Payment() {
+		return PaymentMessages;
 	}
 
 	/**
@@ -50,5 +59,6 @@ class MessageService {
 module.exports = MessageService;
 module.exports.MenuMessages = MenuMessages;
 module.exports.KeyMessages = KeyMessages;
+module.exports.PaymentMessages = PaymentMessages;
 module.exports.PlanMessages = PlanMessages;
 module.exports.AdminMessages = AdminMessages;

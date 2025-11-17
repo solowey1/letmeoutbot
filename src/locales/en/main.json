@@ -48,6 +48,10 @@
     "yes": "Yes",
     "no": "No",
     "user": "User",
+    "amount": "Amount",
+    "date": "Date",
+    "payment": "Payment",
+    "period": "Period",
     "plan": "Plan",
     "status": "Status",
     "used": "Used",
@@ -110,6 +114,15 @@
     "pro_1200gb": {
       "description": "Maximum plan for those who want to download the entire internet",
       "invoice": "Outline VPN key with 1200GB limit for 1 year"
+    }
+  },
+  "statuses": {
+    "payment": {
+      "success": "Paid ✅"
+    },
+    "vpn": {
+      "active": "Active",
+      "inactive": "Inactive"
     }
   }
 }
