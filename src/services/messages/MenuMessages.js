@@ -102,6 +102,15 @@ class MenuMessages {
 	}
 
 	/**
+	 * Изменение языка
+	 * @param {Function} t - Функция перевода
+	 * @returns {string}
+	 */
+	static languageChanging(t) {
+		return t('settings.language_title', { ns: 'message' });
+	}
+
+	/**
 	 * Язык изменён
 	 * @param {Function} t - Функция перевода
 	 * @returns {string}
