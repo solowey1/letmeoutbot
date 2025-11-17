@@ -1,150 +1,150 @@
-# Архитектура VPN Telegram Bot
+# VPN Telegram Bot Architecture
 
-## Обзор
+## Overview
 
-VPN Telegram Bot - это модульное приложение для автоматизации продажи VPN ключей через Telegram с оплатой Telegram Stars.
+VPN Telegram Bot is a modular application for automating VPN key sales through Telegram with Telegram Stars payment.
 
-## Структура проекта
+## Project Structure
 
 ```
 vpnbot/
 ├── src/
-│   ├── index.js                    # Точка входа
+│   ├── index.js                    # Entry point
 │   ├── bot/
-│   │   └── index.js                # Главный класс бота
+│   │   └── index.js                # Main bot class
 │   ├── bot/handlers/
-│   │   └── callbacks/              # Обработчики callback-запросов
-│   │       ├── AdminCallbacks.js   # Админ функции
-│   │       ├── KeysCallbacks.js    # Управление ключами
-│   │       ├── PlanCallbacks.js    # Выбор планов
-│   │       ├── MenuCallbacks.js    # Навигация по меню
-│   │       └── LanguageCallbacks.js # Выбор языка
+│   │   └── callbacks/              # Callback query handlers
+│   │       ├── AdminCallbacks.js   # Admin functions
+│   │       ├── KeysCallbacks.js    # Key management
+│   │       ├── PlanCallbacks.js    # Plan selection
+│   │       ├── MenuCallbacks.js    # Menu navigation
+│   │       └── LanguageCallbacks.js # Language selection
 │   ├── bot/listeners/
-│   │   ├── CallbackHandler.js      # Маршрутизатор callback
-│   │   ├── CommandHandlers.js      # Обработчики команд
-│   │   ├── MessageHandlers.js      # Обработчики сообщений
-│   │   └── PaymentHandlers.js      # Обработчики платежей
+│   │   ├── CallbackHandler.js      # Callback router
+│   │   ├── CommandHandlers.js      # Command handlers
+│   │   ├── MessageHandlers.js      # Message handlers
+│   │   └── PaymentHandlers.js      # Payment handlers
 │   ├── services/
-│   │   ├── PaymentService.js       # Сервис платежей
-│   │   ├── KeysService.js          # Управление ключами
-│   │   ├── OutlineService.js       # API Outline VPN
-│   │   ├── PlanService.js          # Тарифные планы
-│   │   ├── NotificationService.js  # Уведомления
-│   │   └── I18nService.js          # Интернационализация
-│   ├── services/messages/          # Шаблоны сообщений
+│   │   ├── PaymentService.js       # Payment service
+│   │   ├── KeysService.js          # Key management
+│   │   ├── OutlineService.js       # Outline VPN API
+│   │   ├── PlanService.js          # Pricing plans
+│   │   ├── NotificationService.js  # Notifications
+│   │   └── I18nService.js          # Internationalization
+│   ├── services/messages/          # Message templates
 │   │   ├── AdminMessages.js
 │   │   ├── KeysMessages.js
 │   │   ├── PlanMessages.js
 │   │   ├── MenuMessages.js
 │   │   └── index.js
 │   ├── models/
-│   │   ├── Database.js             # SQLite модель
-│   │   ├── PostgresDatabase.js     # PostgreSQL модель
-│   │   └── SupabaseDatabase.js     # Supabase модель
+│   │   ├── Database.js             # SQLite model
+│   │   ├── PostgresDatabase.js     # PostgreSQL model
+│   │   └── SupabaseDatabase.js     # Supabase model
 │   ├── middleware/
-│   │   └── i18nMiddleware.js       # Middleware для i18n
+│   │   └── i18nMiddleware.js       # i18n middleware
 │   ├── utils/
-│   │   └── keyboards.js            # Клавиатуры
+│   │   └── keyboards.js            # Keyboards
 │   └── config/
-│       ├── constants.js            # Константы
-│       └── index.js                # Конфигурация
+│       ├── constants.js            # Constants
+│       └── index.js                # Configuration
 ├── migrations/
-│   └── init.sql                    # Схема БД
-├── locales/                        # Переводы
+│   └── init.sql                    # Database schema
+├── locales/                        # Translations
 │   ├── en.json
 │   └── ru.json
-├── install.sh                      # Скрипт установки
-├── quick-start.sh                  # Быстрый старт для dev
-├── init-database.sh                # Инициализация БД
-├── check-setup.sh                  # Проверка настройки
-└── docs/                           # Документация
-    ├── en/                         # Английская
-    └── ru/                         # Русская
+├── install.sh                      # Installation script
+├── quick-start.sh                  # Quick start for dev
+├── init-database.sh                # Database initialization
+├── check-setup.sh                  # Setup verification
+└── docs/                           # Documentation
+    ├── en/                         # English
+    └── ru/                         # Russian
 ```
 
-## Архитектурные слои
+## Architectural Layers
 
-### 1. Presentation Layer (Бот)
-- **bot/index.js**: Главный класс бота, инициализация
-- **bot/listeners/**: Обработчики событий Telegram
-- **bot/handlers/callbacks/**: Специфичные обработчики кнопок
+### 1. Presentation Layer (Bot)
+- **bot/index.js**: Main bot class, initialization
+- **bot/listeners/**: Telegram event handlers
+- **bot/handlers/callbacks/**: Specific button handlers
 
-### 2. Service Layer (Бизнес-логика)
-- **PaymentService**: Создание инвойсов, обработка платежей
-- **KeysService**: Создание, мониторинг, управление VPN ключами
-- **OutlineService**: Интеграция с Outline VPN API
-- **PlanService**: Управление тарифными планами
-- **NotificationService**: Отправка уведомлений пользователям
-- **I18nService**: Многоязычная поддержка
+### 2. Service Layer (Business Logic)
+- **PaymentService**: Invoice creation, payment processing
+- **KeysService**: VPN key creation, monitoring, management
+- **OutlineService**: Outline VPN API integration
+- **PlanService**: Pricing plan management
+- **NotificationService**: User notifications
+- **I18nService**: Multi-language support
 
-### 3. Data Layer (Данные)
-- **models/**: Абстракция над различными БД
-  - SQLite для разработки
-  - PostgreSQL для средних проектов
-  - Supabase для продакшн
+### 3. Data Layer (Data)
+- **models/**: Abstraction over different databases
+  - SQLite for development
+  - PostgreSQL for medium projects
+  - Supabase for production
 
-### 4. Infrastructure (Инфраструктура)
-- **middleware/**: Промежуточное ПО
-- **utils/**: Вспомогательные функции
-- **config/**: Конфигурация приложения
+### 4. Infrastructure
+- **middleware/**: Middleware
+- **utils/**: Helper functions
+- **config/**: Application configuration
 
-## Поток данных
+## Data Flow
 
-### Покупка VPN ключа
-
-```
-Пользователь нажимает "Купить VPN"
-  ↓
-MenuCallbacks обрабатывает callback
-  ↓
-Показывает список планов (PlanService)
-  ↓
-Пользователь выбирает план
-  ↓
-PlanCallbacks создаёт инвойс (PaymentService)
-  ↓
-Telegram показывает форму оплаты
-  ↓
-Пользователь оплачивает
-  ↓
-PaymentHandlers обрабатывает успешную оплату
-  ↓
-KeysService создаёт VPN ключ (OutlineService)
-  ↓
-Ключ сохраняется в БД
-  ↓
-Пользователь получает ключ доступа
-```
-
-### Мониторинг лимитов
+### VPN Key Purchase
 
 ```
-Cron задача (каждые 30 мин)
+User clicks "Buy VPN"
+  ↓
+MenuCallbacks handles callback
+  ↓
+Shows plan list (PlanService)
+  ↓
+User selects plan
+  ↓
+PlanCallbacks creates invoice (PaymentService)
+  ↓
+Telegram shows payment form
+  ↓
+User pays
+  ↓
+PaymentHandlers processes successful payment
+  ↓
+KeysService creates VPN key (OutlineService)
+  ↓
+Key saved to database
+  ↓
+User receives access key
+```
+
+### Limits Monitoring
+
+```
+Cron task (every 30 min)
   ↓
 KeysService.checkAllActiveKeys()
   ↓
-Для каждого активного ключа:
+For each active key:
   ↓
-OutlineService получает использование трафика
+OutlineService gets traffic usage
   ↓
-Сравнивает с лимитами
+Compares with limits
   ↓
-Если близок к лимиту:
+If approaching limit:
   ↓
-NotificationService отправляет уведомление
+NotificationService sends notification
   ↓
-Сохраняет в БД (чтобы не дублировать)
+Saves to DB (to avoid duplicates)
   ↓
-Если превышен лимит:
+If limit exceeded:
   ↓
-OutlineService удаляет ключ
+OutlineService deletes key
   ↓
-Обновляет статус в БД
+Updates status in DB
 ```
 
-## Модели данных
+## Data Models
 
-### Users (Пользователи)
+### Users
 ```javascript
 {
   id: Integer (PK),
@@ -158,7 +158,7 @@ OutlineService удаляет ключ
 }
 ```
 
-### Keys (VPN Ключи)
+### Keys (VPN Keys)
 ```javascript
 {
   id: Integer (PK),
@@ -175,7 +175,7 @@ OutlineService удаляет ключ
 }
 ```
 
-### Payments (Платежи)
+### Payments
 ```javascript
 {
   id: Integer (PK),
@@ -190,7 +190,7 @@ OutlineService удаляет ключ
 }
 ```
 
-### Usage Logs (Логи использования)
+### Usage Logs
 ```javascript
 {
   id: Integer (PK),
@@ -200,7 +200,7 @@ OutlineService удаляет ключ
 }
 ```
 
-### Notifications (Уведомления)
+### Notifications
 ```javascript
 {
   id: Integer (PK),
@@ -211,28 +211,28 @@ OutlineService удаляет ключ
 }
 ```
 
-## Ключевые паттерны
+## Key Patterns
 
 ### 1. Service Pattern
-Вся бизнес-логика инкапсулирована в сервисах:
-- Легко тестировать
-- Переиспользуемая логика
-- Четкое разделение ответственности
+All business logic is encapsulated in services:
+- Easy to test
+- Reusable logic
+- Clear separation of concerns
 
 ### 2. Repository Pattern
-Модели БД абстрагируют доступ к данным:
-- Легко переключаться между БД
-- Единый интерфейс
-- Независимость от конкретной БД
+Database models abstract data access:
+- Easy to switch between databases
+- Unified interface
+- Independence from specific database
 
 ### 3. Middleware Pattern
-Middleware для обработки запросов:
-- i18n для многоязычности
-- Автоматическое создание пользователей
-- Логирование
+Middleware for request processing:
+- i18n for multi-language support
+- Automatic user creation
+- Logging
 
 ### 4. Factory Pattern
-Динамическое создание экземпляров БД:
+Dynamic database instance creation:
 ```javascript
 if (DATABASE_TYPE === 'supabase') {
   db = new SupabaseDatabase(...)
@@ -243,54 +243,54 @@ if (DATABASE_TYPE === 'supabase') {
 }
 ```
 
-## Особенности реализации
+## Implementation Features
 
-### Обработка ошибок
-- Try-catch блоки во всех критичных местах
-- Retry механизм для Outline API (3 попытки)
-- Логирование всех ошибок
-- Уведомление пользователей о проблемах
+### Error Handling
+- Try-catch blocks in all critical places
+- Retry mechanism for Outline API (3 attempts)
+- Logging of all errors
+- User notifications about problems
 
-### Безопасность
-- Валидация всех входных данных
-- Проверка прав доступа (ADMIN_IDS)
-- Безопасное хранение секретов (.env)
-- Защита от SQL инъекций (параметризованные запросы)
+### Security
+- Validation of all input data
+- Access rights verification (ADMIN_IDS)
+- Secure secret storage (.env)
+- SQL injection protection (parameterized queries)
 
-### Производительность
-- Индексы на часто запрашиваемых полях
-- Кэширование планов
-- Асинхронная обработка
-- Батчинг уведомлений
+### Performance
+- Indexes on frequently queried fields
+- Plan caching
+- Asynchronous processing
+- Notification batching
 
-### Масштабируемость
-- Stateless дизайн (можно запускать несколько инстансов)
-- Поддержка облачных БД (Supabase)
-- Горизонтальное масштабирование через балансировщик
-- Раздельные сервисы (микросервисная архитектура возможна)
+### Scalability
+- Stateless design (can run multiple instances)
+- Cloud database support (Supabase)
+- Horizontal scaling via load balancer
+- Separate services (microservice architecture possible)
 
-## Интеграции
+## Integrations
 
 ### Telegram Bot API
-- Telegraf фреймворк
-- Inline клавиатуры
-- Telegram Stars платежи
+- Telegraf framework
+- Inline keyboards
+- Telegram Stars payments
 - Webhook / Long polling
 
 ### Outline VPN API
-- Создание ключей доступа
-- Мониторинг использования
-- Управление лимитами
-- Удаление ключей
+- Access key creation
+- Usage monitoring
+- Limit management
+- Key deletion
 
-### Базы данных
-- SQLite через sqlite3
-- PostgreSQL через pg
-- Supabase через @supabase/supabase-js
+### Databases
+- SQLite via sqlite3
+- PostgreSQL via pg
+- Supabase via @supabase/supabase-js
 
-## Конфигурация
+## Configuration
 
-### Переменные окружения
+### Environment Variables
 ```env
 # Telegram
 TELEGRAM_BOT_TOKEN=xxx
@@ -309,77 +309,76 @@ NODE_ENV=production
 LOG_LEVEL=info
 ```
 
-### Константы
-- Тарифные планы
-- Типы уведомлений
-- Тексты сообщений
-- Лимиты и пороги
+### Constants
+- Pricing plans
+- Notification types
+- Message texts
+- Limits and thresholds
 
 ## Deployment
 
 ### Docker
 - Multi-stage builds
 - Health checks
-- Volume mounts для persistence
+- Volume mounts for persistence
 - Network isolation
 
 ### Process Management
-- PM2 для Node.js процессов
-- Systemd для Docker Compose
+- PM2 for Node.js processes
+- Systemd for Docker Compose
 - Auto-restart on failure
 - Log rotation
 
-## Мониторинг
+## Monitoring
 
-### Логирование
-- Структурированные логи
-- Различные уровни (debug, info, warn, error)
-- Timestamp и context
+### Logging
+- Structured logs
+- Different levels (debug, info, warn, error)
+- Timestamp and context
 - Rotation (10MB max, 3 files)
 
-### Метрики
-- Статистика пользователей
-- Активные ключи
-- Платежи
+### Metrics
+- User statistics
+- Active keys
+- Payments
 - Revenue tracking
 
-### Алерты
-- Критические ошибки
-- Проблемы с Outline API
-- Превышение лимитов
-- Неуспешные платежи
+### Alerts
+- Critical errors
+- Outline API issues
+- Limit exceeded
+- Failed payments
 
-## Разработка
+## Development
 
-### Окружения
+### Environments
 - **Development**: SQLite, hot reload, debug logs
 - **Production**: Supabase/PostgreSQL, Docker, info logs
 
-### Тестирование
-- Unit tests для сервисов
-- Integration tests для API
-- E2E tests для критичных flows
+### Testing
+- Unit tests for services
+- Integration tests for API
+- E2E tests for critical flows
 
 ### CI/CD
-- Автоматическое тестирование
+- Automatic testing
 - Docker image build
-- Deployment на сервер
+- Server deployment
 - Database migrations
 
-## Будущие улучшения
+## Future Improvements
 
-### Планируется
-- [ ] Перевод ARCHITECTURE.md на английский
-- [ ] Реферальная программа
-- [ ] Telegram Mini App для статистики
-- [ ] Множественные Outline серверы
-- [ ] Аналитика поведения пользователей
-- [ ] A/B тестирование цен
-- [ ] Webhook вместо long polling
-- [ ] Redis для кэширования
+### Planned
+- [ ] Referral program
+- [ ] Telegram Mini App for statistics
+- [ ] Multiple Outline servers
+- [ ] User behavior analytics
+- [ ] A/B price testing
+- [ ] Webhook instead of long polling
+- [ ] Redis for caching
 - [ ] GraphQL API
-- [ ] Web админ-панель
+- [ ] Web admin panel
 
 ---
 
-**Версия архитектуры**: 2.0
+**Architecture Version**: 2.0
