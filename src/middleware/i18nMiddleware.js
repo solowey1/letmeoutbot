@@ -33,7 +33,7 @@ class I18nMiddleware {
 			// Добавляем функции перевода в context
 			ctx.i18n = {
 				locale: locale,
-				t: (key, params) => this.i18nService.t(locale, key, params),
+				t: (key, params) => this.i18nService.t(ctx.i18n.locale, key, params),
 				setLocale: async (newLocale) => {
 					if (this.i18nService.isSupported(newLocale)) {
 						ctx.i18n.locale = newLocale;
