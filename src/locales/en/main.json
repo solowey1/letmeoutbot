@@ -42,7 +42,8 @@
     "pagination": {
       "prev": "◀️",
       "next": "▶️"
-    }
+    },
+    "change_port": "🔄 Change Port"
   },
   "common": {
     "yes": "Yes",

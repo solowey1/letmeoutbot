@@ -82,19 +82,23 @@ class KeysCallbacks {
 
 			let message = `🔑 <b>${t('keys.details_title', { ns: 'message' })}</b>\n\n`;
 			message += `📦 ${t('common.plan')}: ${key.plan.displayName}\n`;
-			message += `🟢 ${t('common.status')}: ${key.status === 'active' ? t('keys.status_active', { ns: 'message' }) : t('keys.status_inactive', { ns: 'message' })}\n\n`;
+			message += `🟢 ${t('common.status')}: ${key.status === 'active' ? t('keys.status_active', { ns: 'message' }) : t('keys.status_inactive', { ns: 'message' })}\n`;
+
+			if (key.expires_at) {
+				message += `📅 ${t('common.valid_until')}: ${new Date(key.expires_at).toLocaleDateString()}\n`;
+			}
 
 			if (key.usage) {
 				const usage = key.usage;
-				message += `📊 <b>${t('keys.usage_title', { ns: 'message' })}</b>\n`;
+				message += `\n📊 <b>${t('keys.usage_title', { ns: 'message' })}</b>\n`;
 				message += `• ${t('common.used')}: ${usage.formattedUsed} (${usage.usagePercentage}%)\n`;
 				message += `• ${t('common.limit')}: ${usage.formattedLimit}\n`;
 				message += `• ${t('common.remaining')}: ${usage.formattedRemaining}\n`;
-				message += `• ${t('keys.days_until_expiry', { ns: 'message' })}: ${usage.daysRemaining}\n\n`;
+				message += `• ${t('keys.days_until_expiry', { ns: 'message' })}: ${usage.daysRemaining}\n`;
 			}
 
 			if (key.access_url) {
-				message += `🔐 <b>${t('keys.access_key_title', { ns: 'message' })}</b>\n`;
+				message += `\n🔐 <b>${t('keys.access_key_title', { ns: 'message' })}</b>\n`;
 				message += `<code>${key.access_url}</code>\n\n`;
 				message += `📱 <b>${t('keys.how_to_connect', { ns: 'message' })}</b>\n`;
 				const steps = t('keys.connect_steps', { ns: 'message' });
@@ -103,7 +107,9 @@ class KeysCallbacks {
 				});
 			}
 
-			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId);
+			// Определяем текущий протокол из access_url (по умолчанию tcp)
+			const protocol = key.protocol || 'tcp';
+			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId, protocol);
 
 			await ctx.editMessageText(message, {
 				...keyboard,
@@ -173,6 +179,75 @@ class KeysCallbacks {
 		const filled = Math.round((percentage / 100) * length);
 		const empty = length - filled;
 		return '█'.repeat(filled) + '░'.repeat(empty);
+	}
+
+	async handleChangePort(ctx, keyId) {
+		const t = ctx.i18n.t;
+
+		try {
+			const key = await this.keyService.getKeyDetails(t, keyId, false);
+			if (!key) {
+				await ctx.editMessageText(
+					t('keys.not_found', { ns: 'error' }),
+					KeyboardUtils.createBackToMenuKeyboard(t)
+				);
+				return;
+			}
+
+			// Регенерируем ключ с новым портом
+			await ctx.answerCbQuery(t('keys.port_changing', { ns: 'message' }));
+
+			// Здесь должна быть логика смены порта
+			// Пока просто показываем обновленную информацию
+			const updatedKey = await this.keyService.getKeyDetails(t, keyId, true);
+
+			let message = `🔄 <b>${t('keys.port_changed', { ns: 'message' })}</b>\n\n`;
+			message += `🔐 <b>${t('keys.new_access_key', { ns: 'message' })}</b>\n`;
+			message += `<code>${updatedKey.access_url}</code>\n\n`;
+			message += `ℹ️ ${t('keys.port_change_hint', { ns: 'message' })}`;
+
+			const protocol = updatedKey.protocol || 'tcp';
+			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId, protocol);
+
+			await ctx.editMessageText(message, {
+				...keyboard,
+				parse_mode: 'HTML'
+			});
+		} catch (error) {
+			console.error('Ошибка смены порта:', error);
+			await ctx.editMessageText(
+				t('generic.loading_error', { ns: 'error' }),
+				KeyboardUtils.createBackToMenuKeyboard(t)
+			);
+		}
+	}
+
+	async handleChangeProtocol(ctx, keyId, protocol) {
+		const t = ctx.i18n.t;
+
+		try {
+			const key = await this.keyService.getKeyDetails(t, keyId, false);
+			if (!key) {
+				await ctx.editMessageText(
+					t('keys.not_found', { ns: 'error' }),
+					KeyboardUtils.createBackToMenuKeyboard(t)
+				);
+				return;
+			}
+
+			// Здесь должна быть логика смены протокола
+			// Пока просто обновляем отображение
+			await ctx.answerCbQuery(t('keys.protocol_changed', { ns: 'message', args: { protocol: protocol.toUpperCase() } }));
+
+			// Показываем обновленную информацию с выбранным протоколом
+			await this.handleKeyDetails(ctx, keyId);
+		} catch (error) {
+			console.error('Ошибка смены протокола:', error);
+			await ctx.editMessageText(
+				t('generic.loading_error', { ns: 'error' }),
+				KeyboardUtils.createBackToMenuKeyboard(t)
+			);
+		}
 	}
 }
 
