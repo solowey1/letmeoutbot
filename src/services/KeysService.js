@@ -557,8 +557,9 @@ class KeysService {
 	}
 
 	/**
-	 * Пересоздание ключа (удаление старого и создание нового с теми же параметрами)
-	 * Это эффективно меняет порт, так как Outline назначает новый порт при создании ключа
+	 * Пересоздание ключа с сохранением оставшегося трафика
+	 * Старый ключ удаляется из Outline и получает статус REVOKED в БД
+	 * Новый ключ создается с лимитом = оставшийся трафик
 	 * @param {number} keyId - ID ключа для пересоздания
 	 * @param {number} userTID - Telegram ID пользователя
 	 * @returns {Promise<Object>}
@@ -572,6 +573,25 @@ class KeysService {
 
 			console.log(`🔄 Пересоздание ключа ${keyId}...`);
 
+			// Получаем актуальное использование трафика через Outline API
+			let actualUsage = key.data_used;
+			if (key.outline_key_id) {
+				try {
+					actualUsage = await this.outlineService.getKeyDataUsage(key.outline_key_id);
+					console.log(`📊 Актуальное использование: ${this.outlineService.formatBytes(actualUsage)} из ${this.outlineService.formatBytes(key.data_limit)}`);
+				} catch (error) {
+					console.warn(`⚠️ Не удалось получить актуальное использование, используем данные из БД`);
+				}
+			}
+
+			// Вычисляем оставшийся трафик
+			const remainingTraffic = Math.max(0, key.data_limit - actualUsage);
+			console.log(`💾 Оставшийся трафик: ${this.outlineService.formatBytes(remainingTraffic)}`);
+
+			if (remainingTraffic === 0) {
+				throw new Error('У ключа не осталось трафика для пересоздания');
+			}
+
 			// Удаляем старый ключ из Outline
 			if (key.outline_key_id) {
 				try {
@@ -582,10 +602,17 @@ class KeysService {
 				}
 			}
 
-			// Создаем новый ключ через Outline API с теми же параметрами
+			// Помечаем старый ключ как отозванный
+			await this.db.updateKey(keyId, {
+				status: KEY_STATUS.REVOKED,
+				data_used: actualUsage // Сохраняем актуальное использование
+			});
+			console.log(`🔒 Ключ ${keyId} помечен как отозванный`);
+
+			// Создаем новый ключ через Outline API с оставшимся трафиком
 			const keyData = {
 				plan_id: key.plan_id,
-				data_limit: key.data_limit
+				data_limit: remainingTraffic // Важно: используем оставшийся трафик!
 			};
 
 			const newKeyData = await this.outlineService.createKey(keyData, userTID);
@@ -595,15 +622,17 @@ class KeysService {
 				outline_key_id: newKeyData.keyId,
 				access_url: newKeyData.accessUrl,
 				status: KEY_STATUS.ACTIVE,
-				data_used: 0 // Сбрасываем использованные данные
+				data_limit: remainingTraffic,
+				data_used: 0
 			});
 
-			console.log(`✅ Ключ ${keyId} успешно пересоздан с новым ID ${newKeyData.keyId}`);
+			console.log(`✅ Ключ ${keyId} успешно пересоздан с новым ID ${newKeyData.keyId} и лимитом ${this.outlineService.formatBytes(remainingTraffic)}`);
 
 			return {
 				keyId,
 				outlineKeyId: newKeyData.keyId,
-				accessUrl: newKeyData.accessUrl
+				accessUrl: newKeyData.accessUrl,
+				remainingTraffic
 			};
 		} catch (error) {
 			console.error('Ошибка пересоздания ключа:', error);
@@ -611,29 +640,6 @@ class KeysService {
 		}
 	}
 
-	/**
-	 * Обновление протокола ключа (информационно, так как Outline поддерживает оба)
-	 * @param {number} keyId - ID ключа
-	 * @param {string} protocol - 'tcp' или 'udp'
-	 * @returns {Promise<boolean>}
-	 */
-	async updateKeyProtocol(keyId, protocol) {
-		try {
-			if (!['tcp', 'udp'].includes(protocol)) {
-				throw new Error('Неверный протокол. Допустимые значения: tcp, udp');
-			}
-
-			await this.db.updateKey(keyId, {
-				protocol: protocol
-			});
-
-			console.log(`✅ Протокол ключа ${keyId} обновлен на ${protocol.toUpperCase()}`);
-			return true;
-		} catch (error) {
-			console.error('Ошибка обновления протокола:', error);
-			return false;
-		}
-	}
 }
 
 module.exports = KeysService;

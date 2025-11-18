@@ -65,19 +65,9 @@ class KeyboardUtils {
 		return Markup.inlineKeyboard(buttons);
 	}
 
-	static createKeyDetailsKeyboard(t, keyId, protocol = 'tcp') {
+	static createKeyDetailsKeyboard(t, keyId) {
 		return Markup.inlineKeyboard([
 			[Markup.button.callback(t('buttons.change_port'), `key_change_port_${keyId}`)],
-			[
-				Markup.button.callback(
-					protocol === 'tcp' ? `✓ TCP` : 'TCP',
-					`key_protocol_tcp_${keyId}`
-				),
-				Markup.button.callback(
-					protocol === 'udp' ? `✓ UDP` : 'UDP',
-					`key_protocol_udp_${keyId}`
-				)
-			],
 			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.KEYS.MENU)],
 			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
 		]);

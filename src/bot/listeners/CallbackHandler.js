@@ -58,12 +58,6 @@ class CallbackHandler {
 			} else if (callbackData.startsWith('key_change_port_')) {
 				const keyId = parseInt(callbackData.split('_')[3]);
 				await this.KeysCallbacks.handleChangePort(ctx, keyId);
-			} else if (callbackData.startsWith('key_protocol_tcp_')) {
-				const keyId = parseInt(callbackData.split('_')[3]);
-				await this.KeysCallbacks.handleChangeProtocol(ctx, keyId, 'tcp');
-			} else if (callbackData.startsWith('key_protocol_udp_')) {
-				const keyId = parseInt(callbackData.split('_')[3]);
-				await this.KeysCallbacks.handleChangeProtocol(ctx, keyId, 'udp');
 			} else if (callbackData === CALLBACK_ACTIONS.SETTINGS.MENU) {
 				await this.menuCallbacks.handleSettings(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.SETTINGS.LANGUAGE.SET) {

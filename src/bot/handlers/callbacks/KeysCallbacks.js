@@ -107,9 +107,7 @@ class KeysCallbacks {
 				});
 			}
 
-			// Определяем текущий протокол из access_url (по умолчанию tcp)
-			const protocol = key.protocol || 'tcp';
-			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId, protocol);
+			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId);
 
 			await ctx.editMessageText(message, {
 				...keyboard,
@@ -213,8 +211,7 @@ class KeysCallbacks {
 			message += `📦 ${t('common.plan')}: ${updatedKey.plan.displayName}\n`;
 			message += `📅 ${t('common.valid_until')}: ${new Date(updatedKey.expires_at).toLocaleDateString()}`;
 
-			const protocol = updatedKey.protocol || 'tcp';
-			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId, protocol);
+			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId);
 
 			await ctx.editMessageText(message, {
 				...keyboard,
@@ -222,42 +219,19 @@ class KeysCallbacks {
 			});
 		} catch (error) {
 			console.error('Ошибка смены порта:', error);
+
+			// Проверяем специфичные ошибки
+			const errorMessage = error.message.includes('не осталось трафика')
+				? t('keys.no_traffic_left', { ns: 'error' })
+				: t('keys.port_change_error', { ns: 'error' });
+
 			await ctx.editMessageText(
-				t('keys.port_change_error', { ns: 'error' }),
+				errorMessage,
 				KeyboardUtils.createBackToMenuKeyboard(t)
 			);
 		}
 	}
 
-	async handleChangeProtocol(ctx, keyId, protocol) {
-		const t = ctx.i18n.t;
-
-		try {
-			const key = await this.keyService.getKeyDetails(t, keyId, false);
-			if (!key) {
-				await ctx.editMessageText(
-					t('keys.not_found', { ns: 'error' }),
-					KeyboardUtils.createBackToMenuKeyboard(t)
-				);
-				return;
-			}
-
-			// Обновляем протокол в БД
-			await this.keyService.updateKeyProtocol(keyId, protocol);
-
-			// Показываем уведомление
-			await ctx.answerCbQuery(t('keys.protocol_changed', { ns: 'message', args: { protocol: protocol.toUpperCase() } }));
-
-			// Показываем обновленную информацию с выбранным протоколом
-			await this.handleKeyDetails(ctx, keyId);
-		} catch (error) {
-			console.error('Ошибка смены протокола:', error);
-			await ctx.editMessageText(
-				t('generic.loading_error', { ns: 'error' }),
-				KeyboardUtils.createBackToMenuKeyboard(t)
-			);
-		}
-	}
 }
 
 module.exports = KeysCallbacks;

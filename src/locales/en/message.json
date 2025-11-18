@@ -102,8 +102,7 @@
     "port_changing": "Changing port...",
     "port_changed": "Port successfully changed!",
     "new_access_key": "New access key:",
-    "port_change_hint": "Copy the new key and update it in the Outline app.",
-    "protocol_changed": "Protocol changed to {{protocol}}"
+    "port_change_hint": "Copy the new key and update it in the Outline app."
   },
   "plans": {
     "choose": "Choose a plan:",

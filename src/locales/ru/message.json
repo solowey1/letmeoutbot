@@ -104,8 +104,7 @@
     "port_changing": "Изменение порта...",
     "port_changed": "Порт успешно изменён!",
     "new_access_key": "Новый ключ доступа:",
-    "port_change_hint": "Скопируйте новый ключ и обновите его в приложении Outline.",
-    "protocol_changed": "Протокол изменён на {{protocol}}"
+    "port_change_hint": "Скопируйте новый ключ и обновите его в приложении Outline."
   },
   "plans": {
     "choose": "Выберите тарифный план:",

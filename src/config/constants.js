@@ -62,6 +62,7 @@ const KEY_STATUS = {
 	EXPIRED: 'expired',
 	SUSPENDED: 'suspended',
 	PENDING: 'pending',
+	REVOKED: 'revoked',
 };
 
 const LANG = {

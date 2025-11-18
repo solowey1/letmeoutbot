@@ -15,7 +15,8 @@
     "not_found": "❌ Key not found",
     "no_keys": "❌ You don't have any active keys",
     "plan_not_found": "❌ Plan not found",
-    "port_change_error": "❌ Error changing port. Please try again later or contact support."
+    "port_change_error": "❌ Error changing port. Please try again later or contact support.",
+    "no_traffic_left": "❌ The key has no traffic left for recreation. Purchase a new plan."
   },
   "payments": {
     "failed": "❌ Payment error. Please try again later."
