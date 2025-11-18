@@ -42,7 +42,13 @@
       "plan": "Plan",
       "created": "Created",
       "status_label": "Status"
-    }
+    },
+    "withdrawals": {
+      "title": "📜 Pending Withdrawals",
+      "no_pending": "📜 No pending withdrawals",
+      "instructions": "Use /approve_withdrawal <id> or /reject_withdrawal <id>"
+    },
+    "loading_error": "Loading error"
   },
   "download": {
     "apps": {
@@ -141,6 +147,47 @@
       "vpn_key": "VPN key:",
       "thanks": "Thank you for your purchase! 🎉"
     }
+  },
+  "referral": {
+    "title": "🎁 Referral Program",
+    "description": "Invite friends and get <b>30% from each purchase!</b>",
+    "stats": {
+      "title": "Your statistics",
+      "total_referrals": "Total referrals",
+      "total_earned": "Total earned",
+      "total_withdrawn": "Total withdrawn",
+      "available_for_withdrawal": "Available for withdrawal",
+      "pending_amount": "Pending (14 days)"
+    },
+    "how_it_works_title": "How it works:",
+    "how_it_works": [
+      "Share your referral link with friends",
+      "When a friend makes a purchase, you get 30% of the amount",
+      "Funds can be withdrawn 14 days after referral purchase",
+      "Payouts are processed manually by administration"
+    ],
+    "invite_text": "🎁 Join Let me Out VPN!\n\nGet fast and secure VPN for just a few Telegram stars!\n\n✨ Use my referral link:",
+    "your_link": "Your referral link:",
+    "share_link": "Share this link with friends to earn 30% from their purchases!",
+    "no_referrals": "You don't have any referrals yet.\n\nShare the link with friends to start earning!",
+    "referrals_list": "Your referrals:",
+    "referral_item": "{{name}} - earned: {{earned}} ⭐",
+    "withdrawal": {
+      "title": "Withdrawal Request",
+      "confirm": "Are you sure you want to withdraw <b>{{amount}} ⭐</b>?",
+      "success": "Withdrawal request for {{amount}} ⭐ sent to administrators.\n\nExpect processing within 24 hours.",
+      "insufficient": "Insufficient funds for withdrawal.\n\nMinimum amount: 1 ⭐\nAvailable: {{amount}} ⭐",
+      "no_funds": "You don't have any funds to withdraw yet.\n\nInvite friends and earn 30% from their purchases!",
+      "admin_notification": "🔔 New withdrawal request!\n\n👤 User: {{username}} (ID: {{userId}})\n💰 Amount: {{amount}} ⭐\n📊 Total referrals: {{referrals}}\n🆔 Request ID: {{withdrawalId}}\n\nPlease process the request as soon as possible.",
+      "history_title": "📜 Withdrawal History",
+      "no_history": "You don't have any withdrawal history yet.\n\nWithdraw funds to see them here.",
+      "status": {
+        "pending": "Pending",
+        "completed": "Completed",
+        "rejected": "Rejected"
+      }
+    },
+    "welcome_referral": "🎉 You came from a referral link from user <b>{{referrerName}}</b>!\n\nNow they will receive 30% from your purchases."
   },
   "stats": {
     "title": "Usage Statistics",

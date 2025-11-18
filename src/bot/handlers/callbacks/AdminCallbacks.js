@@ -112,6 +112,36 @@ class AdminCallbacks {
 			);
 		}
 	}
+
+	async handlePendingWithdrawals(ctx) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		try {
+			const withdrawals = await this.db.getPendingWithdrawals();
+			const message = await AdminMessages.pendingWithdrawalsList(
+				t,
+				withdrawals,
+				this.db.getUserById.bind(this.db)
+			);
+			const keyboard = KeyboardUtils.createAdminKeyboard(t);
+
+			await ctx.editMessageText(message, {
+				...keyboard,
+				parse_mode: 'HTML'
+			});
+		} catch (error) {
+			console.error('Ошибка получения pending выплат:', error);
+			await ctx.editMessageText(
+				t('admin.loading_error', { ns: 'message' }),
+				KeyboardUtils.createAdminKeyboard(t)
+			);
+		}
+	}
 }
 
 module.exports = AdminCallbacks;

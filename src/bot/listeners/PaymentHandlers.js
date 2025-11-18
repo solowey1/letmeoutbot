@@ -1,6 +1,7 @@
 const KeyboardUtils = require('../../utils/keyboards');
 const { PlanMessages, KeyMessages } = require('../../services/messages');
 const PlanService = require('../../services/PlanService');
+const ReferralService = require('../../services/ReferralService');
 
 class PaymentHandlers {
 	constructor(paymentService, keysService, database, adminNotificationService = null) {
@@ -8,6 +9,7 @@ class PaymentHandlers {
 		this.keysService = keysService;
 		this.db = database;
 		this.adminNotificationService = adminNotificationService;
+		this.referralService = new ReferralService(database);
 	}
 
 	async handlePreCheckoutQuery(ctx) {
@@ -98,6 +100,21 @@ class PaymentHandlers {
 			console.log('📤 Отправляем сообщение пользователю...');
 
 			await this.sendAccessKeyMessage(ctx, completedPayment, result);
+
+			// Начисляем реферальный бонус, если есть реферер
+			try {
+				const plan = PlanService.getPlanById(completedPayment.plan_id);
+				const bonusResult = await this.referralService.processReferralBonus(
+					completedPayment.user_id,
+					plan.price
+				);
+
+				if (bonusResult) {
+					console.log(`💰 Начислен реферальный бонус: ${bonusResult.bonusAmount} ⭐ для пользователя ${bonusResult.referrerId}`);
+				}
+			} catch (bonusError) {
+				console.error('⚠️ Ошибка начисления реферального бонуса:', bonusError.message);
+			}
 
 			// Уведомляем администраторов об успешной покупке
 			if (this.adminNotificationService) {

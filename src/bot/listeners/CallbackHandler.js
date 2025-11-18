@@ -7,12 +7,14 @@ const PlanCallbacks = require('../handlers/callbacks/PlanCallbacks');
 const KeysCallbacks = require('../handlers/callbacks/KeysCallbacks');
 const LanguageCallbacks = require('../handlers/callbacks/LanguageCallbacks');
 const AdminCallbacks = require('../handlers/callbacks/AdminCallbacks');
+const ReferralCallbacks = require('../handlers/callbacks/ReferralCallbacks');
 
 class CallbackHandler {
-	constructor(database, paymentService, keysService) {
+	constructor(database, paymentService, keysService, bot) {
 		this.db = database;
 		this.paymentService = paymentService;
 		this.keysService = keysService;
+		this.bot = bot;
 
 		// Инициализируем модульные обработчики
 		this.menuCallbacks = new MenuCallbacks(database, paymentService, keysService);
@@ -20,6 +22,7 @@ class CallbackHandler {
 		this.KeysCallbacks = new KeysCallbacks(database, paymentService, keysService);
 		this.languageCallbacks = new LanguageCallbacks(database, paymentService, keysService);
 		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService);
+		this.referralCallbacks = new ReferralCallbacks(database, bot);
 	}
 
 	async handleCallback(ctx) {
@@ -76,6 +79,22 @@ class CallbackHandler {
 				await this.adminCallbacks.handleAdminStats(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.KEYS.PENDING) {
 				await this.adminCallbacks.handleAdminPendingKeys(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING) {
+				await this.adminCallbacks.handlePendingWithdrawals(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.MENU) {
+				await this.referralCallbacks.handleReferralMenu(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.INVITE) {
+				await this.referralCallbacks.handleInvite(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.GET_LINK) {
+				await this.referralCallbacks.handleGetLink(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.MY_REFERRALS) {
+				await this.referralCallbacks.handleMyReferrals(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.WITHDRAW) {
+				await this.referralCallbacks.handleWithdraw(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.CONFIRM_WITHDRAW) {
+				await this.referralCallbacks.handleConfirmWithdraw(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.HISTORY) {
+				await this.referralCallbacks.handleWithdrawalHistory(ctx);
 			} else {
 				// Неизвестный callback
 				await ctx.editMessageText(t('generic.unknown_command', { ns: 'error' }), KeyboardUtils.createBackToMenuKeyboard(t));

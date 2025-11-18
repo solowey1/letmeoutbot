@@ -527,6 +527,187 @@ class SupabaseDatabase {
 			.slice(0, limit);
 	}
 
+	// ============== REFERRALS ==============
+
+	async createReferral(referrerId, referredId) {
+		const { data, error } = await this.supabase
+			.from('referrals')
+			.insert([{
+				referrer_id: referrerId,
+				referred_id: referredId
+			}])
+			.select('id')
+			.single();
+
+		if (error) {
+			// Если связь уже существует, игнорируем
+			if (error.code === '23505') {
+				return 0;
+			}
+			throw error;
+		}
+
+		return data.id;
+	}
+
+	async getReferralStats(userId) {
+		const { data, error } = await this.supabase
+			.from('referrals')
+			.select('bonus_earned')
+			.eq('referrer_id', userId);
+
+		if (error) throw error;
+
+		const totalReferrals = data.length;
+		const totalBonus = data.reduce((sum, r) => sum + (r.bonus_earned || 0), 0);
+
+		return {
+			total_referrals: totalReferrals,
+			total_bonus: totalBonus
+		};
+	}
+
+	async getReferrals(userId, limit = 50) {
+		const { data, error } = await this.supabase
+			.from('referrals')
+			.select('*, users!referred_id(username, first_name, created_at)')
+			.eq('referrer_id', userId)
+			.order('created_at', { ascending: false })
+			.limit(limit);
+
+		if (error) throw error;
+
+		// Преобразуем данные для совместимости с другими БД
+		return (data || []).map(r => ({
+			...r,
+			username: r.users?.username,
+			first_name: r.users?.first_name,
+			referred_date: r.users?.created_at
+		}));
+	}
+
+	async updateReferralBonus(referrerId, referredId, bonusAmount, bonusType) {
+		// Получаем текущее значение бонуса
+		const { data: current } = await this.supabase
+			.from('referrals')
+			.select('bonus_earned')
+			.eq('referrer_id', referrerId)
+			.eq('referred_id', referredId)
+			.single();
+
+		const newBonus = (current?.bonus_earned || 0) + bonusAmount;
+
+		const { error } = await this.supabase
+			.from('referrals')
+			.update({
+				bonus_earned: newBonus,
+				bonus_type: bonusType
+			})
+			.eq('referrer_id', referrerId)
+			.eq('referred_id', referredId);
+
+		if (error) throw error;
+	}
+
+	async setUserReferrer(userId, referrerId) {
+		const { error } = await this.supabase
+			.from('users')
+			.update({ referrer_id: referrerId })
+			.eq('id', userId)
+			.is('referrer_id', null);
+
+		if (error) throw error;
+	}
+
+	// ============== WITHDRAWALS ==============
+
+	async createWithdrawal(userId, amount) {
+		const { data, error } = await this.supabase
+			.from('withdrawals')
+			.insert([{
+				user_id: userId,
+				amount: amount
+			}])
+			.select('id')
+			.single();
+
+		if (error) throw error;
+		return data.id;
+	}
+
+	async getWithdrawal(withdrawalId) {
+		const { data, error } = await this.supabase
+			.from('withdrawals')
+			.select('*')
+			.eq('id', withdrawalId)
+			.single();
+
+		if (error) {
+			if (error.code === 'PGRST116') return null;
+			throw error;
+		}
+
+		return data;
+	}
+
+	async getUserWithdrawals(userId) {
+		const { data, error } = await this.supabase
+			.from('withdrawals')
+			.select('*')
+			.eq('user_id', userId)
+			.order('requested_at', { ascending: false });
+
+		if (error) throw error;
+		return data || [];
+	}
+
+	async getPendingWithdrawals() {
+		const { data, error } = await this.supabase
+			.from('withdrawals')
+			.select(`
+				*,
+				users!user_id(telegram_id, username, first_name)
+			`)
+			.eq('status', 'pending')
+			.order('requested_at', { ascending: true });
+
+		if (error) throw error;
+
+		// Преобразуем данные для совместимости
+		return (data || []).map(w => ({
+			...w,
+			telegram_id: w.users?.telegram_id,
+			username: w.users?.username,
+			first_name: w.users?.first_name
+		}));
+	}
+
+	async updateWithdrawalStatus(withdrawalId, status, processedBy = null, notes = null) {
+		const { error } = await this.supabase
+			.from('withdrawals')
+			.update({
+				status: status,
+				processed_at: new Date().toISOString(),
+				processed_by: processedBy,
+				notes: notes
+			})
+			.eq('id', withdrawalId);
+
+		if (error) throw error;
+	}
+
+	async getTotalWithdrawn(userId) {
+		const { data, error } = await this.supabase
+			.from('withdrawals')
+			.select('amount')
+			.eq('user_id', userId)
+			.eq('status', 'completed');
+
+		if (error) throw error;
+
+		return (data || []).reduce((sum, w) => sum + (w.amount || 0), 0);
+	}
+
 	// ============== CLEANUP ==============
 
 	close() {
