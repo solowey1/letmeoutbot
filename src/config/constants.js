@@ -107,6 +107,14 @@ const CALLBACK_ACTIONS = {
 			SET: 'lang_set',
 		},
 	},
+	REFERRAL: {
+		MENU: 'referral_menu',
+		INVITE: 'referral_invite',
+		GET_LINK: 'referral_get_link',
+		WITHDRAW: 'referral_withdraw',
+		CONFIRM_WITHDRAW: 'referral_confirm_withdraw',
+		MY_REFERRALS: 'referral_my_referrals',
+	},
 };
 
 const NOTIFICATION_TYPES = {
@@ -118,6 +126,12 @@ const NOTIFICATION_TYPES = {
 	TIME_EXPIRED: 'time_expired',
 };
 
+const REFERRAL_CONFIG = {
+	COMMISSION_RATE: 0.3, // 30% комиссия
+	WITHDRAWAL_DELAY_DAYS: 14, // Период ожидания перед выводом (в днях)
+	MIN_WITHDRAWAL_AMOUNT: 1, // Минимальная сумма для вывода (в звездах)
+};
+
 const ADMIN_IDS = process.env.ADMIN_IDS ? process.env.ADMIN_IDS.split(',').map(id => parseInt(id)) : [];
 
 module.exports = {
@@ -127,5 +141,6 @@ module.exports = {
 	PAYMENT_STATUS,
 	CALLBACK_ACTIONS,
 	NOTIFICATION_TYPES,
+	REFERRAL_CONFIG,
 	ADMIN_IDS,
 };

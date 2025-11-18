@@ -7,6 +7,7 @@ class KeyboardUtils {
 		return Markup.inlineKeyboard([
 			[Markup.button.callback(t('buttons.buy.key'), CALLBACK_ACTIONS.KEYS.BUY)],
 			[Markup.button.callback(t('buttons.my_keys'), CALLBACK_ACTIONS.KEYS.MENU)],
+			[Markup.button.callback(t('buttons.referral'), CALLBACK_ACTIONS.REFERRAL.MENU)],
 			[Markup.button.callback(t('buttons.settings'), CALLBACK_ACTIONS.SETTINGS.MENU)],
 			[Markup.button.callback(t('buttons.help'), 'help')],
 		]);
@@ -189,6 +190,38 @@ class KeyboardUtils {
 		buttons.push([Markup.button.callback(t('buttons.back'), backAction)]);
 
 		return Markup.inlineKeyboard(buttons);
+	}
+
+	static createReferralMenuKeyboard(t) {
+		return Markup.inlineKeyboard([
+			[
+				Markup.button.callback(t('buttons.referral_actions.invite'), CALLBACK_ACTIONS.REFERRAL.INVITE),
+				Markup.button.callback(t('buttons.referral_actions.get_link'), CALLBACK_ACTIONS.REFERRAL.GET_LINK)
+			],
+			[Markup.button.callback(t('buttons.referral_actions.my_referrals'), CALLBACK_ACTIONS.REFERRAL.MY_REFERRALS)],
+			[Markup.button.callback(t('buttons.referral_actions.withdraw'), CALLBACK_ACTIONS.REFERRAL.WITHDRAW)],
+			[Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
+		]);
+	}
+
+	static createReferralInviteKeyboard(t, shareText) {
+		return Markup.inlineKeyboard([
+			[Markup.button.switchToChat(t('buttons.referral_actions.invite'), shareText)],
+			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.REFERRAL.MENU)]
+		]);
+	}
+
+	static createReferralBackKeyboard(t) {
+		return Markup.inlineKeyboard([
+			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.REFERRAL.MENU)]
+		]);
+	}
+
+	static createWithdrawalConfirmKeyboard(t, amount) {
+		return Markup.inlineKeyboard([
+			[Markup.button.callback(`✅ Подтвердить вывод ${amount} ⭐`, CALLBACK_ACTIONS.REFERRAL.CONFIRM_WITHDRAW)],
+			[Markup.button.callback(t('buttons.cancel'), CALLBACK_ACTIONS.REFERRAL.MENU)]
+		]);
 	}
 
 	static removeKeyboard() {

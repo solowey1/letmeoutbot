@@ -223,6 +223,62 @@ class PostgresDatabase {
 		};
 	}
 
+	// === REFERRALS ===
+	async createReferral(referrerId, referredId) {
+		const query = `
+            INSERT INTO referrals (referrer_id, referred_id)
+            VALUES ($1, $2)
+            ON CONFLICT (referrer_id, referred_id) DO NOTHING
+            RETURNING id
+        `;
+		const result = await this.pool.query(query, [referrerId, referredId]);
+		return result.rows[0]?.id || 0;
+	}
+
+	async getReferralStats(userId) {
+		const query = `
+            SELECT
+                COUNT(*) as total_referrals,
+                COALESCE(SUM(bonus_earned), 0) as total_bonus
+            FROM referrals
+            WHERE referrer_id = $1
+        `;
+		const result = await this.pool.query(query, [userId]);
+		return result.rows[0];
+	}
+
+	async getReferrals(userId, limit = 50) {
+		const query = `
+            SELECT r.*, u.username, u.first_name, u.created_at as referred_date
+            FROM referrals r
+            JOIN users u ON r.referred_id = u.id
+            WHERE r.referrer_id = $1
+            ORDER BY r.created_at DESC
+            LIMIT $2
+        `;
+		const result = await this.pool.query(query, [userId, limit]);
+		return result.rows;
+	}
+
+	async updateReferralBonus(referrerId, referredId, bonusAmount, bonusType) {
+		const query = `
+            UPDATE referrals
+            SET bonus_earned = bonus_earned + $1, bonus_type = $2
+            WHERE referrer_id = $3 AND referred_id = $4
+        `;
+		await this.pool.query(query, [bonusAmount, bonusType, referrerId, referredId]);
+	}
+
+	async setUserReferrer(userId, referrerId) {
+		const query = `
+            UPDATE users
+            SET referrer_id = $1
+            WHERE id = $2 AND referrer_id IS NULL
+        `;
+		const result = await this.pool.query(query, [referrerId, userId]);
+		return result.rowCount;
+	}
+
 	// Закрытие подключения
 	async close() {
 		await this.pool.end();

@@ -527,6 +527,98 @@ class SupabaseDatabase {
 			.slice(0, limit);
 	}
 
+	// ============== REFERRALS ==============
+
+	async createReferral(referrerId, referredId) {
+		const { data, error } = await this.supabase
+			.from('referrals')
+			.insert([{
+				referrer_id: referrerId,
+				referred_id: referredId
+			}])
+			.select('id')
+			.single();
+
+		if (error) {
+			// Если связь уже существует, игнорируем
+			if (error.code === '23505') {
+				return 0;
+			}
+			throw error;
+		}
+
+		return data.id;
+	}
+
+	async getReferralStats(userId) {
+		const { data, error } = await this.supabase
+			.from('referrals')
+			.select('bonus_earned')
+			.eq('referrer_id', userId);
+
+		if (error) throw error;
+
+		const totalReferrals = data.length;
+		const totalBonus = data.reduce((sum, r) => sum + (r.bonus_earned || 0), 0);
+
+		return {
+			total_referrals: totalReferrals,
+			total_bonus: totalBonus
+		};
+	}
+
+	async getReferrals(userId, limit = 50) {
+		const { data, error } = await this.supabase
+			.from('referrals')
+			.select('*, users!referred_id(username, first_name, created_at)')
+			.eq('referrer_id', userId)
+			.order('created_at', { ascending: false })
+			.limit(limit);
+
+		if (error) throw error;
+
+		// Преобразуем данные для совместимости с другими БД
+		return (data || []).map(r => ({
+			...r,
+			username: r.users?.username,
+			first_name: r.users?.first_name,
+			referred_date: r.users?.created_at
+		}));
+	}
+
+	async updateReferralBonus(referrerId, referredId, bonusAmount, bonusType) {
+		// Получаем текущее значение бонуса
+		const { data: current } = await this.supabase
+			.from('referrals')
+			.select('bonus_earned')
+			.eq('referrer_id', referrerId)
+			.eq('referred_id', referredId)
+			.single();
+
+		const newBonus = (current?.bonus_earned || 0) + bonusAmount;
+
+		const { error } = await this.supabase
+			.from('referrals')
+			.update({
+				bonus_earned: newBonus,
+				bonus_type: bonusType
+			})
+			.eq('referrer_id', referrerId)
+			.eq('referred_id', referredId);
+
+		if (error) throw error;
+	}
+
+	async setUserReferrer(userId, referrerId) {
+		const { error } = await this.supabase
+			.from('users')
+			.update({ referrer_id: referrerId })
+			.eq('id', userId)
+			.is('referrer_id', null);
+
+		if (error) throw error;
+	}
+
 	// ============== CLEANUP ==============
 
 	close() {

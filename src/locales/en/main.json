@@ -6,6 +6,7 @@
       "more": "➕ Buy More"
     },
     "my_keys": "📋 My Keys",
+    "referral": "🎁 Referral Program",
     "help": "ℹ️ Help",
     "back_to_menu": "◀️ Back to Menu",
     "main_menu": "🏠 Main Menu",
@@ -19,6 +20,12 @@
     "settings": "⚙️ Settings",
     "language": "🌐 Language",
     "retry": "🔄 Try Again",
+    "referral_actions": {
+      "invite": "👥 Invite Friends",
+      "get_link": "🔗 Get Link",
+      "withdraw": "💰 Withdraw Funds",
+      "my_referrals": "📋 My Referrals"
+    },
     "admin": {
       "users": "👥 Users",
       "stats": "📊 Statistics",

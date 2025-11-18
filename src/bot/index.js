@@ -58,7 +58,7 @@ class TelegramBot {
 		);
 
 		// Инициализируем обработчики
-		this.CallbackHandler = new CallbackHandler(this.db, this.paymentService, this.keysService);
+		this.CallbackHandler = new CallbackHandler(this.db, this.paymentService, this.keysService, this.bot);
 		this.commandHandlers = new CommandHandlers(this.db);
 		this.paymentHandlers = new PaymentHandlers(
 			this.paymentService,

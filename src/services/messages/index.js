@@ -6,6 +6,7 @@ const KeyMessages = require('./KeyMessages');
 const PaymentMessages = require('./PaymentMessages');
 const PlanMessages = require('./PlanMessages');
 const AdminMessages = require('./AdminMessages');
+const ReferralMessages = require('./ReferralMessages');
 
 /**
  * Главный класс для работы с сообщениями
@@ -18,6 +19,7 @@ class MessageService {
 		this.payment = PaymentMessages;
 		this.plan = PlanMessages;
 		this.admin = AdminMessages;
+		this.referral = ReferralMessages;
 	}
 
 	/**
@@ -54,6 +56,13 @@ class MessageService {
 	static get Admin() {
 		return AdminMessages;
 	}
+
+	/**
+	 * Быстрый доступ к сообщениям рефералов
+	 */
+	static get Referral() {
+		return ReferralMessages;
+	}
 }
 
 module.exports = MessageService;
@@ -62,3 +71,4 @@ module.exports.KeyMessages = KeyMessages;
 module.exports.PaymentMessages = PaymentMessages;
 module.exports.PlanMessages = PlanMessages;
 module.exports.AdminMessages = AdminMessages;
+module.exports.ReferralMessages = ReferralMessages;
