@@ -194,17 +194,24 @@ class KeysCallbacks {
 				return;
 			}
 
-			// Регенерируем ключ с новым портом
+			// Показываем уведомление о начале процесса
 			await ctx.answerCbQuery(t('keys.port_changing', { ns: 'message' }));
 
-			// Здесь должна быть логика смены порта
-			// Пока просто показываем обновленную информацию
+			// Пересоздаем ключ (это даст новый порт/конфигурацию)
+			const userTID = ctx.from.id;
+			const recreatedKey = await this.keyService.recreateKey(keyId, userTID);
+
+			// Получаем обновленную информацию о ключе
 			const updatedKey = await this.keyService.getKeyDetails(t, keyId, true);
 
 			let message = `🔄 <b>${t('keys.port_changed', { ns: 'message' })}</b>\n\n`;
 			message += `🔐 <b>${t('keys.new_access_key', { ns: 'message' })}</b>\n`;
 			message += `<code>${updatedKey.access_url}</code>\n\n`;
-			message += `ℹ️ ${t('keys.port_change_hint', { ns: 'message' })}`;
+			message += `ℹ️ ${t('keys.port_change_hint', { ns: 'message' })}\n\n`;
+
+			// Добавляем информацию о плане и сроке действия
+			message += `📦 ${t('common.plan')}: ${updatedKey.plan.displayName}\n`;
+			message += `📅 ${t('common.valid_until')}: ${new Date(updatedKey.expires_at).toLocaleDateString()}`;
 
 			const protocol = updatedKey.protocol || 'tcp';
 			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId, protocol);
@@ -216,7 +223,7 @@ class KeysCallbacks {
 		} catch (error) {
 			console.error('Ошибка смены порта:', error);
 			await ctx.editMessageText(
-				t('generic.loading_error', { ns: 'error' }),
+				t('keys.port_change_error', { ns: 'error' }),
 				KeyboardUtils.createBackToMenuKeyboard(t)
 			);
 		}
@@ -235,8 +242,10 @@ class KeysCallbacks {
 				return;
 			}
 
-			// Здесь должна быть логика смены протокола
-			// Пока просто обновляем отображение
+			// Обновляем протокол в БД
+			await this.keyService.updateKeyProtocol(keyId, protocol);
+
+			// Показываем уведомление
 			await ctx.answerCbQuery(t('keys.protocol_changed', { ns: 'message', args: { protocol: protocol.toUpperCase() } }));
 
 			// Показываем обновленную информацию с выбранным протоколом

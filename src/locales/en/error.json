@@ -14,7 +14,8 @@
     "creation_failed": "The service is temporarily unavailable. Try again later.",
     "not_found": "❌ Key not found",
     "no_keys": "❌ You don't have any active keys",
-    "plan_not_found": "❌ Plan not found"
+    "plan_not_found": "❌ Plan not found",
+    "port_change_error": "❌ Error changing port. Please try again later or contact support."
   },
   "payments": {
     "failed": "❌ Payment error. Please try again later."

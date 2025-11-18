@@ -555,6 +555,85 @@ class KeysService {
 		// Все попытки исчерпаны
 		throw new Error(`Не удалось создать ключ после ${maxRetries} попыток: ${lastError.message}`);
 	}
+
+	/**
+	 * Пересоздание ключа (удаление старого и создание нового с теми же параметрами)
+	 * Это эффективно меняет порт, так как Outline назначает новый порт при создании ключа
+	 * @param {number} keyId - ID ключа для пересоздания
+	 * @param {number} userTID - Telegram ID пользователя
+	 * @returns {Promise<Object>}
+	 */
+	async recreateKey(keyId, userTID) {
+		try {
+			const key = await this.db.getKey(keyId);
+			if (!key) {
+				throw new Error('Ключ не найден');
+			}
+
+			console.log(`🔄 Пересоздание ключа ${keyId}...`);
+
+			// Удаляем старый ключ из Outline
+			if (key.outline_key_id) {
+				try {
+					await this.outlineService.deleteAccessKey(key.outline_key_id);
+					console.log(`🗑️ Старый ключ ${key.outline_key_id} удален из Outline`);
+				} catch (error) {
+					console.warn(`⚠️ Не удалось удалить старый ключ из Outline:`, error.message);
+				}
+			}
+
+			// Создаем новый ключ через Outline API с теми же параметрами
+			const keyData = {
+				plan_id: key.plan_id,
+				data_limit: key.data_limit
+			};
+
+			const newKeyData = await this.outlineService.createKey(keyData, userTID);
+
+			// Обновляем информацию в БД
+			await this.db.updateKey(keyId, {
+				outline_key_id: newKeyData.keyId,
+				access_url: newKeyData.accessUrl,
+				status: KEY_STATUS.ACTIVE,
+				data_used: 0 // Сбрасываем использованные данные
+			});
+
+			console.log(`✅ Ключ ${keyId} успешно пересоздан с новым ID ${newKeyData.keyId}`);
+
+			return {
+				keyId,
+				outlineKeyId: newKeyData.keyId,
+				accessUrl: newKeyData.accessUrl
+			};
+		} catch (error) {
+			console.error('Ошибка пересоздания ключа:', error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Обновление протокола ключа (информационно, так как Outline поддерживает оба)
+	 * @param {number} keyId - ID ключа
+	 * @param {string} protocol - 'tcp' или 'udp'
+	 * @returns {Promise<boolean>}
+	 */
+	async updateKeyProtocol(keyId, protocol) {
+		try {
+			if (!['tcp', 'udp'].includes(protocol)) {
+				throw new Error('Неверный протокол. Допустимые значения: tcp, udp');
+			}
+
+			await this.db.updateKey(keyId, {
+				protocol: protocol
+			});
+
+			console.log(`✅ Протокол ключа ${keyId} обновлен на ${protocol.toUpperCase()}`);
+			return true;
+		} catch (error) {
+			console.error('Ошибка обновления протокола:', error);
+			return false;
+		}
+	}
 }
 
 module.exports = KeysService;

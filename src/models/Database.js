@@ -44,6 +44,7 @@ class Database {
                 data_limit INTEGER NOT NULL,
                 data_used INTEGER DEFAULT 0,
                 status TEXT DEFAULT 'pending',
+                protocol TEXT DEFAULT 'tcp',
                 expires_at DATETIME NOT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
