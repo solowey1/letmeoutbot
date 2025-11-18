@@ -18,7 +18,7 @@ class ReferralMessages {
 			`<b>${t('referral.title', { ns: 'message' })}</b>`,
 			t('referral.description', { ns: 'message' }),
 			'',
-			'📊 <b>Ваша статистика:</b>',
+			`📊 <b>${t('referral.stats.title', { ns: 'message' })}:</b>`,
 			`👥 ${t('referral.stats.total_referrals', { ns: 'message' })}: <b>${stats.totalReferrals}</b>`,
 			`💰 ${t('referral.stats.total_earned', { ns: 'message' })}: <b>${stats.totalEarned} ⭐</b>`,
 			`💸 ${t('referral.stats.total_withdrawn', { ns: 'message' })}: <b>${stats.totalWithdrawn} ⭐</b>`,

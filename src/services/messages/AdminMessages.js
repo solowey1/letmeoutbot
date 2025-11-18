@@ -158,6 +158,38 @@ class AdminMessages {
 	}
 
 	/**
+	 * Список ожидающих выплат
+	 * @param {Function} t - Функция перевода
+	 * @param {Array} withdrawals - Массив выплат
+	 * @param {Function} getUserById - Функция для получения пользователя
+	 * @returns {Promise<string>}
+	 */
+	static async pendingWithdrawalsList(t, withdrawals, getUserById) {
+		if (!withdrawals || withdrawals.length === 0) {
+			return t('admin.withdrawals.no_pending', { ns: 'message' });
+		}
+
+		// Формируем список
+		const list = await Promise.all(withdrawals.map(async (w) => {
+			const user = await getUserById(w.user_id);
+			const userName = user?.username || user?.first_name || 'Unknown';
+			const date = new Date(w.requested_at).toLocaleDateString();
+
+			return `🆔 ${w.id} | ${userName} (${user?.telegram_id})\n💰 ${w.amount} ⭐ | ${date}`;
+		}));
+
+		const message = [
+			`<b>${t('admin.withdrawals.title', { ns: 'message' })}</b>`,
+			'',
+			...list,
+			'',
+			t('admin.withdrawals.instructions', { ns: 'message' })
+		].join('\n');
+
+		return message;
+	}
+
+	/**
 	 * Отказ в доступе
 	 * @param {Function} t - Функция перевода
 	 * @returns {string}

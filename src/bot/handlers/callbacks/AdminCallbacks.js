@@ -123,35 +123,11 @@ class AdminCallbacks {
 
 		try {
 			const withdrawals = await this.db.getPendingWithdrawals();
-
-			if (!withdrawals || withdrawals.length === 0) {
-				const message = '📜 Нет ожидающих выплат';
-				const keyboard = KeyboardUtils.createAdminKeyboard(t);
-
-				await ctx.editMessageText(message, {
-					...keyboard,
-					parse_mode: 'HTML'
-				});
-				return;
-			}
-
-			// Формируем список
-			const list = await Promise.all(withdrawals.map(async (w) => {
-				const user = await this.db.getUserById(w.user_id);
-				const userName = user?.username || user?.first_name || 'Unknown';
-				const date = new Date(w.requested_at).toLocaleDateString();
-
-				return `🆔 ${w.id} | ${userName} (${user?.telegram_id})\n💰 ${w.amount} ⭐ | ${date}`;
-			}));
-
-			const message = [
-				'<b>📜 Ожидающие выплаты</b>',
-				'',
-				...list,
-				'',
-				'Используйте /approve_withdrawal <id> или /reject_withdrawal <id>'
-			].join('\n');
-
+			const message = await AdminMessages.pendingWithdrawalsList(
+				t,
+				withdrawals,
+				this.db.getUserById.bind(this.db)
+			);
 			const keyboard = KeyboardUtils.createAdminKeyboard(t);
 
 			await ctx.editMessageText(message, {

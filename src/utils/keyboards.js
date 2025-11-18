@@ -223,7 +223,7 @@ class KeyboardUtils {
 
 	static createWithdrawalConfirmKeyboard(t, amount) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(`✅ Подтвердить вывод ${amount} ⭐`, CALLBACK_ACTIONS.REFERRAL.CONFIRM_WITHDRAW)],
+			[Markup.button.callback(`${t('buttons.referral_actions.withdraw_confirm')} ${amount} ⭐`, CALLBACK_ACTIONS.REFERRAL.CONFIRM_WITHDRAW)],
 			[Markup.button.callback(t('buttons.cancel'), CALLBACK_ACTIONS.REFERRAL.MENU)]
 		]);
 	}
