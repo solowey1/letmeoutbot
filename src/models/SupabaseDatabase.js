@@ -619,6 +619,95 @@ class SupabaseDatabase {
 		if (error) throw error;
 	}
 
+	// ============== WITHDRAWALS ==============
+
+	async createWithdrawal(userId, amount) {
+		const { data, error } = await this.supabase
+			.from('withdrawals')
+			.insert([{
+				user_id: userId,
+				amount: amount
+			}])
+			.select('id')
+			.single();
+
+		if (error) throw error;
+		return data.id;
+	}
+
+	async getWithdrawal(withdrawalId) {
+		const { data, error } = await this.supabase
+			.from('withdrawals')
+			.select('*')
+			.eq('id', withdrawalId)
+			.single();
+
+		if (error) {
+			if (error.code === 'PGRST116') return null;
+			throw error;
+		}
+
+		return data;
+	}
+
+	async getUserWithdrawals(userId) {
+		const { data, error } = await this.supabase
+			.from('withdrawals')
+			.select('*')
+			.eq('user_id', userId)
+			.order('requested_at', { ascending: false });
+
+		if (error) throw error;
+		return data || [];
+	}
+
+	async getPendingWithdrawals() {
+		const { data, error } = await this.supabase
+			.from('withdrawals')
+			.select(`
+				*,
+				users!user_id(telegram_id, username, first_name)
+			`)
+			.eq('status', 'pending')
+			.order('requested_at', { ascending: true });
+
+		if (error) throw error;
+
+		// Преобразуем данные для совместимости
+		return (data || []).map(w => ({
+			...w,
+			telegram_id: w.users?.telegram_id,
+			username: w.users?.username,
+			first_name: w.users?.first_name
+		}));
+	}
+
+	async updateWithdrawalStatus(withdrawalId, status, processedBy = null, notes = null) {
+		const { error } = await this.supabase
+			.from('withdrawals')
+			.update({
+				status: status,
+				processed_at: new Date().toISOString(),
+				processed_by: processedBy,
+				notes: notes
+			})
+			.eq('id', withdrawalId);
+
+		if (error) throw error;
+	}
+
+	async getTotalWithdrawn(userId) {
+		const { data, error } = await this.supabase
+			.from('withdrawals')
+			.select('amount')
+			.eq('user_id', userId)
+			.eq('status', 'completed');
+
+		if (error) throw error;
+
+		return (data || []).reduce((sum, w) => sum + (w.amount || 0), 0);
+	}
+
 	// ============== CLEANUP ==============
 
 	close() {

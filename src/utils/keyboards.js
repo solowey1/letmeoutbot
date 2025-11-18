@@ -99,9 +99,10 @@ class KeyboardUtils {
 			],
 			[
 				Markup.button.callback(t('buttons.admin.pending_keys'), CALLBACK_ACTIONS.ADMIN.KEYS.PENDING),
-				Markup.button.callback(t('buttons.admin.broadcast'), 'admin_broadcast')
+				Markup.button.callback(t('buttons.admin.pending_withdrawals'), CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING)
 			],
 			[
+				Markup.button.callback(t('buttons.admin.broadcast'), 'admin_broadcast'),
 				Markup.button.callback(t('buttons.admin.settings'), 'admin_settings')
 			],
 			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
@@ -199,7 +200,10 @@ class KeyboardUtils {
 				Markup.button.callback(t('buttons.referral_actions.get_link'), CALLBACK_ACTIONS.REFERRAL.GET_LINK)
 			],
 			[Markup.button.callback(t('buttons.referral_actions.my_referrals'), CALLBACK_ACTIONS.REFERRAL.MY_REFERRALS)],
-			[Markup.button.callback(t('buttons.referral_actions.withdraw'), CALLBACK_ACTIONS.REFERRAL.WITHDRAW)],
+			[
+				Markup.button.callback(t('buttons.referral_actions.withdraw'), CALLBACK_ACTIONS.REFERRAL.WITHDRAW),
+				Markup.button.callback(t('buttons.referral_actions.history'), CALLBACK_ACTIONS.REFERRAL.HISTORY)
+			],
 			[Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
 		]);
 	}

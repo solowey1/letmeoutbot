@@ -199,6 +199,7 @@
     "stats": {
       "total_referrals": "Total referrals",
       "total_earned": "Total earned",
+      "total_withdrawn": "Total withdrawn",
       "available_for_withdrawal": "Available for withdrawal",
       "pending_amount": "Pending (14 days)"
     },
@@ -221,7 +222,14 @@
       "success": "Withdrawal request for {{amount}} ⭐ sent to administrators.\n\nExpect processing within 24 hours.",
       "insufficient": "Insufficient funds for withdrawal.\n\nMinimum amount: 1 ⭐\nAvailable: {{amount}} ⭐",
       "no_funds": "You don't have any funds to withdraw yet.\n\nInvite friends and earn 30% from their purchases!",
-      "admin_notification": "🔔 New withdrawal request!\n\n👤 User: {{username}} (ID: {{userId}})\n💰 Amount: {{amount}} ⭐\n📊 Total referrals: {{referrals}}\n\nPlease process the request as soon as possible."
+      "admin_notification": "🔔 New withdrawal request!\n\n👤 User: {{username}} (ID: {{userId}})\n💰 Amount: {{amount}} ⭐\n📊 Total referrals: {{referrals}}\n🆔 Request ID: {{withdrawalId}}\n\nPlease process the request as soon as possible.",
+      "history_title": "📜 Withdrawal History",
+      "no_history": "You don't have any withdrawal history yet.\n\nWithdraw funds to see them here.",
+      "status": {
+        "pending": "Pending",
+        "completed": "Completed",
+        "rejected": "Rejected"
+      }
     },
     "welcome_referral": "🎉 You came from a referral link from user <b>{{referrerName}}</b>!\n\nNow they will receive 30% from your purchases."
   }

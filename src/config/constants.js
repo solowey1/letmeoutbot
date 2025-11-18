@@ -90,6 +90,9 @@ const CALLBACK_ACTIONS = {
 		USERS: {
 			MENU: 'admin_stats_menu',
 		},
+		WITHDRAWALS: {
+			PENDING: 'admin_withdrawals_pending',
+		},
 	},
 	BASIC: {
 		BACK_TO_MENU: 'back_menu',
@@ -114,6 +117,7 @@ const CALLBACK_ACTIONS = {
 		WITHDRAW: 'referral_withdraw',
 		CONFIRM_WITHDRAW: 'referral_confirm_withdraw',
 		MY_REFERRALS: 'referral_my_referrals',
+		HISTORY: 'referral_history',
 	},
 };
 

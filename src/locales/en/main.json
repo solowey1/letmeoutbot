@@ -24,7 +24,8 @@
       "invite": "👥 Invite Friends",
       "get_link": "🔗 Get Link",
       "withdraw": "💰 Withdraw Funds",
-      "my_referrals": "📋 My Referrals"
+      "my_referrals": "📋 My Referrals",
+      "history": "📜 Withdrawal History"
     },
     "admin": {
       "users": "👥 Users",
@@ -32,6 +33,7 @@
       "payments": "💰 Payments",
       "keys": "🔑 Keys",
       "pending_keys": "⏳ Pending Keys",
+      "pending_withdrawals": "💸 Withdrawals",
       "broadcast": "📢 Broadcast",
       "settings": "⚙️ Settings"
     },

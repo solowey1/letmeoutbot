@@ -21,6 +21,7 @@ class ReferralMessages {
 			'📊 <b>Ваша статистика:</b>',
 			`👥 ${t('referral.stats.total_referrals', { ns: 'message' })}: <b>${stats.totalReferrals}</b>`,
 			`💰 ${t('referral.stats.total_earned', { ns: 'message' })}: <b>${stats.totalEarned} ⭐</b>`,
+			`💸 ${t('referral.stats.total_withdrawn', { ns: 'message' })}: <b>${stats.totalWithdrawn} ⭐</b>`,
 			`✅ ${t('referral.stats.available_for_withdrawal', { ns: 'message' })}: <b>${stats.availableForWithdrawal} ⭐</b>`,
 			`⏳ ${t('referral.stats.pending_amount', { ns: 'message' })}: <b>${stats.pendingAmount} ⭐</b>`,
 			'',
@@ -148,7 +149,41 @@ class ReferralMessages {
 			userId: data.userId,
 			amount: data.amount,
 			referrals: data.referrals,
+			withdrawalId: data.withdrawalId,
 		});
+	}
+
+	/**
+	 * История выводов средств
+	 * @param {Function} t - Функция перевода
+	 * @param {Array} withdrawals - Список выводов
+	 * @returns {string}
+	 */
+	static withdrawalHistory(t, withdrawals) {
+		if (!withdrawals || withdrawals.length === 0) {
+			return t('referral.withdrawal.no_history', { ns: 'message' });
+		}
+
+		const statusIcons = {
+			pending: '⏳',
+			completed: '✅',
+			rejected: '❌'
+		};
+
+		const withdrawalsList = withdrawals.map(w => {
+			const icon = statusIcons[w.status] || '❓';
+			const statusKey = `referral.withdrawal.status.${w.status}`;
+			const status = t(statusKey, { ns: 'message' });
+			const date = new Date(w.requested_at).toLocaleDateString();
+
+			return `${icon} ${w.amount} ⭐ - ${status} (${date})`;
+		});
+
+		return [
+			`<b>${t('referral.withdrawal.history_title', { ns: 'message' })}</b>`,
+			'',
+			...withdrawalsList,
+		].join('\n');
 	}
 
 	/**

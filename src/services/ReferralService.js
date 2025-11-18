@@ -40,13 +40,17 @@ class ReferralService {
 			const stats = await this.db.getReferralStats(userId);
 			const referrals = await this.db.getReferrals(userId);
 
-			// Рассчитываем доступные для вывода средства
-			const availableAmount = this.calculateAvailableForWithdrawal(referrals);
-			const pendingAmount = (stats.total_bonus || 0) - availableAmount;
+			// Получаем сумму уже выведенных средств
+			const totalWithdrawn = await this.db.getTotalWithdrawn(userId);
+
+			// Рассчитываем доступные для вывода средства (с учетом уже выведенных)
+			const availableAmount = await this.calculateAvailableForWithdrawal(referrals, totalWithdrawn);
+			const pendingAmount = Math.max(0, (stats.total_bonus || 0) - totalWithdrawn - availableAmount);
 
 			return {
 				totalReferrals: stats.total_referrals || 0,
 				totalEarned: stats.total_bonus || 0,
+				totalWithdrawn: totalWithdrawn,
 				availableForWithdrawal: availableAmount,
 				pendingAmount: pendingAmount,
 			};
@@ -55,6 +59,7 @@ class ReferralService {
 			return {
 				totalReferrals: 0,
 				totalEarned: 0,
+				totalWithdrawn: 0,
 				availableForWithdrawal: 0,
 				pendingAmount: 0,
 			};
@@ -64,9 +69,10 @@ class ReferralService {
 	/**
 	 * Рассчитать доступные для вывода средства
 	 * @param {Array} referrals - Список рефералов с бонусами
+	 * @param {number} totalWithdrawn - Общая сумма уже выведенных средств
 	 */
-	calculateAvailableForWithdrawal(referrals) {
-		let availableAmount = 0;
+	async calculateAvailableForWithdrawal(referrals, totalWithdrawn = 0) {
+		let totalEligible = 0;
 		const now = moment();
 
 		for (const referral of referrals) {
@@ -81,11 +87,13 @@ class ReferralService {
 
 				// Бонус доступен для вывода через WITHDRAWAL_DELAY_DAYS дней
 				if (daysSinceReferral >= REFERRAL_CONFIG.WITHDRAWAL_DELAY_DAYS) {
-					availableAmount += referral.bonus_earned;
+					totalEligible += referral.bonus_earned;
 				}
 			}
 		}
 
+		// Вычитаем уже выведенные средства из суммы, доступной для вывода
+		const availableAmount = Math.max(0, totalEligible - totalWithdrawn);
 		return availableAmount;
 	}
 

@@ -106,12 +106,28 @@ class Database {
             )
         `;
 
+		const createWithdrawalsTable = `
+            CREATE TABLE IF NOT EXISTS withdrawals (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                amount INTEGER NOT NULL,
+                status TEXT DEFAULT 'pending',
+                requested_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                processed_at DATETIME,
+                processed_by INTEGER,
+                notes TEXT,
+                FOREIGN KEY (user_id) REFERENCES users (id),
+                FOREIGN KEY (processed_by) REFERENCES users (id)
+            )
+        `;
+
 		this.db.run(createUsersTable);
 		this.db.run(createKeysTable);
 		this.db.run(createPaymentsTable);
 		this.db.run(createUsageLogsTable);
 		this.db.run(createNotificationsTable);
 		this.db.run(createReferralsTable);
+		this.db.run(createWithdrawalsTable);
 	}
 
 	// Методы для работы с пользователями
@@ -524,6 +540,106 @@ class Database {
 					reject(err);
 				} else {
 					resolve(this.changes);
+				}
+			});
+		});
+	}
+
+	// Методы для работы с выплатами
+	async createWithdrawal(userId, amount) {
+		return new Promise((resolve, reject) => {
+			const query = `
+                INSERT INTO withdrawals (user_id, amount)
+                VALUES (?, ?)
+            `;
+			this.db.run(query, [userId, amount], function(err) {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(this.lastID);
+				}
+			});
+		});
+	}
+
+	async getWithdrawal(withdrawalId) {
+		return new Promise((resolve, reject) => {
+			const query = 'SELECT * FROM withdrawals WHERE id = ?';
+			this.db.get(query, [withdrawalId], (err, row) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(row);
+				}
+			});
+		});
+	}
+
+	async getUserWithdrawals(userId) {
+		return new Promise((resolve, reject) => {
+			const query = `
+                SELECT * FROM withdrawals
+                WHERE user_id = ?
+                ORDER BY requested_at DESC
+            `;
+			this.db.all(query, [userId], (err, rows) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(rows);
+				}
+			});
+		});
+	}
+
+	async getPendingWithdrawals() {
+		return new Promise((resolve, reject) => {
+			const query = `
+                SELECT w.*, u.telegram_id, u.username, u.first_name
+                FROM withdrawals w
+                JOIN users u ON w.user_id = u.id
+                WHERE w.status = 'pending'
+                ORDER BY w.requested_at ASC
+            `;
+			this.db.all(query, [], (err, rows) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(rows);
+				}
+			});
+		});
+	}
+
+	async updateWithdrawalStatus(withdrawalId, status, processedBy = null, notes = null) {
+		return new Promise((resolve, reject) => {
+			const query = `
+                UPDATE withdrawals
+                SET status = ?, processed_at = CURRENT_TIMESTAMP, processed_by = ?, notes = ?
+                WHERE id = ?
+            `;
+			this.db.run(query, [status, processedBy, notes, withdrawalId], function(err) {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(this.changes);
+				}
+			});
+		});
+	}
+
+	async getTotalWithdrawn(userId) {
+		return new Promise((resolve, reject) => {
+			const query = `
+                SELECT COALESCE(SUM(amount), 0) as total
+                FROM withdrawals
+                WHERE user_id = ? AND status = 'completed'
+            `;
+			this.db.get(query, [userId], (err, row) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(row.total);
 				}
 			});
 		});

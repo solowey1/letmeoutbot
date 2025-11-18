@@ -79,6 +79,8 @@ class CallbackHandler {
 				await this.adminCallbacks.handleAdminStats(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.KEYS.PENDING) {
 				await this.adminCallbacks.handleAdminPendingKeys(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING) {
+				await this.adminCallbacks.handlePendingWithdrawals(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.MENU) {
 				await this.referralCallbacks.handleReferralMenu(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.INVITE) {
@@ -91,6 +93,8 @@ class CallbackHandler {
 				await this.referralCallbacks.handleWithdraw(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.CONFIRM_WITHDRAW) {
 				await this.referralCallbacks.handleConfirmWithdraw(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.HISTORY) {
+				await this.referralCallbacks.handleWithdrawalHistory(ctx);
 			} else {
 				// Неизвестный callback
 				await ctx.editMessageText(t('generic.unknown_command', { ns: 'error' }), KeyboardUtils.createBackToMenuKeyboard(t));

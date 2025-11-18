@@ -279,6 +279,64 @@ class PostgresDatabase {
 		return result.rowCount;
 	}
 
+	// === WITHDRAWALS ===
+	async createWithdrawal(userId, amount) {
+		const query = `
+            INSERT INTO withdrawals (user_id, amount)
+            VALUES ($1, $2)
+            RETURNING id
+        `;
+		const result = await this.pool.query(query, [userId, amount]);
+		return result.rows[0].id;
+	}
+
+	async getWithdrawal(withdrawalId) {
+		const query = 'SELECT * FROM withdrawals WHERE id = $1';
+		const result = await this.pool.query(query, [withdrawalId]);
+		return result.rows[0];
+	}
+
+	async getUserWithdrawals(userId) {
+		const query = `
+            SELECT * FROM withdrawals
+            WHERE user_id = $1
+            ORDER BY requested_at DESC
+        `;
+		const result = await this.pool.query(query, [userId]);
+		return result.rows;
+	}
+
+	async getPendingWithdrawals() {
+		const query = `
+            SELECT w.*, u.telegram_id, u.username, u.first_name
+            FROM withdrawals w
+            JOIN users u ON w.user_id = u.id
+            WHERE w.status = 'pending'
+            ORDER BY w.requested_at ASC
+        `;
+		const result = await this.pool.query(query);
+		return result.rows;
+	}
+
+	async updateWithdrawalStatus(withdrawalId, status, processedBy = null, notes = null) {
+		const query = `
+            UPDATE withdrawals
+            SET status = $1, processed_at = NOW(), processed_by = $2, notes = $3
+            WHERE id = $4
+        `;
+		await this.pool.query(query, [status, processedBy, notes, withdrawalId]);
+	}
+
+	async getTotalWithdrawn(userId) {
+		const query = `
+            SELECT COALESCE(SUM(amount), 0) as total
+            FROM withdrawals
+            WHERE user_id = $1 AND status = 'completed'
+        `;
+		const result = await this.pool.query(query, [userId]);
+		return parseInt(result.rows[0].total);
+	}
+
 	// Закрытие подключения
 	async close() {
 		await this.pool.end();

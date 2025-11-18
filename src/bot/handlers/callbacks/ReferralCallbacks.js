@@ -151,12 +151,16 @@ class ReferralCallbacks {
 		const stats = await this.referralService.getReferralStats(user.id);
 		const amount = stats.availableForWithdrawal;
 
+		// Создаём запись о выводе средств в базе данных
+		const withdrawal = await this.db.createWithdrawal(user.id, amount);
+
 		// Отправляем уведомление администраторам
 		const adminMessage = ReferralMessages.withdrawalAdminNotification(t, {
 			username: user.username || user.first_name || 'Unknown',
 			userId: user.telegram_id,
 			amount: amount,
-			referrals: stats.totalReferrals
+			referrals: stats.totalReferrals,
+			withdrawalId: withdrawal.id
 		});
 
 		// Отправляем уведомление всем администраторам
@@ -172,6 +176,26 @@ class ReferralCallbacks {
 
 		// Отправляем подтверждение пользователю
 		const message = ReferralMessages.withdrawalSuccess(t, amount);
+		const keyboard = KeyboardUtils.createReferralBackKeyboard(t);
+
+		await ctx.editMessageText(message, {
+			...keyboard,
+			parse_mode: 'HTML'
+		});
+	}
+
+	/**
+	 * Показать историю выводов
+	 */
+	async handleWithdrawalHistory(ctx) {
+		const t = ctx.i18n.t;
+		const user = await this.db.getUser(ctx.from.id);
+
+		// Получаем историю выводов
+		const withdrawals = await this.db.getUserWithdrawals(user.id);
+
+		// Генерируем сообщение
+		const message = ReferralMessages.withdrawalHistory(t, withdrawals);
 		const keyboard = KeyboardUtils.createReferralBackKeyboard(t);
 
 		await ctx.editMessageText(message, {

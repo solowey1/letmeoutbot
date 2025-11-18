@@ -112,6 +112,60 @@ class AdminCallbacks {
 			);
 		}
 	}
+
+	async handlePendingWithdrawals(ctx) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		try {
+			const withdrawals = await this.db.getPendingWithdrawals();
+
+			if (!withdrawals || withdrawals.length === 0) {
+				const message = '📜 Нет ожидающих выплат';
+				const keyboard = KeyboardUtils.createAdminKeyboard(t);
+
+				await ctx.editMessageText(message, {
+					...keyboard,
+					parse_mode: 'HTML'
+				});
+				return;
+			}
+
+			// Формируем список
+			const list = await Promise.all(withdrawals.map(async (w) => {
+				const user = await this.db.getUserById(w.user_id);
+				const userName = user?.username || user?.first_name || 'Unknown';
+				const date = new Date(w.requested_at).toLocaleDateString();
+
+				return `🆔 ${w.id} | ${userName} (${user?.telegram_id})\n💰 ${w.amount} ⭐ | ${date}`;
+			}));
+
+			const message = [
+				'<b>📜 Ожидающие выплаты</b>',
+				'',
+				...list,
+				'',
+				'Используйте /approve_withdrawal <id> или /reject_withdrawal <id>'
+			].join('\n');
+
+			const keyboard = KeyboardUtils.createAdminKeyboard(t);
+
+			await ctx.editMessageText(message, {
+				...keyboard,
+				parse_mode: 'HTML'
+			});
+		} catch (error) {
+			console.error('Ошибка получения pending выплат:', error);
+			await ctx.editMessageText(
+				t('admin.loading_error', { ns: 'message' }),
+				KeyboardUtils.createAdminKeyboard(t)
+			);
+		}
+	}
 }
 
 module.exports = AdminCallbacks;
