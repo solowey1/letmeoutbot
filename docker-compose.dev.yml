@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  vpnbot:
+    build: .
+    container_name: vpnbot-dev
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./src:/app/src  # Hot reload для разработки
+      - ./support.js:/app/support.js  # Hot reload для support.js
+    networks:
+      - vpnbot-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('Bot is running')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  support-bot:
+    build: .
+    container_name: support-bot-dev
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./src:/app/src  # Hot reload для разработки
+      - ./support.js:/app/support.js  # Hot reload для support.js
+    command: ["node", "support.js"]
+    networks:
+      - vpnbot-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('Support Bot is running')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  vpnbot-network:
+    driver: bridge
+
+volumes:
+  vpnbot-data:
+    driver: local
