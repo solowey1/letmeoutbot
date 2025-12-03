@@ -20,10 +20,19 @@ class AdminCallbacks {
 		const keyboard = KeyboardUtils.createAdminKeyboard(t);
 		const message = AdminMessages.adminPanel(t);
 
-		await ctx.editMessageText(message, {
-			...keyboard,
-			parse_mode: 'HTML'
-		});
+		try {
+			await ctx.editMessageText(message, {
+				...keyboard,
+				parse_mode: 'HTML'
+			});
+		} catch (error) {
+			// Игнорируем ошибку "message is not modified"
+			if (error.description && error.description.includes('message is not modified')) {
+				console.log('Админ-панель: сообщение не изменилось');
+			} else {
+				console.error('Ошибка редактирования сообщения админ-панели:', error);
+			}
+		}
 	}
 
 	async handleAdminUsers(ctx) {
@@ -39,16 +48,32 @@ class AdminCallbacks {
 			const message = AdminMessages.usersList(t, users);
 			const keyboard = KeyboardUtils.createAdminKeyboard(t);
 
-			await ctx.editMessageText(message, {
-				...keyboard,
-				parse_mode: 'HTML'
-			});
+			try {
+				await ctx.editMessageText(message, {
+					...keyboard,
+					parse_mode: 'HTML'
+				});
+			} catch (editError) {
+				// Игнорируем ошибку "message is not modified" от Telegram
+				if (editError.description && editError.description.includes('message is not modified')) {
+					console.log('Сообщение не изменилось, пропускаем обновление');
+				} else {
+					throw editError;
+				}
+			}
 		} catch (error) {
 			console.error('Ошибка получения пользователей:', error);
-			await ctx.editMessageText(
-				t('admin.loading_error', { ns: 'message' }),
-				KeyboardUtils.createAdminKeyboard(t)
-			);
+			console.error('Детали ошибки:', error.message, error.stack);
+
+			try {
+				await ctx.editMessageText(
+					t('admin.loading_error', { ns: 'message' }),
+					KeyboardUtils.createAdminKeyboard(t)
+				);
+			} catch (editError) {
+				// Если не можем отредактировать сообщение, просто логируем
+				console.error('Не удалось отредактировать сообщение об ошибке:', editError.message);
+			}
 		}
 	}
 
@@ -74,16 +99,30 @@ class AdminCallbacks {
 			const message = AdminMessages.stats(t, normalizedStats);
 			const keyboard = KeyboardUtils.createAdminKeyboard(t);
 
-			await ctx.editMessageText(message, {
-				...keyboard,
-				parse_mode: 'HTML'
-			});
+			try {
+				await ctx.editMessageText(message, {
+					...keyboard,
+					parse_mode: 'HTML'
+				});
+			} catch (editError) {
+				if (editError.description && editError.description.includes('message is not modified')) {
+					console.log('Статистика: сообщение не изменилось');
+				} else {
+					throw editError;
+				}
+			}
 		} catch (error) {
 			console.error('Ошибка получения статистики:', error);
-			await ctx.editMessageText(
-				t('admin.loading_error', { ns: 'message' }),
-				KeyboardUtils.createAdminKeyboard(t)
-			);
+			console.error('Детали ошибки:', error.message);
+
+			try {
+				await ctx.editMessageText(
+					t('admin.loading_error', { ns: 'message' }),
+					KeyboardUtils.createAdminKeyboard(t)
+				);
+			} catch (editError) {
+				console.error('Не удалось отредактировать сообщение об ошибке:', editError.message);
+			}
 		}
 	}
 
@@ -100,16 +139,30 @@ class AdminCallbacks {
 			const message = await AdminMessages.pendingKeysList(t, pendingKeys, this.db.getUserById.bind(this.db));
 			const keyboard = KeyboardUtils.createAdminKeyboard(t);
 
-			await ctx.editMessageText(message, {
-				...keyboard,
-				parse_mode: 'HTML'
-			});
+			try {
+				await ctx.editMessageText(message, {
+					...keyboard,
+					parse_mode: 'HTML'
+				});
+			} catch (editError) {
+				if (editError.description && editError.description.includes('message is not modified')) {
+					console.log('Pending ключи: сообщение не изменилось');
+				} else {
+					throw editError;
+				}
+			}
 		} catch (error) {
 			console.error('Ошибка получения pending подписок:', error);
-			await ctx.editMessageText(
-				t('admin.loading_error', { ns: 'message' }),
-				KeyboardUtils.createAdminKeyboard(t)
-			);
+			console.error('Детали ошибки:', error.message);
+
+			try {
+				await ctx.editMessageText(
+					t('admin.loading_error', { ns: 'message' }),
+					KeyboardUtils.createAdminKeyboard(t)
+				);
+			} catch (editError) {
+				console.error('Не удалось отредактировать сообщение об ошибке:', editError.message);
+			}
 		}
 	}
 
@@ -130,16 +183,30 @@ class AdminCallbacks {
 			);
 			const keyboard = KeyboardUtils.createAdminKeyboard(t);
 
-			await ctx.editMessageText(message, {
-				...keyboard,
-				parse_mode: 'HTML'
-			});
+			try {
+				await ctx.editMessageText(message, {
+					...keyboard,
+					parse_mode: 'HTML'
+				});
+			} catch (editError) {
+				if (editError.description && editError.description.includes('message is not modified')) {
+					console.log('Pending выплаты: сообщение не изменилось');
+				} else {
+					throw editError;
+				}
+			}
 		} catch (error) {
 			console.error('Ошибка получения pending выплат:', error);
-			await ctx.editMessageText(
-				t('admin.loading_error', { ns: 'message' }),
-				KeyboardUtils.createAdminKeyboard(t)
-			);
+			console.error('Детали ошибки:', error.message);
+
+			try {
+				await ctx.editMessageText(
+					t('admin.loading_error', { ns: 'message' }),
+					KeyboardUtils.createAdminKeyboard(t)
+				);
+			} catch (editError) {
+				console.error('Не удалось отредактировать сообщение об ошибке:', editError.message);
+			}
 		}
 	}
 }

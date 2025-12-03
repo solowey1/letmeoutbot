@@ -52,9 +52,12 @@ class CallbackHandler {
 				await this.planCallbacks.handleDirectCheckout(ctx, planId);
 			} else if (callbackData === CALLBACK_ACTIONS.KEYS.MENU) {
 				await this.KeysCallbacks.handleMyKeys(ctx);
-			} else if (callbackData.startsWith('key_details_')) {
+			} else if (callbackData.startsWith('key_details_') || callbackData.startsWith('sub_details_')) {
 				const keyId = parseInt(callbackData.split('_')[2]);
 				await this.KeysCallbacks.handleKeyDetails(ctx, keyId);
+			} else if (callbackData.startsWith('sub_stats_')) {
+				const keyId = parseInt(callbackData.split('_')[2]);
+				await this.KeysCallbacks.handleKeyStats(ctx, keyId);
 			} else if (callbackData.startsWith('key_stats_')) {
 				const keyId = parseInt(callbackData.split('_')[2]);
 				await this.KeysCallbacks.handleKeyStats(ctx, keyId);

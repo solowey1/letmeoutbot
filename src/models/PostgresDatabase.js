@@ -65,7 +65,12 @@ class PostgresDatabase {
 
 	async getAllUsers(limit = 100) {
 		const query = `
-            SELECT u.*, COUNT(k.id) as key_count
+            SELECT
+                u.*,
+                COUNT(k.id) as key_count,
+                COUNT(k.id) as keys_purchased,
+                COUNT(CASE WHEN k.outline_key_id IS NOT NULL THEN 1 END) as keys_activated,
+                COUNT(CASE WHEN k.status = 'active' THEN 1 END) as keys_active
             FROM users u
             LEFT JOIN keys k ON u.id = k.user_id
             GROUP BY u.id
@@ -73,7 +78,12 @@ class PostgresDatabase {
             LIMIT $1
         `;
 		const result = await this.pool.query(query, [limit]);
-		return result.rows;
+		return result.rows.map(row => ({
+			...row,
+			keys_purchased: parseInt(row.keys_purchased) || 0,
+			keys_activated: parseInt(row.keys_activated) || 0,
+			keys_active: parseInt(row.keys_active) || 0
+		}));
 	}
 
 	// === KEYS ===

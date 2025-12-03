@@ -41,7 +41,9 @@ class AdminMessages {
 
 			message.push(`${index + 1}. <b>${firstName}</b> (${username})`);
 			message.push(`   ID: ${user.telegram_id}`);
-			message.push(`   ${t('admin.users.user_keys', { ns: 'message' })}: ${user.key_count || 0}`);
+			message.push(`   📦 Куплено: ${user.keys_purchased || 0}`);
+			message.push(`   ✅ Активировано: ${user.keys_activated || 0}`);
+			message.push(`   🟢 Активно сейчас: ${user.keys_active || 0}`);
 			message.push(`   ${t('common.registration')}: ${regDate}`);
 			message.push('');
 		});

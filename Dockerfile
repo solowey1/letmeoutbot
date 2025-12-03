@@ -16,6 +16,7 @@ RUN addgroup -g 1001 -S nodejs && \
 
 # Копируем исходный код
 COPY src/ ./src/
+COPY support.js ./
 COPY .env.example ./
 
 # Создаем директорию для базы данных
