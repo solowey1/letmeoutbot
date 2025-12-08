@@ -3,10 +3,11 @@ const KeyboardUtils = require('../../../utils/keyboards');
 const { AdminMessages } = require('../../../services/messages');
 
 class AdminCallbacks {
-	constructor(database, paymentService, keysService) {
+	constructor(database, paymentService, keysService, broadcastCallbacks = null) {
 		this.db = database;
 		this.paymentService = paymentService;
 		this.keysService = keysService;
+		this.broadcastCallbacks = broadcastCallbacks;
 	}
 
 	async handleAdminPanel(ctx) {
@@ -111,6 +112,44 @@ class AdminCallbacks {
 				KeyboardUtils.createAdminKeyboard(t)
 			);
 		}
+	}
+
+	async handlePendingWithdrawals(ctx) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		try {
+			const withdrawals = await this.db.getPendingWithdrawals();
+			const message = await AdminMessages.pendingWithdrawalsList(
+				t,
+				withdrawals,
+				this.db.getUserById.bind(this.db)
+			);
+			const keyboard = KeyboardUtils.createAdminKeyboard(t);
+
+			await ctx.editMessageText(message, {
+				...keyboard,
+				parse_mode: 'HTML'
+			});
+		} catch (error) {
+			console.error('Ошибка получения pending выплат:', error);
+			await ctx.editMessageText(
+				t('admin.loading_error', { ns: 'message' }),
+				KeyboardUtils.createAdminKeyboard(t)
+			);
+		}
+	}
+
+	async handleBroadcast(ctx) {
+		if (this.broadcastCallbacks) {
+			return this.broadcastCallbacks.handleBroadcastMenu(ctx);
+		}
+
+		await ctx.answerCbQuery('Broadcast functionality not available');
 	}
 }
 

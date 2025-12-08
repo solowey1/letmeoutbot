@@ -42,7 +42,63 @@
       "plan": "Plan",
       "created": "Created",
       "status_label": "Status"
-    }
+    },
+    "withdrawals": {
+      "title": "📜 Pending Withdrawals",
+      "no_pending": "📜 No pending withdrawals",
+      "instructions": "Use /approve_withdrawal <id> or /reject_withdrawal <id>"
+    },
+    "broadcast": {
+      "title": "Message Broadcast",
+      "description": "Create a mass broadcast with user filtering",
+      "select_filter": "Select filter",
+      "filter_description": "Who should receive the message?",
+      "enter_message": "Enter message text",
+      "filter": "Filter",
+      "recipients_count": "Recipients",
+      "message_hint": "Enter the broadcast message text. HTML formatting is supported.",
+      "confirm_title": "Broadcast Confirmation",
+      "message_preview": "Message Preview",
+      "confirm_question": "Send broadcast?",
+      "scheduled_time": "Send time",
+      "scheduled_success": "Broadcast scheduled",
+      "scheduled_hint": "The broadcast will be sent at the specified time",
+      "started": "Broadcast started",
+      "progress_hint": "Broadcast is being sent to users...",
+      "status_title": "Broadcast Status",
+      "status_label": "Status",
+      "total_recipients": "Total recipients",
+      "sent": "Sent",
+      "failed": "Failed",
+      "started_at": "Started",
+      "completed_at": "Completed",
+      "history_title": "Broadcast History",
+      "no_history": "No broadcast history",
+      "schedule_time_title": "Send Time",
+      "schedule_time_hint": "Enter date and time for sending",
+      "schedule_time_format": "Format: DD.MM.YYYY HH:MM (e.g., 25.12.2024 15:30)",
+      "cancelled": "Broadcast cancelled",
+      "error": "Broadcast error",
+      "status": {
+        "pending": "Pending",
+        "in_progress": "In Progress",
+        "completed": "Completed",
+        "failed": "Failed",
+        "cancelled": "Cancelled"
+      },
+      "filters": {
+        "all": "All users",
+        "active_keys": "With active keys",
+        "expired_keys": "With expired keys",
+        "no_keys": "Without keys",
+        "paid_users": "Paid users",
+        "free_users": "Free users",
+        "language": "By language",
+        "new_users": "New users (7 days)",
+        "old_users": "Old users (30+ days)"
+      }
+    },
+    "loading_error": "Loading error"
   },
   "download": {
     "apps": {

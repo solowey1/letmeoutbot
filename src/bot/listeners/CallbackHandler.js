@@ -9,7 +9,7 @@ const LanguageCallbacks = require('../handlers/callbacks/LanguageCallbacks');
 const AdminCallbacks = require('../handlers/callbacks/AdminCallbacks');
 
 class CallbackHandler {
-	constructor(database, paymentService, keysService) {
+	constructor(database, paymentService, keysService, broadcastCallbacks = null) {
 		this.db = database;
 		this.paymentService = paymentService;
 		this.keysService = keysService;
@@ -19,7 +19,8 @@ class CallbackHandler {
 		this.planCallbacks = new PlanCallbacks(database, paymentService, keysService);
 		this.KeysCallbacks = new KeysCallbacks(database, paymentService, keysService);
 		this.languageCallbacks = new LanguageCallbacks(database, paymentService, keysService);
-		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService);
+		this.broadcastCallbacks = broadcastCallbacks;
+		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService, broadcastCallbacks);
 	}
 
 	async handleCallback(ctx) {
@@ -76,6 +77,21 @@ class CallbackHandler {
 				await this.adminCallbacks.handleAdminStats(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.KEYS.PENDING) {
 				await this.adminCallbacks.handleAdminPendingKeys(ctx);
+			} else if (callbackData === 'admin_broadcast') {
+				await this.adminCallbacks.handleBroadcast(ctx);
+			} else if (callbackData === 'broadcast_new') {
+				await this.broadcastCallbacks?.handleNewBroadcast(ctx);
+			} else if (callbackData.startsWith('broadcast_filter_')) {
+				const filterType = callbackData.replace('broadcast_filter_', '');
+				await this.broadcastCallbacks?.handleFilterSelection(ctx, filterType);
+			} else if (callbackData === 'broadcast_confirm_send') {
+				await this.broadcastCallbacks?.handleConfirmSend(ctx);
+			} else if (callbackData === 'broadcast_cancel') {
+				await this.broadcastCallbacks?.handleCancel(ctx);
+			} else if (callbackData === 'broadcast_history') {
+				await this.broadcastCallbacks?.handleBroadcastHistory(ctx);
+			} else if (callbackData === 'admin_panel') {
+				await this.adminCallbacks.handleAdminPanel(ctx);
 			} else {
 				// Неизвестный callback
 				await ctx.editMessageText(t('generic.unknown_command', { ns: 'error' }), KeyboardUtils.createBackToMenuKeyboard(t));
