@@ -10,7 +10,7 @@ const AdminCallbacks = require('../handlers/callbacks/AdminCallbacks');
 const ReferralCallbacks = require('../handlers/callbacks/ReferralCallbacks');
 
 class CallbackHandler {
-	constructor(database, paymentService, keysService, bot) {
+	constructor(database, paymentService, keysService, bot, broadcastCallbacks = null) {
 		this.db = database;
 		this.paymentService = paymentService;
 		this.keysService = keysService;
@@ -21,7 +21,8 @@ class CallbackHandler {
 		this.planCallbacks = new PlanCallbacks(database, paymentService, keysService);
 		this.KeysCallbacks = new KeysCallbacks(database, paymentService, keysService);
 		this.languageCallbacks = new LanguageCallbacks(database, paymentService, keysService);
-		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService);
+		this.broadcastCallbacks = broadcastCallbacks;
+		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService, broadcastCallbacks);
 		this.referralCallbacks = new ReferralCallbacks(database, bot);
 	}
 
@@ -84,6 +85,21 @@ class CallbackHandler {
 				await this.adminCallbacks.handleAdminPendingKeys(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING) {
 				await this.adminCallbacks.handlePendingWithdrawals(ctx);
+			} else if (callbackData === 'admin_broadcast') {
+				await this.adminCallbacks.handleBroadcast(ctx);
+			} else if (callbackData === 'broadcast_new') {
+				await this.broadcastCallbacks?.handleNewBroadcast(ctx);
+			} else if (callbackData.startsWith('broadcast_filter_')) {
+				const filterType = callbackData.replace('broadcast_filter_', '');
+				await this.broadcastCallbacks?.handleFilterSelection(ctx, filterType);
+			} else if (callbackData === 'broadcast_confirm_send') {
+				await this.broadcastCallbacks?.handleConfirmSend(ctx);
+			} else if (callbackData === 'broadcast_cancel') {
+				await this.broadcastCallbacks?.handleCancel(ctx);
+			} else if (callbackData === 'broadcast_history') {
+				await this.broadcastCallbacks?.handleBroadcastHistory(ctx);
+			} else if (callbackData === 'admin_panel') {
+				await this.adminCallbacks.handleAdminPanel(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.MENU) {
 				await this.referralCallbacks.handleReferralMenu(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.INVITE) {

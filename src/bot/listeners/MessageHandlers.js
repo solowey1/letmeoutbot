@@ -3,11 +3,20 @@ const { MenuMessages } = require('../../services/messages');
 const { ADMIN_IDS } = require('../../config/constants');
 
 class MessageHandlers {
-	constructor(database) {
+	constructor(database, broadcastCallbacks = null) {
 		this.db = database;
+		this.broadcastCallbacks = broadcastCallbacks;
 	}
 
 	async handleMessage(ctx) {
+		// Проверяем, не ждём ли мы текст сообщения для рассылки
+		if (this.broadcastCallbacks && ctx.message.text) {
+			const handled = await this.broadcastCallbacks.handleMessageText(ctx);
+			if (handled !== false) {
+				return;
+			}
+		}
+
 		// Показываем главное меню при любом текстовом сообщении
 		if (ctx.message.text) {
 			await this.showMainMenu(ctx);

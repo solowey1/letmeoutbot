@@ -2,6 +2,7 @@
  * Единая точка импорта всех сервисов сообщений
  */
 const AdminMessages = require('./AdminMessages');
+const BroadcastMessages = require('./BroadcastMessages');
 const KeyMessages = require('./KeyMessages');
 const MenuMessages = require('./MenuMessages');
 const PaymentMessages = require('./PaymentMessages');
@@ -15,6 +16,7 @@ const ReferralMessages = require('./ReferralMessages');
 class MessageService {
 	constructor() {
 		this.admin = AdminMessages;
+		this.broadcast = BroadcastMessages;
 		this.key = KeyMessages;
 		this.menu = MenuMessages;
 		this.payment = PaymentMessages;
@@ -27,6 +29,13 @@ class MessageService {
 	 */
 	static get Admin() {
 		return AdminMessages;
+	}
+
+	/**
+	 * Быстрый доступ к сообщениям рассылки
+	 */
+	static get Broadcast() {
+		return BroadcastMessages;
 	}
 
 	/**
@@ -67,6 +76,7 @@ class MessageService {
 
 module.exports = MessageService;
 module.exports.AdminMessages = AdminMessages;
+module.exports.BroadcastMessages = BroadcastMessages;
 module.exports.KeyMessages = KeyMessages;
 module.exports.MenuMessages = MenuMessages;
 module.exports.PaymentMessages = PaymentMessages;

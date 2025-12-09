@@ -17,6 +17,7 @@
     "confirm_purchase": "✅ Confirm Purchase",
     "pay": "✅ Pay",
     "cancel": "❌ Cancel",
+    "confirm": "✅ Confirm",
     "back": "◀️ Back",
     "settings": "⚙️ Settings",
     "language": "🌐 Language",
@@ -37,6 +38,9 @@
       "pending_keys": "⏳ Pending Keys",
       "pending_withdrawals": "💸 Withdrawals",
       "broadcast": "📢 Broadcast",
+      "broadcast_new": "📤 New Broadcast",
+      "broadcast_history": "📜 History",
+      "broadcast_schedule": "⏰ Schedule",
       "settings": "⚙️ Settings"
     },
     "apps": {

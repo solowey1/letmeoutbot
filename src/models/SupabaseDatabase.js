@@ -675,6 +675,281 @@ class SupabaseDatabase {
 		return data.id;
 	}
 
+	// ============== BROADCAST ==============
+
+	/**
+	 * Создать новую рассылку
+	 * @param {number} adminId - Telegram ID администратора
+	 * @param {string} messageText - Текст сообщения
+	 * @param {string} filterType - Тип фильтра
+	 * @param {string} filterValue - Значение фильтра
+	 * @param {Date} scheduledAt - Время отложенной отправки (null для немедленной)
+	 * @returns {Promise<number>} ID созданной рассылки
+	 */
+	async createBroadcast(adminId, messageText, filterType, filterValue = null, scheduledAt = null) {
+		const { data, error } = await this.supabase
+			.from('broadcast_messages')
+			.insert([{
+				admin_id: adminId,
+				message_text: messageText,
+				filter_type: filterType,
+				filter_value: filterValue,
+				scheduled_at: scheduledAt ? scheduledAt.toISOString() : null,
+				status: 'pending'
+			}])
+			.select('id')
+			.single();
+
+		if (error) throw error;
+		return data.id;
+	}
+
+	/**
+	 * Получить список пользователей для рассылки по фильтру
+	 * @param {string} filterType - Тип фильтра
+	 * @param {string} filterValue - Значение фильтра
+	 * @returns {Promise<Array>} Массив пользователей
+	 */
+	async getBroadcastRecipients(filterType, filterValue = null) {
+		let query = this.supabase
+			.from('users')
+			.select('id, telegram_id, username, first_name, language');
+
+		switch (filterType) {
+		case 'all':
+			// Все пользователи
+			break;
+
+		case 'active_keys':
+			// Пользователи с активными ключами
+			query = this.supabase
+				.from('users')
+				.select('id, telegram_id, username, first_name, language, keys!inner(status, expires_at)')
+				.eq('keys.status', 'active')
+				.gt('keys.expires_at', new Date().toISOString());
+			break;
+
+		case 'expired_keys':
+			// Пользователи с истекшими ключами
+			query = this.supabase
+				.from('users')
+				.select('id, telegram_id, username, first_name, language, keys!inner(status, expires_at)')
+				.or('keys.status.eq.expired,keys.expires_at.lt.' + new Date().toISOString());
+			break;
+
+		case 'no_keys':
+			// Пользователи без ключей
+			const { data: usersWithKeys } = await this.supabase
+				.from('keys')
+				.select('user_id');
+
+			const userIdsWithKeys = usersWithKeys?.map(k => k.user_id) || [];
+
+			if (userIdsWithKeys.length > 0) {
+				query = query.not('id', 'in', `(${userIdsWithKeys.join(',')})`);
+			}
+			break;
+
+		case 'paid_users':
+			// Пользователи с успешными платежами
+			query = this.supabase
+				.from('users')
+				.select('id, telegram_id, username, first_name, language, payments!inner(status)')
+				.eq('payments.status', 'completed');
+			break;
+
+		case 'free_users':
+			// Пользователи без покупок
+			const { data: usersWithPayments } = await this.supabase
+				.from('payments')
+				.select('user_id')
+				.eq('status', 'completed');
+
+			const userIdsWithPayments = usersWithPayments?.map(p => p.user_id) || [];
+
+			if (userIdsWithPayments.length > 0) {
+				query = query.not('id', 'in', `(${userIdsWithPayments.join(',')})`);
+			}
+			break;
+
+		case 'language':
+			// Фильтр по языку
+			if (filterValue) {
+				query = query.eq('language', filterValue);
+			}
+			break;
+
+		case 'new_users':
+			// Новые пользователи (последние 7 дней)
+			const weekAgo = new Date();
+			weekAgo.setDate(weekAgo.getDate() - 7);
+			query = query.gte('created_at', weekAgo.toISOString());
+			break;
+
+		case 'old_users':
+			// Старые пользователи (более 30 дней)
+			const monthAgo = new Date();
+			monthAgo.setDate(monthAgo.getDate() - 30);
+			query = query.lte('created_at', monthAgo.toISOString());
+			break;
+		}
+
+		const { data, error } = await query;
+
+		if (error) throw error;
+
+		// Убираем дубликаты пользователей (могут появиться при JOIN)
+		const uniqueUsers = Array.from(
+			new Map(data.map(user => [user.id, user])).values()
+		);
+
+		return uniqueUsers;
+	}
+
+	/**
+	 * Добавить получателей в рассылку
+	 * @param {number} broadcastId - ID рассылки
+	 * @param {Array} users - Массив пользователей
+	 */
+	async addBroadcastRecipients(broadcastId, users) {
+		const recipients = users.map(user => ({
+			broadcast_id: broadcastId,
+			user_id: user.id,
+			telegram_id: user.telegram_id,
+			status: 'pending'
+		}));
+
+		const { error } = await this.supabase
+			.from('broadcast_recipients')
+			.insert(recipients);
+
+		if (error) throw error;
+
+		// Обновляем счётчик получателей
+		await this.supabase
+			.from('broadcast_messages')
+			.update({ total_recipients: users.length })
+			.eq('id', broadcastId);
+	}
+
+	/**
+	 * Обновить статус рассылки
+	 * @param {number} broadcastId - ID рассылки
+	 * @param {string} status - Новый статус
+	 * @param {Object} updates - Дополнительные обновления
+	 */
+	async updateBroadcastStatus(broadcastId, status, updates = {}) {
+		const updateData = { status, ...updates };
+
+		const { error } = await this.supabase
+			.from('broadcast_messages')
+			.update(updateData)
+			.eq('id', broadcastId);
+
+		if (error) throw error;
+	}
+
+	/**
+	 * Получить ожидающих получателей рассылки
+	 * @param {number} broadcastId - ID рассылки
+	 * @param {number} limit - Лимит получателей
+	 */
+	async getPendingRecipients(broadcastId, limit = 30) {
+		const { data, error } = await this.supabase
+			.from('broadcast_recipients')
+			.select('*')
+			.eq('broadcast_id', broadcastId)
+			.eq('status', 'pending')
+			.limit(limit);
+
+		if (error) throw error;
+		return data;
+	}
+
+	/**
+	 * Обновить статус получателя рассылки
+	 * @param {number} recipientId - ID получателя
+	 * @param {string} status - Новый статус (sent/failed)
+	 * @param {string} errorMessage - Сообщение об ошибке (опционально)
+	 */
+	async updateRecipientStatus(recipientId, status, errorMessage = null) {
+		const updateData = {
+			status,
+			sent_at: new Date().toISOString()
+		};
+
+		if (errorMessage) {
+			updateData.error_message = errorMessage;
+		}
+
+		const { error } = await this.supabase
+			.from('broadcast_recipients')
+			.update(updateData)
+			.eq('id', recipientId);
+
+		if (error) throw error;
+	}
+
+	/**
+	 * Обновить счётчики рассылки
+	 * @param {number} broadcastId - ID рассылки
+	 */
+	async updateBroadcastCounters(broadcastId) {
+		const { data: recipients, error } = await this.supabase
+			.from('broadcast_recipients')
+			.select('status')
+			.eq('broadcast_id', broadcastId);
+
+		if (error) throw error;
+
+		const sentCount = recipients.filter(r => r.status === 'sent').length;
+		const failedCount = recipients.filter(r => r.status === 'failed').length;
+
+		await this.supabase
+			.from('broadcast_messages')
+			.update({
+				sent_count: sentCount,
+				failed_count: failedCount
+			})
+			.eq('id', broadcastId);
+	}
+
+	/**
+	 * Получить рассылки по статусу
+	 * @param {string} status - Статус рассылки
+	 * @param {number} limit - Лимит
+	 */
+	async getBroadcastsByStatus(status, limit = 10) {
+		const { data, error } = await this.supabase
+			.from('broadcast_messages')
+			.select('*')
+			.eq('status', status)
+			.order('created_at', { ascending: false })
+			.limit(limit);
+
+		if (error) throw error;
+		return data;
+	}
+
+	/**
+	 * Получить рассылку по ID
+	 * @param {number} broadcastId - ID рассылки
+	 */
+	async getBroadcastById(broadcastId) {
+		const { data, error } = await this.supabase
+			.from('broadcast_messages')
+			.select('*')
+			.eq('id', broadcastId)
+			.single();
+
+		if (error) {
+			if (error.code === 'PGRST116') return null;
+			throw error;
+		}
+
+		return data;
+	}
+
 	async getWithdrawal(withdrawalId) {
 		const { data, error } = await this.supabase
 			.from('withdrawals')
@@ -804,6 +1079,46 @@ class SupabaseDatabase {
 			.eq('admin_telegram_id', adminId);
 
 		if (error) throw error;
+	}
+
+	/**
+	 * Получить запланированные рассылки
+	 */
+	async getScheduledBroadcasts() {
+		const now = new Date().toISOString();
+
+		const { data, error } = await this.supabase
+			.from('broadcast_messages')
+			.select('*')
+			.eq('status', 'pending')
+			.not('scheduled_at', 'is', null)
+			.lte('scheduled_at', now);
+
+		if (error) throw error;
+		return data;
+	}
+
+	/**
+	 * Получить историю рассылок
+	 * @param {number} limit - Лимит
+	 */
+	async getBroadcastHistory(limit = 20) {
+		const { data, error } = await this.supabase
+			.from('broadcast_messages')
+			.select('*')
+			.order('created_at', { ascending: false })
+			.limit(limit);
+
+		if (error) throw error;
+		return data;
+	}
+
+	/**
+	 * Отменить рассылку
+	 * @param {number} broadcastId - ID рассылки
+	 */
+	async cancelBroadcast(broadcastId) {
+		await this.updateBroadcastStatus(broadcastId, 'cancelled');
 	}
 
 	// ============== CLEANUP ==============

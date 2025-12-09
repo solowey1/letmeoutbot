@@ -10,6 +10,7 @@ const PaymentService = require('../services/PaymentService');
 const KeysService = require('../services/KeysService');
 const NotificationService = require('../services/NotificationService');
 const AdminNotificationService = require('../services/AdminNotificationService');
+const BroadcastService = require('../services/BroadcastService');
 const I18nService = require('../services/I18nService');
 
 // Планировщики задач
@@ -20,6 +21,7 @@ const CallbackHandler = require('./listeners/CallbackHandler');
 const CommandHandlers = require('./listeners/CommandHandlers');
 const PaymentHandlers = require('./listeners/PaymentHandlers');
 const MessageHandlers = require('./listeners/MessageHandlers');
+const BroadcastCallbacks = require('./handlers/callbacks/BroadcastCallbacks');
 const I18nMiddleware = require('../middleware/i18nMiddleware');
 
 // Импорты конфигурации
@@ -50,15 +52,20 @@ class TelegramBot {
 		this.keysService = new KeysService(this.db, this.outlineService);
 		this.notificationService = new NotificationService(this.bot, this.i18nService, this.db);
 		this.adminNotificationService = new AdminNotificationService(this.bot, this.db);
+		this.broadcastService = new BroadcastService(this.bot, this.db);
 
 		// Инициализируем менеджер планировщиков
 		this.schedulerManager = new SchedulerManager(
 			this.keysService,
-			this.adminNotificationService
+			this.adminNotificationService,
+			this.broadcastService
 		);
 
+		// Инициализируем обработчики рассылок
+		this.broadcastCallbacks = new BroadcastCallbacks(this.db, this.broadcastService);
+
 		// Инициализируем обработчики
-		this.CallbackHandler = new CallbackHandler(this.db, this.paymentService, this.keysService, this.bot);
+		this.CallbackHandler = new CallbackHandler(this.db, this.paymentService, this.keysService, this.bot, this.broadcastCallbacks);
 		this.commandHandlers = new CommandHandlers(this.db);
 		this.paymentHandlers = new PaymentHandlers(
 			this.paymentService,
@@ -66,7 +73,7 @@ class TelegramBot {
 			this.db,
 			this.adminNotificationService
 		);
-		this.messageHandlers = new MessageHandlers(this.db);
+		this.messageHandlers = new MessageHandlers(this.db, this.broadcastCallbacks);
 
 		// Подключаем i18n middleware
 		const i18nMiddleware = new I18nMiddleware(this.i18nService, this.db);
