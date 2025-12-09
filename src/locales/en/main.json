@@ -6,6 +6,8 @@
       "more": "➕ Buy More"
     },
     "my_keys": "📋 My Keys",
+    "referral": "🎁 Referral Program",
+    "admin_panel": "👨‍💼 Admin Panel",
     "help": "ℹ️ Help",
     "back_to_menu": "◀️ Back to Menu",
     "main_menu": "🏠 Main Menu",
@@ -20,12 +22,21 @@
     "settings": "⚙️ Settings",
     "language": "🌐 Language",
     "retry": "🔄 Try Again",
+    "referral_actions": {
+      "invite": "👥 Invite Friends",
+      "get_link": "🔗 Get Link",
+      "withdraw": "💰 Withdraw Funds",
+      "withdraw_confirm": "✅ Confirm withdrawal",
+      "my_referrals": "📋 My Referrals",
+      "history": "📜 Withdrawal History"
+    },
     "admin": {
       "users": "👥 Users",
       "stats": "📊 Statistics",
       "payments": "💰 Payments",
       "keys": "🔑 Keys",
       "pending_keys": "⏳ Pending Keys",
+      "pending_withdrawals": "💸 Withdrawals",
       "broadcast": "📢 Broadcast",
       "broadcast_new": "📤 New Broadcast",
       "broadcast_history": "📜 History",

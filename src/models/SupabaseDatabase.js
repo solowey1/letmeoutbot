@@ -97,14 +97,54 @@ class SupabaseDatabase {
 		if (error) throw error;
 	}
 
-	async getAllUsers() {
-		const { data, error } = await this.supabase
+	async getAllUsers(limit = 100) {
+		// Получаем пользователей с подсчетом их ключей
+		const { data: users, error: usersError } = await this.supabase
 			.from('users')
 			.select('*')
-			.order('created_at', { ascending: false });
+			.order('created_at', { ascending: false })
+			.limit(limit);
 
-		if (error) throw error;
-		return data || [];
+		if (usersError) throw usersError;
+
+		// Для каждого пользователя подсчитываем статистику ключей
+		const usersWithStats = await Promise.all(users.map(async (user) => {
+			// Всего куплено
+			const { count: totalPurchased, error: purchasedError } = await this.supabase
+				.from('keys')
+				.select('*', { count: 'exact', head: true })
+				.eq('user_id', user.id);
+
+			if (purchasedError) console.error('Error counting purchased keys:', purchasedError);
+
+			// Всего активировано (ключи, которые были добавлены в Outline)
+			const { count: totalActivated, error: activatedError } = await this.supabase
+				.from('keys')
+				.select('*', { count: 'exact', head: true })
+				.eq('user_id', user.id)
+				.not('outline_key_id', 'is', null);
+
+			if (activatedError) console.error('Error counting activated keys:', activatedError);
+
+			// Активно сейчас (ключи со статусом active)
+			const { count: currentlyActive, error: activeError } = await this.supabase
+				.from('keys')
+				.select('*', { count: 'exact', head: true })
+				.eq('user_id', user.id)
+				.eq('status', 'active');
+
+			if (activeError) console.error('Error counting active keys:', activeError);
+
+			return {
+				...user,
+				key_count: totalPurchased || 0,
+				keys_purchased: totalPurchased || 0,
+				keys_activated: totalActivated || 0,
+				keys_active: currentlyActive || 0
+			};
+		}));
+
+		return usersWithStats;
 	}
 
 	// ============== KEYS ==============
@@ -527,6 +567,114 @@ class SupabaseDatabase {
 			.slice(0, limit);
 	}
 
+	// ============== REFERRALS ==============
+
+	async createReferral(referrerId, referredId) {
+		const { data, error } = await this.supabase
+			.from('referrals')
+			.insert([{
+				referrer_id: referrerId,
+				referred_id: referredId
+			}])
+			.select('id')
+			.single();
+
+		if (error) {
+			// Если связь уже существует, игнорируем
+			if (error.code === '23505') {
+				return 0;
+			}
+			throw error;
+		}
+
+		return data.id;
+	}
+
+	async getReferralStats(userId) {
+		const { data, error } = await this.supabase
+			.from('referrals')
+			.select('bonus_earned')
+			.eq('referrer_id', userId);
+
+		if (error) throw error;
+
+		const totalReferrals = data.length;
+		const totalBonus = data.reduce((sum, r) => sum + (r.bonus_earned || 0), 0);
+
+		return {
+			total_referrals: totalReferrals,
+			total_bonus: totalBonus
+		};
+	}
+
+	async getReferrals(userId, limit = 50) {
+		const { data, error } = await this.supabase
+			.from('referrals')
+			.select('*, users!referred_id(username, first_name, created_at)')
+			.eq('referrer_id', userId)
+			.order('created_at', { ascending: false })
+			.limit(limit);
+
+		if (error) throw error;
+
+		// Преобразуем данные для совместимости с другими БД
+		return (data || []).map(r => ({
+			...r,
+			username: r.users?.username,
+			first_name: r.users?.first_name,
+			referred_date: r.users?.created_at
+		}));
+	}
+
+	async updateReferralBonus(referrerId, referredId, bonusAmount, bonusType) {
+		// Получаем текущее значение бонуса
+		const { data: current } = await this.supabase
+			.from('referrals')
+			.select('bonus_earned')
+			.eq('referrer_id', referrerId)
+			.eq('referred_id', referredId)
+			.single();
+
+		const newBonus = (current?.bonus_earned || 0) + bonusAmount;
+
+		const { error } = await this.supabase
+			.from('referrals')
+			.update({
+				bonus_earned: newBonus,
+				bonus_type: bonusType
+			})
+			.eq('referrer_id', referrerId)
+			.eq('referred_id', referredId);
+
+		if (error) throw error;
+	}
+
+	async setUserReferrer(userId, referrerId) {
+		const { error } = await this.supabase
+			.from('users')
+			.update({ referrer_id: referrerId })
+			.eq('id', userId)
+			.is('referrer_id', null);
+
+		if (error) throw error;
+	}
+
+	// ============== WITHDRAWALS ==============
+
+	async createWithdrawal(userId, amount) {
+		const { data, error } = await this.supabase
+			.from('withdrawals')
+			.insert([{
+				user_id: userId,
+				amount: amount
+			}])
+			.select('id')
+			.single();
+
+		if (error) throw error;
+		return data.id;
+	}
+
 	// ============== BROADCAST ==============
 
 	/**
@@ -800,6 +948,137 @@ class SupabaseDatabase {
 		}
 
 		return data;
+	}
+
+	async getWithdrawal(withdrawalId) {
+		const { data, error } = await this.supabase
+			.from('withdrawals')
+			.select('*')
+			.eq('id', withdrawalId)
+			.single();
+
+		if (error) {
+			if (error.code === 'PGRST116') return null;
+			throw error;
+		}
+
+		return data;
+	}
+
+	async getUserWithdrawals(userId) {
+		const { data, error } = await this.supabase
+			.from('withdrawals')
+			.select('*')
+			.eq('user_id', userId)
+			.order('requested_at', { ascending: false });
+
+		if (error) throw error;
+		return data || [];
+	}
+
+	async getPendingWithdrawals() {
+		const { data, error } = await this.supabase
+			.from('withdrawals')
+			.select(`
+				*,
+				users!user_id(telegram_id, username, first_name)
+			`)
+			.eq('status', 'pending')
+			.order('requested_at', { ascending: true });
+
+		if (error) throw error;
+
+		// Преобразуем данные для совместимости
+		return (data || []).map(w => ({
+			...w,
+			telegram_id: w.users?.telegram_id,
+			username: w.users?.username,
+			first_name: w.users?.first_name
+		}));
+	}
+
+	async updateWithdrawalStatus(withdrawalId, status, processedBy = null, notes = null) {
+		const { error } = await this.supabase
+			.from('withdrawals')
+			.update({
+				status: status,
+				processed_at: new Date().toISOString(),
+				processed_by: processedBy,
+				notes: notes
+			})
+			.eq('id', withdrawalId);
+
+		if (error) throw error;
+	}
+
+	async getTotalWithdrawn(userId) {
+		const { data, error } = await this.supabase
+			.from('withdrawals')
+			.select('amount')
+			.eq('user_id', userId)
+			.eq('status', 'completed');
+
+		if (error) throw error;
+
+		return (data || []).reduce((sum, w) => sum + (w.amount || 0), 0);
+	}
+
+	// ============== SUPPORT BOT ==============
+
+	async createSupportMessage(messageData) {
+		const { data, error } = await this.supabase
+			.from('support_messages')
+			.insert([messageData])
+			.select('id')
+			.single();
+
+		if (error) throw error;
+		return data.id;
+	}
+
+	async markSupportMessageReplied(messageId, adminId) {
+		const { error } = await this.supabase
+			.from('support_messages')
+			.update({
+				replied_by_admin_id: adminId,
+				replied_at: new Date().toISOString()
+			})
+			.eq('id', messageId);
+
+		if (error) throw error;
+	}
+
+	async setAdminReplyState(adminId, userId, messageId) {
+		const { error } = await this.supabase
+			.from('admin_reply_state')
+			.upsert({
+				admin_telegram_id: adminId,
+				replying_to_user_id: userId,
+				replying_to_message_id: messageId,
+				created_at: new Date().toISOString()
+			});
+
+		if (error) throw error;
+	}
+
+	async getAdminReplyState(adminId) {
+		const { data, error } = await this.supabase
+			.from('admin_reply_state')
+			.select('*')
+			.eq('admin_telegram_id', adminId)
+			.single();
+
+		if (error && error.code !== 'PGRST116') throw error;
+		return data;
+	}
+
+	async clearAdminReplyState(adminId) {
+		const { error } = await this.supabase
+			.from('admin_reply_state')
+			.delete()
+			.eq('admin_telegram_id', adminId);
+
+		if (error) throw error;
 	}
 
 	/**

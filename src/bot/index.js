@@ -65,7 +65,7 @@ class TelegramBot {
 		this.broadcastCallbacks = new BroadcastCallbacks(this.db, this.broadcastService);
 
 		// Инициализируем обработчики
-		this.CallbackHandler = new CallbackHandler(this.db, this.paymentService, this.keysService, this.broadcastCallbacks);
+		this.CallbackHandler = new CallbackHandler(this.db, this.paymentService, this.keysService, this.bot, this.broadcastCallbacks);
 		this.commandHandlers = new CommandHandlers(this.db);
 		this.paymentHandlers = new PaymentHandlers(
 			this.paymentService,

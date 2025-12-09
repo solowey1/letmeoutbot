@@ -3,13 +3,21 @@ const { CALLBACK_ACTIONS } = require('../config/constants');
 const PlanService = require('../services/PlanService');
 
 class KeyboardUtils {
-	static createMainMenu(t) {
-		return Markup.inlineKeyboard([
+	static createMainMenu(t, isAdmin = false) {
+		const buttons = [
 			[Markup.button.callback(t('buttons.buy.key'), CALLBACK_ACTIONS.KEYS.BUY)],
 			[Markup.button.callback(t('buttons.my_keys'), CALLBACK_ACTIONS.KEYS.MENU)],
+			[Markup.button.callback(t('buttons.referral'), CALLBACK_ACTIONS.REFERRAL.MENU)],
 			[Markup.button.callback(t('buttons.settings'), CALLBACK_ACTIONS.SETTINGS.MENU)],
-			[Markup.button.callback(t('buttons.help'), 'help')],
-		]);
+		];
+
+		if (isAdmin) {
+			buttons.push([Markup.button.callback(t('buttons.admin_panel'), CALLBACK_ACTIONS.ADMIN.MENU)]);
+		}
+
+		buttons.push([Markup.button.callback(t('buttons.help'), 'help')]);
+
+		return Markup.inlineKeyboard(buttons);
 	}
 
 	static createPlansKeyboard(t, isAdmin = false) {
@@ -41,15 +49,15 @@ class KeyboardUtils {
 		const buttons = [];
 
 		if (keys && keys.length > 0) {
-			keys.forEach((sub) => {
-				const plan = PlanService.getPlanById(sub.plan_id);
+			keys.forEach((key) => {
+				const plan = PlanService.getPlanById(key.plan_id);
 				if (plan) {
 					const formatted = PlanService.formatPlanForDisplay(t, plan);
-					const status = sub.status === 'active' ? '🟢' : '🔴';
+					const status = key.status === 'active' ? '🟢' : '🔴';
 					buttons.push([
 						Markup.button.callback(
 							`${status} ${formatted.displayName}`,
-							`sub_details_${sub.id}`
+							`key_details_${key.id}`
 						)
 					]);
 				}
@@ -67,7 +75,7 @@ class KeyboardUtils {
 
 	static createKeyDetailsKeyboard(t, keyId) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.stats'), `sub_stats_${keyId}`)],
+			[Markup.button.callback(t('buttons.stats'), `key_stats_${keyId}`)],
 			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
 		]);
 	}
@@ -98,9 +106,10 @@ class KeyboardUtils {
 			],
 			[
 				Markup.button.callback(t('buttons.admin.pending_keys'), CALLBACK_ACTIONS.ADMIN.KEYS.PENDING),
-				Markup.button.callback(t('buttons.admin.broadcast'), 'admin_broadcast')
+				Markup.button.callback(t('buttons.admin.pending_withdrawals'), CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING)
 			],
 			[
+				Markup.button.callback(t('buttons.admin.broadcast'), 'admin_broadcast'),
 				Markup.button.callback(t('buttons.admin.settings'), 'admin_settings')
 			],
 			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
@@ -189,6 +198,41 @@ class KeyboardUtils {
 		buttons.push([Markup.button.callback(t('buttons.back'), backAction)]);
 
 		return Markup.inlineKeyboard(buttons);
+	}
+
+	static createReferralMenuKeyboard(t) {
+		return Markup.inlineKeyboard([
+			[
+				Markup.button.callback(t('buttons.referral_actions.invite'), CALLBACK_ACTIONS.REFERRAL.INVITE),
+				Markup.button.callback(t('buttons.referral_actions.get_link'), CALLBACK_ACTIONS.REFERRAL.GET_LINK)
+			],
+			[Markup.button.callback(t('buttons.referral_actions.my_referrals'), CALLBACK_ACTIONS.REFERRAL.MY_REFERRALS)],
+			[
+				Markup.button.callback(t('buttons.referral_actions.withdraw'), CALLBACK_ACTIONS.REFERRAL.WITHDRAW),
+				Markup.button.callback(t('buttons.referral_actions.history'), CALLBACK_ACTIONS.REFERRAL.HISTORY)
+			],
+			[Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
+		]);
+	}
+
+	static createReferralInviteKeyboard(t, shareText) {
+		return Markup.inlineKeyboard([
+			[Markup.button.switchToChat(t('buttons.referral_actions.invite'), shareText)],
+			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.REFERRAL.MENU)]
+		]);
+	}
+
+	static createReferralBackKeyboard(t) {
+		return Markup.inlineKeyboard([
+			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.REFERRAL.MENU)]
+		]);
+	}
+
+	static createWithdrawalConfirmKeyboard(t, amount) {
+		return Markup.inlineKeyboard([
+			[Markup.button.callback(`${t('buttons.referral_actions.withdraw_confirm')} ${amount} ⭐`, CALLBACK_ACTIONS.REFERRAL.CONFIRM_WITHDRAW)],
+			[Markup.button.callback(t('buttons.cancel'), CALLBACK_ACTIONS.REFERRAL.MENU)]
+		]);
 	}
 
 	static removeKeyboard() {

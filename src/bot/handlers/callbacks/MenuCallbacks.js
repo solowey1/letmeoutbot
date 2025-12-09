@@ -1,5 +1,6 @@
 const KeyboardUtils = require('../../../utils/keyboards');
 const { MenuMessages } = require('../../../services/messages');
+const { ADMIN_IDS } = require('../../../config/constants');
 
 class MenuCallbacks {
 	constructor(database, paymentService, keysService) {
@@ -11,7 +12,8 @@ class MenuCallbacks {
 	async handleBackToMenu(ctx) {
 		const t = ctx.i18n.t;
 		const message = MenuMessages.welcome(t);
-		const keyboard = KeyboardUtils.createMainMenu(t);
+		const isAdmin = ADMIN_IDS.includes(ctx.from.id);
+		const keyboard = KeyboardUtils.createMainMenu(t, isAdmin);
 
 		await ctx.editMessageText(message, {
 			...keyboard,

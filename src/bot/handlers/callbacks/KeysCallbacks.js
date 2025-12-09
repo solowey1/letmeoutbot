@@ -1,5 +1,6 @@
 const { KeyMessages } = require('../../../services/messages');
 const KeyboardUtils = require('../../../utils/keyboards');
+const { ADMIN_IDS } = require('../../../config/constants');
 
 class KeysCallbacks {
 	constructor(database, paymentService, keyService) {
@@ -15,7 +16,8 @@ class KeysCallbacks {
 			let user = await this.db.getUser(ctx.from.id);
 			if (!user) {
 				const message = KeyMessages.myKeys(t, []);
-				const keyboard = KeyboardUtils.createMainMenu(t);
+				const isAdmin = ADMIN_IDS.includes(ctx.from.id);
+				const keyboard = KeyboardUtils.createMainMenu(t, isAdmin);
 				await ctx.editMessageText(message, {
 					...keyboard,
 					parse_mode: 'HTML'

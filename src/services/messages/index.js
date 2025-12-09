@@ -1,12 +1,13 @@
 /**
  * Единая точка импорта всех сервисов сообщений
  */
-const MenuMessages = require('./MenuMessages');
-const KeyMessages = require('./KeyMessages');
-const PaymentMessages = require('./PaymentMessages');
-const PlanMessages = require('./PlanMessages');
 const AdminMessages = require('./AdminMessages');
 const BroadcastMessages = require('./BroadcastMessages');
+const KeyMessages = require('./KeyMessages');
+const MenuMessages = require('./MenuMessages');
+const PaymentMessages = require('./PaymentMessages');
+const PlanMessages = require('./PlanMessages');
+const ReferralMessages = require('./ReferralMessages');
 
 /**
  * Главный класс для работы с сообщениями
@@ -14,19 +15,27 @@ const BroadcastMessages = require('./BroadcastMessages');
  */
 class MessageService {
 	constructor() {
-		this.menu = MenuMessages;
-		this.key = KeyMessages;
-		this.payment = PaymentMessages;
-		this.plan = PlanMessages;
 		this.admin = AdminMessages;
 		this.broadcast = BroadcastMessages;
+		this.key = KeyMessages;
+		this.menu = MenuMessages;
+		this.payment = PaymentMessages;
+		this.plan = PlanMessages;
+		this.referral = ReferralMessages;
 	}
 
 	/**
-	 * Быстрый доступ к сообщениям меню
+	 * Быстрый доступ к сообщениям админки
 	 */
-	static get Menu() {
-		return MenuMessages;
+	static get Admin() {
+		return AdminMessages;
+	}
+
+	/**
+	 * Быстрый доступ к сообщениям рассылки
+	 */
+	static get Broadcast() {
+		return BroadcastMessages;
 	}
 
 	/**
@@ -34,6 +43,13 @@ class MessageService {
 	 */
 	static get Key() {
 		return KeyMessages;
+	}
+
+	/**
+	 * Быстрый доступ к сообщениям меню
+	 */
+	static get Menu() {
+		return MenuMessages;
 	}
 
 	/**
@@ -51,24 +67,18 @@ class MessageService {
 	}
 
 	/**
-	 * Быстрый доступ к сообщениям админки
+	 * Быстрый доступ к сообщениям рефералов
 	 */
-	static get Admin() {
-		return AdminMessages;
-	}
-
-	/**
-	 * Быстрый доступ к сообщениям рассылки
-	 */
-	static get Broadcast() {
-		return BroadcastMessages;
+	static get Referral() {
+		return ReferralMessages;
 	}
 }
 
 module.exports = MessageService;
-module.exports.MenuMessages = MenuMessages;
-module.exports.KeyMessages = KeyMessages;
-module.exports.PaymentMessages = PaymentMessages;
-module.exports.PlanMessages = PlanMessages;
 module.exports.AdminMessages = AdminMessages;
 module.exports.BroadcastMessages = BroadcastMessages;
+module.exports.KeyMessages = KeyMessages;
+module.exports.MenuMessages = MenuMessages;
+module.exports.PaymentMessages = PaymentMessages;
+module.exports.PlanMessages = PlanMessages;
+module.exports.ReferralMessages = ReferralMessages;
