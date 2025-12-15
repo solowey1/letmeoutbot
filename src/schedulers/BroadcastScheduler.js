@@ -1,4 +1,4 @@
-const cron = require('node-cron');
+const { CronJob } = require('cron');
 
 /**
  * Планировщик для автоматической обработки запланированных рассылок
@@ -16,16 +16,13 @@ class BroadcastScheduler {
 		console.log('📢 Запуск планировщика рассылок...');
 
 		// Проверяем запланированные рассылки каждую минуту
-		const scheduledBroadcastsJob = cron.schedule('* * * * *', async () => {
+		const scheduledBroadcastsJob = new CronJob('* * * * *', async () => {
 			try {
 				await this.broadcastService.processScheduledBroadcasts();
 			} catch (error) {
 				console.error('Ошибка обработки запланированных рассылок:', error);
 			}
-		}, {
-			scheduled: true,
-			timezone: 'UTC'
-		});
+		}, null, true, 'UTC');
 
 		this.jobs.push({
 			name: 'process_scheduled_broadcasts',
