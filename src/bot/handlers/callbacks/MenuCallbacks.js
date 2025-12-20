@@ -59,7 +59,7 @@ class MenuCallbacks {
 	async handleSupport(ctx) {
 		const t = ctx.i18n.t;
 		const message = MenuMessages.support(t);
-		const keyboard = KeyboardUtils.createBackToMenuKeyboard(t);
+		const keyboard = KeyboardUtils.createSupportKeyboard(t);
 
 		await ctx.editMessageText(message, {
 			...keyboard,

@@ -148,6 +148,13 @@ class KeyboardUtils {
 		]);
 	}
 
+	static createSupportKeyboard(t) {
+		return Markup.inlineKeyboard([
+			[Markup.button.url(t('buttons.contact_support'), 'https://t.me/letmeoutsupportbot')],
+			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
+		]);
+	}
+
 	static createSettingsKeyboard(t) {
 		return Markup.inlineKeyboard([
 			[Markup.button.callback(t('buttons.language'), CALLBACK_ACTIONS.SETTINGS.LANGUAGE.SET)],
