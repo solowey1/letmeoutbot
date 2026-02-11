@@ -40,7 +40,7 @@ class ReferralCallbacks {
 
 		// Генерируем реферальную ссылку
 		const botInfo = await ctx.telegram.getMe();
-		const referralLink = ReferralService.generateReferralLink(botInfo.username, user.id);
+		const referralLink = ReferralService.generateReferralLink(botInfo.username, user.telegram_id);
 
 		// Текст для приглашения
 		const inviteText = ReferralMessages.inviteText(t, referralLink);
@@ -65,7 +65,7 @@ class ReferralCallbacks {
 
 		// Генерируем реферальную ссылку
 		const botInfo = await ctx.telegram.getMe();
-		const referralLink = ReferralService.generateReferralLink(botInfo.username, user.id);
+		const referralLink = ReferralService.generateReferralLink(botInfo.username, user.telegram_id);
 
 		// Генерируем сообщение
 		const message = ReferralMessages.referralLink(t, referralLink);
