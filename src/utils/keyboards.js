@@ -39,7 +39,8 @@ class KeyboardUtils {
 
 	static createPlanDetailsKeyboard(t, planId) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.pay'), `${CALLBACK_ACTIONS.PAYMENT.CONFIRM}_${planId}`, 'success', '5942783678668085067')],
+			[Markup.button.callback(t('buttons.pay'), `${CALLBACK_ACTIONS.PAYMENT.CONFIRM}_${planId}`, 'success', '5942783678668085067'			хЬфклгзюигеещтюсфддифсл(е(эигеещтыюзфнэ)б ] % ХСФДДИФСЛ_ФСЕШЩТЫюЗФНЬУТЕюСЩТАШКЬЪ_ % ХздфтШвЪ]б эыгссуыыэб э5942783678668085067э)ъб
+)],
 			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.KEYS.BUY)],
 			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
 		]);
@@ -157,6 +158,13 @@ class KeyboardUtils {
 				Markup.button.url(t('buttons.apps.macos'), 'https://s3.amazonaws.com/outline-releases/client/macos/stable/Outline-Client.dmg')
 			],
 			[Markup.button.callback(t('buttons.back'), 'help')]
+		]);
+	}
+
+	static createSupportKeyboard(t) {
+		return Markup.inlineKeyboard([
+			[Markup.button.url(t('buttons.contact_support'), 'https://t.me/letmeoutsupportbot')],
+			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
 		]);
 	}
 

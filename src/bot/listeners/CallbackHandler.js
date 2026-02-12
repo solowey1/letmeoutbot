@@ -10,7 +10,7 @@ const AdminCallbacks = require('../handlers/callbacks/AdminCallbacks');
 const ReferralCallbacks = require('../handlers/callbacks/ReferralCallbacks');
 
 class CallbackHandler {
-	constructor(database, paymentService, keysService, bot) {
+	constructor(database, paymentService, keysService, bot, broadcastCallbacks = null) {
 		this.db = database;
 		this.paymentService = paymentService;
 		this.keysService = keysService;
@@ -21,7 +21,8 @@ class CallbackHandler {
 		this.planCallbacks = new PlanCallbacks(database, paymentService, keysService);
 		this.KeysCallbacks = new KeysCallbacks(database, paymentService, keysService);
 		this.languageCallbacks = new LanguageCallbacks(database, paymentService, keysService);
-		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService);
+		this.broadcastCallbacks = broadcastCallbacks;
+		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService, broadcastCallbacks);
 		this.referralCallbacks = new ReferralCallbacks(database, bot);
 	}
 
