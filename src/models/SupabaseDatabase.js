@@ -230,8 +230,7 @@ class SupabaseDatabase {
 		const { data, error } = await this.supabase
 			.from('keys')
 			.select('*')
-			.eq('status', 'active')
-			.gt('expires_at', new Date().toISOString());
+			.eq('status', 'active');
 
 		if (error) throw error;
 		return data || [];

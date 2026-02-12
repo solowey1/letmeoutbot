@@ -15,8 +15,8 @@ class KeysScheduler {
 	start() {
 		console.log('🔑 Запуск планировщика задач по ключам...');
 
-		// Проверка лимитов всех активных ключей (каждые 30 минут)
-		const limitsCheckJob = new CronJob('*/30 * * * *', async () => {
+		// Проверка лимитов всех активных ключей (каждые 5 минут)
+		const limitsCheckJob = new CronJob('*/15 * * * *', async () => {
 			console.log('⏰ [Keys] Проверка лимитов активных ключей...');
 			try {
 				await this.keysService.checkAllActiveKeys();

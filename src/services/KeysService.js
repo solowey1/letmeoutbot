@@ -206,10 +206,14 @@ class KeysService {
 
 				// Блокируем ключ
 				if (key.outline_key_id) {
-					await this.outlineService.suspendKey(key.outline_key_id);
+					const suspended = await this.outlineService.suspendKey(key.outline_key_id);
+					if (!suspended) {
+						console.error(`⚠️ Не удалось заблокировать ключ ${keyId} на Outline, повтор при следующей проверке`);
+						return false;
+					}
 				}
 
-				// Обновляем статус ключа
+				// Обновляем статус ключа только после успешной блокировки на Outline
 				await this.db.updateKey(keyId, {
 					status: KEY_STATUS.SUSPENDED
 				});

@@ -133,6 +133,7 @@ class OutlineService {
 				{ limit: { bytes: limitBytes } },
 				{
 					httpsAgent: this.agent,
+					timeout: 15000,
 					headers: {
 						'Content-Type': 'application/json'
 					}

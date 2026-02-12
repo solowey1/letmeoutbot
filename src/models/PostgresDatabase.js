@@ -112,7 +112,7 @@ class PostgresDatabase {
             SELECT k.*, u.telegram_id
             FROM keys k
             JOIN users u ON k.user_id = u.id
-            WHERE k.status = 'active' AND k.expires_at > NOW()
+            WHERE k.status = 'active'
             ORDER BY k.created_at DESC
         `;
 		const result = await this.pool.query(query);

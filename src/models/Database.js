@@ -447,7 +447,6 @@ class Database {
                 FROM keys k
                 JOIN users u ON k.user_id = u.id
                 WHERE k.status = 'active'
-                AND k.expires_at > datetime('now')
                 ORDER BY k.created_at DESC
             `;
 			this.db.all(query, [], (err, rows) => {
