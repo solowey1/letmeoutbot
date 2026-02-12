@@ -1,8 +1,8 @@
 {
   "buttons": {
     "buy": {
-      "first": "💎 Buy First Key",
-      "key": "💎 Buy a key",
+      "first": "Buy First Key",
+      "key": "Buy a key",
       "more": "➕ Buy More"
     },
     "my_keys": "📋 My Keys",
@@ -15,7 +15,7 @@
     "download_apps": "📱 Download Apps",
     "support": "🆘 Support",
     "confirm_purchase": "✅ Confirm Purchase",
-    "pay": "✅ Pay",
+    "pay": "Pay",
     "cancel": "❌ Cancel",
     "back": "◀️ Back",
     "settings": "⚙️ Settings",

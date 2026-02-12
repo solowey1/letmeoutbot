@@ -5,17 +5,17 @@ const PlanService = require('../services/PlanService');
 class KeyboardUtils {
 	static createMainMenu(t, isAdmin = false) {
 		const buttons = [
-			[Markup.button.callback(t('buttons.buy.key'), CALLBACK_ACTIONS.KEYS.BUY)],
-			[Markup.button.callback(t('buttons.my_keys'), CALLBACK_ACTIONS.KEYS.MENU)],
-			[Markup.button.callback(t('buttons.referral'), CALLBACK_ACTIONS.REFERRAL.MENU)],
-			[Markup.button.callback(t('buttons.settings'), CALLBACK_ACTIONS.SETTINGS.MENU)],
+			[KeyboardUtils.btn(t('buttons.buy.key'), CALLBACK_ACTIONS.KEYS.BUY, 'primary', '5427168083074628963')],
+			[KeyboardUtils.btn(t('buttons.my_keys'), CALLBACK_ACTIONS.KEYS.MENU)],
+			[KeyboardUtils.btn(t('buttons.referral'), CALLBACK_ACTIONS.REFERRAL.MENU)],
+			[KeyboardUtils.btn(t('buttons.settings'), CALLBACK_ACTIONS.SETTINGS.MENU)],
 		];
 
 		if (isAdmin) {
-			buttons.push([Markup.button.callback(t('buttons.admin_panel'), CALLBACK_ACTIONS.ADMIN.MENU)]);
+			buttons.push([KeyboardUtils.btn(t('buttons.admin_panel'), CALLBACK_ACTIONS.ADMIN.MENU, 'danger')]);
 		}
 
-		buttons.push([Markup.button.callback(t('buttons.help'), 'help')]);
+		buttons.push([KeyboardUtils.btn(t('buttons.help'), 'help')]);
 
 		return Markup.inlineKeyboard(buttons);
 	}
@@ -39,7 +39,7 @@ class KeyboardUtils {
 
 	static createPlanDetailsKeyboard(t, planId) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.pay'), `${CALLBACK_ACTIONS.PAYMENT.CONFIRM}_${planId}`)],
+			[Markup.button.callback(t('buttons.pay'), `${CALLBACK_ACTIONS.PAYMENT.CONFIRM}_${planId}`, 'success', '5942783678668085067')],
 			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.KEYS.BUY)],
 			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
 		]);
@@ -65,7 +65,7 @@ class KeyboardUtils {
 
 			buttons.push([Markup.button.callback(t('buttons.buy.more'), CALLBACK_ACTIONS.KEYS.BUY)]);
 		} else {
-			buttons.push([Markup.button.callback(t('buttons.buy.first'), CALLBACK_ACTIONS.KEYS.BUY)]);
+			buttons.push([Markup.button.callback(t('buttons.buy.first'), CALLBACK_ACTIONS.KEYS.BUY, 'primary', '5427168083074628963')]);
 		}
 
 		buttons.push([Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]);
@@ -89,7 +89,7 @@ class KeyboardUtils {
 
 	static createDirectCheckoutKeyboard(t, planId) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.pay'), `confirm_payment_${planId}`)],
+			[Markup.button.callback(t('buttons.pay'), `confirm_payment_${planId}`), 'success', '5942783678668085067'],
 			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.KEYS.BUY)]
 		]);
 	}
@@ -136,7 +136,7 @@ class KeyboardUtils {
 
 	static createHelpKeyboard(t) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.buy.key'), CALLBACK_ACTIONS.KEYS.BUY)],
+			[Markup.button.callback(t('buttons.buy.key'), CALLBACK_ACTIONS.KEYS.BUY, 'primary', '5427168083074628963')],
 			[Markup.button.callback(t('buttons.download_apps'), 'download_apps')],
 			[Markup.button.callback(t('buttons.support'), 'support')],
 			[Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
@@ -245,6 +245,13 @@ class KeyboardUtils {
 			[Markup.button.callback(`${t('buttons.referral_actions.withdraw_confirm')} ${amount} ⭐`, CALLBACK_ACTIONS.REFERRAL.CONFIRM_WITHDRAW)],
 			[Markup.button.callback(t('buttons.cancel'), CALLBACK_ACTIONS.REFERRAL.MENU)]
 		]);
+	}
+
+	static btn(text, data, style = null, icon = null) {
+		const button = Markup.button.callback(text, data);
+		if (style) button.style = style;
+		if (icon) button.icon_custom_emoji_id = icon;
+		return button;
 	}
 
 	static removeKeyboard() {
