@@ -39,8 +39,7 @@ class KeyboardUtils {
 
 	static createPlanDetailsKeyboard(t, planId) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.pay'), `${CALLBACK_ACTIONS.PAYMENT.CONFIRM}_${planId}`, 'success', '5942783678668085067'			хЬфклгзюигеещтюсфддифсл(е(эигеещтыюзфнэ)б ] % ХСФДДИФСЛ_ФСЕШЩТЫюЗФНЬУТЕюСЩТАШКЬЪ_ % ХздфтШвЪ]б эыгссуыыэб э5942783678668085067э)ъб
-)],
+			[KeyboardUtils.btn(t('buttons.pay'), `${CALLBACK_ACTIONS.PAYMENT.CONFIRM}_${planId}`, 'success', '5942783678668085067')],
 			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.KEYS.BUY)],
 			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
 		]);
@@ -66,7 +65,7 @@ class KeyboardUtils {
 
 			buttons.push([Markup.button.callback(t('buttons.buy.more'), CALLBACK_ACTIONS.KEYS.BUY)]);
 		} else {
-			buttons.push([Markup.button.callback(t('buttons.buy.first'), CALLBACK_ACTIONS.KEYS.BUY, 'primary', '5427168083074628963')]);
+			buttons.push([KeyboardUtils.btn(t('buttons.buy.first'), CALLBACK_ACTIONS.KEYS.BUY, 'primary', '5427168083074628963')]);
 		}
 
 		buttons.push([Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]);
@@ -90,7 +89,7 @@ class KeyboardUtils {
 
 	static createDirectCheckoutKeyboard(t, planId) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.pay'), `confirm_payment_${planId}`), 'success', '5942783678668085067'],
+			[KeyboardUtils.btn(t('buttons.pay'), `confirm_payment_${planId}`, 'success', '5942783678668085067')],
 			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.KEYS.BUY)]
 		]);
 	}
@@ -137,7 +136,7 @@ class KeyboardUtils {
 
 	static createHelpKeyboard(t) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.buy.key'), CALLBACK_ACTIONS.KEYS.BUY, 'primary', '5427168083074628963')],
+			[KeyboardUtils.btn(t('buttons.buy.key'), CALLBACK_ACTIONS.KEYS.BUY, 'primary', '5427168083074628963')],
 			[Markup.button.callback(t('buttons.download_apps'), 'download_apps')],
 			[Markup.button.callback(t('buttons.support'), 'support')],
 			[Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
