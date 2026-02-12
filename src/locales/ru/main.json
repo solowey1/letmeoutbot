@@ -37,6 +37,10 @@
       "pending_keys": "⏳ Pending подписки",
       "pending_withdrawals": "💸 Выплаты",
       "broadcast": "📢 Рассылка",
+      "broadcast_all": "👥 Всем пользователям",
+      "broadcast_active": "🟢 Активным подписчикам",
+      "broadcast_buyers": "💰 Покупавшим",
+      "broadcast_non_buyers": "👤 Не покупавшим",
       "settings": "⚙️ Настройки"
     },
     "apps": {

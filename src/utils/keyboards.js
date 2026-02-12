@@ -101,18 +101,30 @@ class KeyboardUtils {
 				Markup.button.callback(t('buttons.admin.stats'), CALLBACK_ACTIONS.ADMIN.STATS.MENU)
 			],
 			[
-				Markup.button.callback(t('buttons.admin.payments'), 'admin_payments'),
-				Markup.button.callback(t('buttons.admin.keys'), 'admin_keys')
+				Markup.button.callback(t('buttons.admin.payments'), CALLBACK_ACTIONS.ADMIN.PAYMENTS.MENU),
+				Markup.button.callback(t('buttons.admin.keys'), CALLBACK_ACTIONS.ADMIN.KEYS.MENU)
 			],
 			[
 				Markup.button.callback(t('buttons.admin.pending_keys'), CALLBACK_ACTIONS.ADMIN.KEYS.PENDING),
 				Markup.button.callback(t('buttons.admin.pending_withdrawals'), CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING)
 			],
 			[
-				Markup.button.callback(t('buttons.admin.broadcast'), 'admin_broadcast'),
-				Markup.button.callback(t('buttons.admin.settings'), 'admin_settings')
+				Markup.button.callback(t('buttons.admin.broadcast'), CALLBACK_ACTIONS.ADMIN.BROADCAST),
+				Markup.button.callback(t('buttons.admin.settings'), CALLBACK_ACTIONS.ADMIN.SETTINGS)
 			],
 			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
+		]);
+	}
+
+	static createBroadcastAudienceKeyboard(t) {
+		return Markup.inlineKeyboard([
+			[Markup.button.callback(t('buttons.admin.broadcast_all'), CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.ALL)],
+			[Markup.button.callback(t('buttons.admin.broadcast_active'), CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.ACTIVE)],
+			[
+				Markup.button.callback(t('buttons.admin.broadcast_buyers'), CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.BUYERS),
+				Markup.button.callback(t('buttons.admin.broadcast_non_buyers'), CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.NON_BUYERS),
+			],
+			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.ADMIN.MENU)],
 		]);
 	}
 

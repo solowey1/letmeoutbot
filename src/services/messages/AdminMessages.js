@@ -88,11 +88,12 @@ class AdminMessages {
 		];
 
 		payments.forEach((payment, index) => {
-			const date = new Date(payments.created_at).toLocaleString();
-			const status = payments.status === 'completed' ? '✅' : payments.status === 'pending' ? '⏳' : '❌';
+			const date = new Date(payment.created_at).toLocaleString();
+			const status = payment.status === 'completed' ? '✅' : payment.status === 'pending' ? '⏳' : '❌';
 
-			message.push(`${index + 1}. ${status} ${payments.amount} ⭐`);
-			message.push(`   ${t('users.user')}: ${payments.user_id}`);
+			message.push(`${index + 1}. ${status} ${payment.amount} ⭐`);
+			message.push(`   ${t('common.user')}: ${payment.user_id}`);
+			message.push(`   ${t('common.plan')}: ${payment.plan_id}`);
 			message.push(`   ${date}`);
 			message.push('');
 		});

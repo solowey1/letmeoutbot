@@ -81,18 +81,29 @@ const CALLBACK_ACTIONS = {
 	ADMIN: {
 		MENU: 'admin_menu',
 		KEYS: {
-			MENU: 'admin_keys_menu',
+			MENU: 'admin_keys',
 			PENDING: 'admin_keys_pending_menu',
+		},
+		PAYMENTS: {
+			MENU: 'admin_payments',
 		},
 		STATS: {
 			MENU: 'admin_stats_menu',
 		},
 		USERS: {
-			MENU: 'admin_stats_menu',
+			MENU: 'admin_users_menu',
 		},
 		WITHDRAWALS: {
 			PENDING: 'admin_withdrawals_pending',
 		},
+		BROADCAST: 'admin_broadcast',
+		BROADCAST_AUDIENCE: {
+			ALL: 'admin_broadcast_all',
+			ACTIVE: 'admin_broadcast_active',
+			BUYERS: 'admin_broadcast_buyers',
+			NON_BUYERS: 'admin_broadcast_non_buyers',
+		},
+		SETTINGS: 'admin_settings',
 	},
 	BASIC: {
 		BACK_TO_MENU: 'back_menu',

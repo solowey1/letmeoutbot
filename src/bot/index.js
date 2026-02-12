@@ -66,7 +66,7 @@ class TelegramBot {
 			this.db,
 			this.adminNotificationService
 		);
-		this.messageHandlers = new MessageHandlers(this.db);
+		this.messageHandlers = new MessageHandlers(this.db, this.bot);
 
 		// Подключаем i18n middleware
 		const i18nMiddleware = new I18nMiddleware(this.i18nService, this.db);

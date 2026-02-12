@@ -335,6 +335,69 @@ class Database {
 		});
 	}
 
+	async getUsersWithActiveKeys() {
+		return new Promise((resolve, reject) => {
+			const query = `
+                SELECT DISTINCT u.id, u.telegram_id
+                FROM users u
+                JOIN keys k ON u.id = k.user_id
+                WHERE k.status = 'active'
+            `;
+			this.db.all(query, [], (err, rows) => {
+				if (err) reject(err);
+				else resolve(rows);
+			});
+		});
+	}
+
+	async getBuyerUsers() {
+		return new Promise((resolve, reject) => {
+			const query = `
+                SELECT DISTINCT u.id, u.telegram_id
+                FROM users u
+                JOIN payments p ON u.id = p.user_id
+                WHERE p.status = 'completed'
+            `;
+			this.db.all(query, [], (err, rows) => {
+				if (err) reject(err);
+				else resolve(rows);
+			});
+		});
+	}
+
+	async getNonBuyerUsers() {
+		return new Promise((resolve, reject) => {
+			const query = `
+                SELECT u.id, u.telegram_id
+                FROM users u
+                WHERE u.id NOT IN (
+                    SELECT DISTINCT user_id FROM payments WHERE status = 'completed'
+                )
+            `;
+			this.db.all(query, [], (err, rows) => {
+				if (err) reject(err);
+				else resolve(rows);
+			});
+		});
+	}
+
+	async getRecentPayments(limit = 20) {
+		return new Promise((resolve, reject) => {
+			const query = `
+                SELECT * FROM payments
+                ORDER BY created_at DESC
+                LIMIT ?
+            `;
+			this.db.all(query, [limit], (err, rows) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(rows);
+				}
+			});
+		});
+	}
+
 	// Методы для логирования использования
 	async logUsage(keyId, dataUsed) {
 		return new Promise((resolve, reject) => {

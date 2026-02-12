@@ -37,6 +37,10 @@
       "pending_keys": "⏳ Pending Keys",
       "pending_withdrawals": "💸 Withdrawals",
       "broadcast": "📢 Broadcast",
+      "broadcast_all": "👥 All users",
+      "broadcast_active": "🟢 Active subscribers",
+      "broadcast_buyers": "💰 Buyers",
+      "broadcast_non_buyers": "👤 Non-buyers",
       "settings": "⚙️ Settings"
     },
     "apps": {

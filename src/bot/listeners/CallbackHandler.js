@@ -80,10 +80,26 @@ class CallbackHandler {
 				await this.adminCallbacks.handleAdminUsers(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.STATS.MENU) {
 				await this.adminCallbacks.handleAdminStats(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.PAYMENTS.MENU) {
+				await this.adminCallbacks.handleAdminPayments(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.KEYS.MENU) {
+				await this.adminCallbacks.handleAdminKeys(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.KEYS.PENDING) {
 				await this.adminCallbacks.handleAdminPendingKeys(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING) {
 				await this.adminCallbacks.handlePendingWithdrawals(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.BROADCAST) {
+				await this.adminCallbacks.handleAdminBroadcast(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.ALL) {
+				await this.adminCallbacks.handleBroadcastAudience(ctx, 'all');
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.ACTIVE) {
+				await this.adminCallbacks.handleBroadcastAudience(ctx, 'active');
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.BUYERS) {
+				await this.adminCallbacks.handleBroadcastAudience(ctx, 'buyers');
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.NON_BUYERS) {
+				await this.adminCallbacks.handleBroadcastAudience(ctx, 'non_buyers');
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.SETTINGS) {
+				await this.adminCallbacks.handleAdminSettings(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.MENU) {
 				await this.referralCallbacks.handleReferralMenu(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.INVITE) {

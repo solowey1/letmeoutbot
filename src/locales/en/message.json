@@ -48,7 +48,19 @@
       "no_pending": "📜 No pending withdrawals",
       "instructions": "Use /approve_withdrawal <id> or /reject_withdrawal <id>"
     },
-    "loading_error": "Loading error"
+    "loading_error": "Loading error",
+    "broadcast": {
+      "select_audience": "📢 <b>Broadcast</b>\n\nSelect audience:",
+      "prompt": "Send your message for broadcast.\n\nSupported: text (HTML), photo, video, GIF.\n\nSend /cancel to cancel.",
+      "sending": "Sending broadcast...",
+      "done": "✅ Broadcast completed.\n\nSent: <b>{{sent}}</b>\nErrors: <b>{{errors}}</b>",
+      "cancelled": "Broadcast cancelled.",
+      "no_users": "No users to broadcast to."
+    },
+    "settings": {
+      "title": "Bot Settings",
+      "description": "Configuration is managed via environment variables (.env)."
+    }
   },
   "download": {
     "apps": {

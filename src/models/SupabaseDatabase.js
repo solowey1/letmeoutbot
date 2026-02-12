@@ -300,6 +300,72 @@ class SupabaseDatabase {
 		return data || [];
 	}
 
+	async getUsersWithActiveKeys() {
+		// Supabase JS client не поддерживает DISTINCT JOIN напрямую, используем rpc или raw query
+		const { data, error } = await this.supabase
+			.from('keys')
+			.select('user_id, users!inner(id, telegram_id)')
+			.eq('status', 'active');
+
+		if (error) throw error;
+
+		const seen = new Set();
+		const users = [];
+		for (const row of (data || [])) {
+			const u = row.users;
+			if (u && !seen.has(u.id)) {
+				seen.add(u.id);
+				users.push({ id: u.id, telegram_id: u.telegram_id });
+			}
+		}
+		return users;
+	}
+
+	async getBuyerUsers() {
+		const { data, error } = await this.supabase
+			.from('payments')
+			.select('user_id, users!inner(id, telegram_id)')
+			.eq('status', 'completed');
+
+		if (error) throw error;
+
+		const seen = new Set();
+		const users = [];
+		for (const row of (data || [])) {
+			const u = row.users;
+			if (u && !seen.has(u.id)) {
+				seen.add(u.id);
+				users.push({ id: u.id, telegram_id: u.telegram_id });
+			}
+		}
+		return users;
+	}
+
+	async getNonBuyerUsers() {
+		// Получаем всех пользователей и исключаем тех, кто платил
+		const buyers = await this.getBuyerUsers();
+		const buyerIds = new Set(buyers.map(u => u.id));
+
+		const { data, error } = await this.supabase
+			.from('users')
+			.select('id, telegram_id');
+
+		if (error) throw error;
+
+		return (data || []).filter(u => !buyerIds.has(u.id));
+	}
+
+	async getRecentPayments(limit = 20) {
+		const { data, error } = await this.supabase
+			.from('payments')
+			.select('*')
+			.order('created_at', { ascending: false })
+			.limit(limit);
+
+		if (error) throw error;
+		return data || [];
+	}
+
 	// ============== USAGE LOGS ==============
 
 	async logUsage(keyId, dataUsed) {

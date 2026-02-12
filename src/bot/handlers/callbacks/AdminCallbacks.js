@@ -1,6 +1,7 @@
 const { ADMIN_IDS } = require('../../../config/constants');
 const KeyboardUtils = require('../../../utils/keyboards');
 const { AdminMessages } = require('../../../services/messages');
+const pendingBroadcast = require('../../../utils/broadcastState');
 
 class AdminCallbacks {
 	constructor(database, paymentService, keysService) {
@@ -162,6 +163,150 @@ class AdminCallbacks {
 				);
 			} catch (editError) {
 				console.error('Не удалось отредактировать сообщение об ошибке:', editError.message);
+			}
+		}
+	}
+
+	async handleAdminPayments(ctx) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		try {
+			const payments = await this.db.getRecentPayments(20);
+			const message = AdminMessages.paymentsList(t, payments);
+			const keyboard = KeyboardUtils.createAdminKeyboard(t);
+
+			try {
+				await ctx.editMessageText(message, {
+					...keyboard,
+					parse_mode: 'HTML'
+				});
+			} catch (editError) {
+				if (editError.description && editError.description.includes('message is not modified')) {
+					console.log('Платежи: сообщение не изменилось');
+				} else {
+					throw editError;
+				}
+			}
+		} catch (error) {
+			console.error('Ошибка получения платежей:', error);
+			try {
+				await ctx.editMessageText(
+					t('admin.loading_error', { ns: 'message' }),
+					KeyboardUtils.createAdminKeyboard(t)
+				);
+			} catch (editError) {
+				console.error('Не удалось отредактировать сообщение об ошибке:', editError.message);
+			}
+		}
+	}
+
+	async handleAdminKeys(ctx) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		try {
+			const keys = await this.db.getAllActiveKeys();
+			const message = AdminMessages.keysList(t, keys);
+			const keyboard = KeyboardUtils.createAdminKeyboard(t);
+
+			try {
+				await ctx.editMessageText(message, {
+					...keyboard,
+					parse_mode: 'HTML'
+				});
+			} catch (editError) {
+				if (editError.description && editError.description.includes('message is not modified')) {
+					console.log('Ключи: сообщение не изменилось');
+				} else {
+					throw editError;
+				}
+			}
+		} catch (error) {
+			console.error('Ошибка получения ключей:', error);
+			try {
+				await ctx.editMessageText(
+					t('admin.loading_error', { ns: 'message' }),
+					KeyboardUtils.createAdminKeyboard(t)
+				);
+			} catch (editError) {
+				console.error('Не удалось отредактировать сообщение об ошибке:', editError.message);
+			}
+		}
+	}
+
+	async handleAdminBroadcast(ctx) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		const keyboard = KeyboardUtils.createBroadcastAudienceKeyboard(t);
+		const message = t('admin.broadcast.select_audience', { ns: 'message' });
+
+		try {
+			await ctx.editMessageText(message, {
+				...keyboard,
+				parse_mode: 'HTML'
+			});
+		} catch (editError) {
+			if (editError.description && editError.description.includes('message is not modified')) {
+				console.log('Рассылка: сообщение не изменилось');
+			} else {
+				console.error('Ошибка редактирования сообщения рассылки:', editError.message);
+			}
+		}
+	}
+
+	async handleBroadcastAudience(ctx, audience) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		pendingBroadcast.set(ctx.from.id, { audience });
+
+		await ctx.reply(t('admin.broadcast.prompt', { ns: 'message' }));
+	}
+
+	async handleAdminSettings(ctx) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		const message = [
+			`⚙️ <b>${t('admin.settings.title', { ns: 'message' })}</b>`,
+			'',
+			t('admin.settings.description', { ns: 'message' })
+		].join('\n');
+
+		const keyboard = KeyboardUtils.createAdminKeyboard(t);
+
+		try {
+			await ctx.editMessageText(message, {
+				...keyboard,
+				parse_mode: 'HTML'
+			});
+		} catch (editError) {
+			if (editError.description && editError.description.includes('message is not modified')) {
+				console.log('Настройки: сообщение не изменилось');
+			} else {
+				console.error('Ошибка редактирования настроек:', editError.message);
 			}
 		}
 	}

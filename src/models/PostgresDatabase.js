@@ -170,6 +170,50 @@ class PostgresDatabase {
 		return result.rows[0];
 	}
 
+	async getUsersWithActiveKeys() {
+		const query = `
+            SELECT DISTINCT u.id, u.telegram_id
+            FROM users u
+            JOIN keys k ON u.id = k.user_id
+            WHERE k.status = 'active'
+        `;
+		const result = await this.pool.query(query);
+		return result.rows;
+	}
+
+	async getBuyerUsers() {
+		const query = `
+            SELECT DISTINCT u.id, u.telegram_id
+            FROM users u
+            JOIN payments p ON u.id = p.user_id
+            WHERE p.status = 'completed'
+        `;
+		const result = await this.pool.query(query);
+		return result.rows;
+	}
+
+	async getNonBuyerUsers() {
+		const query = `
+            SELECT u.id, u.telegram_id
+            FROM users u
+            WHERE u.id NOT IN (
+                SELECT DISTINCT user_id FROM payments WHERE status = 'completed'
+            )
+        `;
+		const result = await this.pool.query(query);
+		return result.rows;
+	}
+
+	async getRecentPayments(limit = 20) {
+		const query = `
+            SELECT * FROM payments
+            ORDER BY created_at DESC
+            LIMIT $1
+        `;
+		const result = await this.pool.query(query, [limit]);
+		return result.rows;
+	}
+
 	async updatePayment(id, updates) {
 		const fields = Object.keys(updates).map((key, idx) => `${key} = $${idx + 2}`).join(', ');
 		const values = Object.values(updates);
