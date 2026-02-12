@@ -21,51 +21,56 @@ class NotificationService {
 
 			switch (notification.type) {
 				case NOTIFICATION_TYPES.TRAFFIC_WARNING_5:
-					message = `⚠️ <b>${t('notifications.traffic_warning_5.title')}</b>\n\n`;
+					message = `⚠️ <b>${t('notifications.traffic_warning_5.title', { ns: 'message' })}</b>\n\n`;
 					message += t('notifications.traffic_warning_5.message', {
+						ns: 'message',
 						percentage: notification.data.remainingPercentage,
 						days: notification.data.daysRemaining
 					});
 					break;
 
 				case NOTIFICATION_TYPES.TRAFFIC_WARNING_1:
-					message = `🚨 <b>${t('notifications.traffic_warning_1.title')}</b>\n\n`;
+					message = `🚨 <b>${t('notifications.traffic_warning_1.title', { ns: 'message' })}</b>\n\n`;
 					message += t('notifications.traffic_warning_1.message', {
+						ns: 'message',
 						percentage: notification.data.remainingPercentage,
 						days: notification.data.daysRemaining
 					});
 					break;
 
 				case NOTIFICATION_TYPES.TRAFFIC_EXHAUSTED:
-					message = `❌ <b>${t('notifications.traffic_exhausted.title')}</b>\n\n`;
+					message = `❌ <b>${t('notifications.traffic_exhausted.title', { ns: 'message' })}</b>\n\n`;
 					message += t('notifications.traffic_exhausted.message', {
+						ns: 'message',
 						percentage: notification.data.usagePercentage
 					});
 					break;
 
 				case NOTIFICATION_TYPES.TIME_WARNING_3:
-					message = `⏰ <b>${t('notifications.time_warning_3.title')}</b>\n\n`;
+					message = `⏰ <b>${t('notifications.time_warning_3.title', { ns: 'message' })}</b>\n\n`;
 					message += t('notifications.time_warning_3.message', {
+						ns: 'message',
 						days: notification.data.daysRemaining,
 						percentage: notification.data.usagePercentage
 					});
 					break;
 
 				case NOTIFICATION_TYPES.TIME_WARNING_1:
-					message = `🔥 <b>${t('notifications.time_warning_1.title')}</b>\n\n`;
+					message = `🔥 <b>${t('notifications.time_warning_1.title', { ns: 'message' })}</b>\n\n`;
 					message += t('notifications.time_warning_1.message', {
+						ns: 'message',
 						days: notification.data.daysRemaining,
 						percentage: notification.data.usagePercentage
 					});
 					break;
 
 				case NOTIFICATION_TYPES.TIME_EXPIRED:
-					message = `⛔ <b>${t('notifications.time_expired.title')}</b>\n\n`;
-					message += t('notifications.time_expired.message');
+					message = `⛔ <b>${t('notifications.time_expired.title', { ns: 'message' })}</b>\n\n`;
+					message += t('notifications.time_expired.message', { ns: 'message' });
 					break;
 
 				default:
-					message = `📢 ${t('notifications.default')}`;
+					message = `📢 ${t('notifications.default', { ns: 'message' })}`;
 			}
 
 			// Добавляем кнопки для всех типов уведомлений
