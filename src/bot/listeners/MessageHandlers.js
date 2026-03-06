@@ -4,13 +4,23 @@ const { ADMIN_IDS } = require('../../config/constants');
 const pendingBroadcast = require('../../utils/broadcastState');
 
 class MessageHandlers {
-	constructor(database, bot) {
+	constructor(database, bot, broadcastCallbacks = null) {
 		this.db = database;
 		this.bot = bot;
+		this.broadcastCallbacks = broadcastCallbacks;
 	}
 
 	async handleMessage(ctx) {
 		const userId = ctx.from.id;
+
+		// Обработка сообщения для новой системы рассылок (BroadcastCallbacks)
+		if (this.broadcastCallbacks && ADMIN_IDS.includes(userId)) {
+			const session = this.broadcastCallbacks.broadcastSessions.get(userId);
+			if (session && session.step === 'awaiting_message') {
+				await this.broadcastCallbacks.handleMessageText(ctx);
+				return;
+			}
+		}
 
 		// Обработка сообщения для рассылки (любой тип контента)
 		if (ADMIN_IDS.includes(userId) && pendingBroadcast.has(userId)) {
