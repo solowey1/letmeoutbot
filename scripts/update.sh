@@ -11,7 +11,8 @@ echo "🔄 Обновление $PROJECT_NAME..."
 
 # Получаем обновления из git
 echo "📥 Загружаем обновления..."
-git pull origin main
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+git pull origin "$BRANCH"
 
 # Останавливаем контейнеры
 echo "⏹️  Останавливаем контейнеры..."
