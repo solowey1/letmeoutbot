@@ -7,6 +7,16 @@ set -e
 
 PROJECT_NAME="vpnbot-prod"
 
+# Определяем compose-файл
+if [ -f "docker-compose.prod.yml" ]; then
+    COMPOSE_FILE="docker-compose.prod.yml"
+elif [ -f "docker-compose.yml" ]; then
+    COMPOSE_FILE="docker-compose.yml"
+else
+    echo "❌ Не найден docker-compose файл"
+    exit 1
+fi
+
 echo "📊 Мониторинг VPN Bot"
 echo "====================="
 

@@ -8,7 +8,17 @@ set -e
 ENV=${1:-production}
 PROJECT_NAME="vpnbot"
 
-echo "🚀 Развертывание $PROJECT_NAME в окружении: $ENV"
+# Определяем compose-файл
+if [ -f "docker-compose.prod.yml" ]; then
+    COMPOSE_FILE="docker-compose.prod.yml"
+elif [ -f "docker-compose.yml" ]; then
+    COMPOSE_FILE="docker-compose.yml"
+else
+    echo "❌ Не найден docker-compose файл"
+    exit 1
+fi
+
+echo "🚀 Развертывание $PROJECT_NAME в окружении: $ENV (compose: $COMPOSE_FILE)"
 
 # Проверяем наличие Docker
 if ! command -v docker &> /dev/null; then
@@ -42,35 +52,31 @@ mkdir -p data logs
 
 # Останавливаем существующие контейнеры
 echo "⏹️  Останавливаем существующие контейнеры..."
-docker-compose -f docker-compose.prod.yml down || true
+docker-compose -f "$COMPOSE_FILE" down || true
 
 # Собираем образ
 echo "🔨 Собираем Docker образ..."
-docker-compose -f docker-compose.prod.yml build --no-cache
+docker-compose -f "$COMPOSE_FILE" build --no-cache
 
 # Запускаем контейнеры
 echo "🚀 Запускаем контейнеры..."
-if [ "$ENV" = "production" ]; then
-    docker-compose -f docker-compose.prod.yml up -d
-else
-    docker-compose up -d
-fi
+docker-compose -f "$COMPOSE_FILE" up -d
 
 # Проверяем статус
 echo "🔍 Проверяем статус контейнеров..."
 sleep 5
-docker-compose -f docker-compose.prod.yml ps
+docker-compose -f "$COMPOSE_FILE" ps
 
 # Показываем логи
 echo "📋 Последние логи:"
-docker-compose -f docker-compose.prod.yml logs --tail=20
+docker-compose -f "$COMPOSE_FILE" logs --tail=20
 
 echo ""
 echo "✅ Развертывание завершено!"
 echo ""
 echo "📊 Полезные команды:"
-echo "  Логи:           docker-compose -f docker-compose.prod.yml logs -f"
-echo "  Статус:         docker-compose -f docker-compose.prod.yml ps"
-echo "  Перезапуск:     docker-compose -f docker-compose.prod.yml restart"
-echo "  Остановка:      docker-compose -f docker-compose.prod.yml down"
-echo "  Обновление:     ./scripts/update.sh"
+echo "  Логи:       ./manage.sh logs"
+echo "  Статус:     ./manage.sh status"
+echo "  Перезапуск: ./manage.sh restart"
+echo "  Остановка:  ./manage.sh stop"
+echo "  Обновление: ./manage.sh update"
