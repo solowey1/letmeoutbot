@@ -181,30 +181,30 @@ class BroadcastCallbacks {
 			return;
 		}
 
-		// Сохраняем текст сообщения
+		// Сохраняем текст сообщения, переходим к выбору языка
 		session.messageText = messageText;
-		session.step = 'confirming';
+		session.step = 'selecting_language';
 		this.broadcastSessions.set(ctx.from.id, session);
 
-		// Показываем подтверждение
-		const message = BroadcastMessages.confirmBroadcast(
-			t,
-			messageText,
-			session.filterType,
-			session.recipientsCount
-		);
+		// Показываем выбор языка аудитории
+		const filterName = BroadcastMessages.getFilterName(t, session.filterType);
+		const message = BroadcastMessages.selectLanguage(t, filterName, session.recipientsCount);
 
 		const keyboard = Markup.inlineKeyboard([
 			[
 				Markup.button.callback(
-					t('buttons.confirm', { ns: 'button', defaultValue: '✅ Отправить' }),
-					'broadcast_confirm_send'
+					t('admin.broadcast.language_ru', { ns: 'message', defaultValue: '🇷🇺 Русский' }),
+					'broadcast_lang_ru'
 				),
 				Markup.button.callback(
-					t('buttons.admin.broadcast_schedule', { defaultValue: '⏰ Отложить' }),
-					'broadcast_schedule'
+					t('admin.broadcast.language_en', { ns: 'message', defaultValue: '🌍 English' }),
+					'broadcast_lang_en'
 				)
 			],
+			[Markup.button.callback(
+				t('admin.broadcast.language_all', { ns: 'message', defaultValue: '👥 Все языки' }),
+				'broadcast_lang_all'
+			)],
 			[Markup.button.callback(
 				t('buttons.cancel', { ns: 'button', defaultValue: '❌ Отмена' }),
 				'broadcast_cancel'
@@ -215,6 +215,84 @@ class BroadcastCallbacks {
 			...keyboard,
 			parse_mode: 'HTML'
 		});
+	}
+
+	/**
+	 * Обработка выбора языка аудитории
+	 */
+	async handleLanguageSelection(ctx, lang) {
+		const t = ctx.i18n.t;
+		const session = this.broadcastSessions.get(ctx.from.id);
+
+		if (!session || session.step !== 'selecting_language') {
+			await ctx.answerCbQuery();
+			return;
+		}
+
+		try {
+			// Получаем всех получателей по фильтру и применяем языковой фильтр
+			const allRecipients = await this.db.getBroadcastRecipients(session.filterType);
+			let filtered = allRecipients;
+			if (lang === 'ru') {
+				filtered = allRecipients.filter(u => u.language === 'ru');
+			} else if (lang === 'en') {
+				filtered = allRecipients.filter(u => u.language !== 'ru');
+			}
+
+			if (filtered.length === 0) {
+				await ctx.answerCbQuery(
+					t('admin.broadcast.no_recipients', {
+						ns: 'message',
+						defaultValue: 'Нет получателей для этого фильтра'
+					}),
+					{ show_alert: true }
+				);
+				return;
+			}
+
+			session.languageFilter = lang;
+			session.recipientsCount = filtered.length;
+			session.step = 'confirming';
+			this.broadcastSessions.set(ctx.from.id, session);
+
+			const message = BroadcastMessages.confirmBroadcast(
+				t,
+				session.messageText,
+				session.filterType,
+				session.recipientsCount,
+				null,
+				lang
+			);
+
+			const keyboard = Markup.inlineKeyboard([
+				[
+					Markup.button.callback(
+						t('buttons.confirm', { ns: 'button', defaultValue: '✅ Отправить' }),
+						'broadcast_confirm_send'
+					),
+					Markup.button.callback(
+						t('buttons.admin.broadcast_schedule', { defaultValue: '⏰ Отложить' }),
+						'broadcast_schedule'
+					)
+				],
+				[Markup.button.callback(
+					t('buttons.cancel', { ns: 'button', defaultValue: '❌ Отмена' }),
+					'broadcast_cancel'
+				)]
+			]);
+
+			await ctx.editMessageText(message, {
+				...keyboard,
+				parse_mode: 'HTML'
+			});
+			await ctx.answerCbQuery();
+		} catch (error) {
+			console.error('Error selecting language:', error);
+			await ctx.answerCbQuery(
+				t('admin.broadcast.error', { ns: 'message' }),
+				{ show_alert: true }
+			);
+		}
 	}
 
 	/**
@@ -234,7 +312,8 @@ class BroadcastCallbacks {
 			const result = await this.broadcastService.createBroadcast(
 				ctx.from.id,
 				session.messageText,
-				session.filterType
+				session.filterType,
+				session.languageFilter || null
 			);
 
 			// Удаляем сессию
