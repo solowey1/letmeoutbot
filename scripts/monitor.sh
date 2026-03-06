@@ -22,7 +22,7 @@ echo "====================="
 
 # Проверяем статус контейнера
 echo "🔍 Статус контейнера:"
-docker-compose -f docker-compose.prod.yml ps
+docker-compose -f "$COMPOSE_FILE" ps
 
 echo ""
 
@@ -34,7 +34,7 @@ echo ""
 
 # Проверяем логи на ошибки
 echo "⚠️  Последние ошибки:"
-docker-compose -f docker-compose.prod.yml logs --tail=50 | grep -i error || echo "Ошибок не найдено"
+docker-compose -f "$COMPOSE_FILE" logs --tail=50 | grep -i error || echo "Ошибок не найдено"
 
 echo ""
 
@@ -70,4 +70,4 @@ echo ""
 
 # Показываем последние 10 строк логов
 echo "📋 Последние логи:"
-docker-compose -f docker-compose.prod.yml logs --tail=10
+docker-compose -f "$COMPOSE_FILE" logs --tail=10

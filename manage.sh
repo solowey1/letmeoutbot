@@ -9,7 +9,14 @@
 set -e
 
 SCRIPTS_DIR="$(cd "$(dirname "$0")/scripts" && pwd)"
-COMPOSE_PROD="docker-compose.prod.yml"
+# Определяем compose-файл
+if [ -f "docker-compose.prod.yml" ]; then
+    COMPOSE_PROD="docker-compose.prod.yml"
+elif [ -f "docker-compose.yml" ]; then
+    COMPOSE_PROD="docker-compose.yml"
+else
+    COMPOSE_PROD=""
+fi
 COMPOSE_DEV="docker-compose.yml"
 
 # Цвета
