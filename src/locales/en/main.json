@@ -43,6 +43,9 @@
       "broadcast_active": "🟢 Active subscribers",
       "broadcast_buyers": "💰 Buyers",
       "broadcast_non_buyers": "👤 Non-buyers",
+      "broadcast_new": "📤 New Broadcast",
+      "broadcast_history": "📜 History",
+      "broadcast_schedule": "⏰ Schedule",
       "settings": "⚙️ Settings"
     },
     "apps": {

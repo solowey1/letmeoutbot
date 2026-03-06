@@ -28,16 +28,16 @@ class BroadcastCallbacks {
 		const message = BroadcastMessages.mainMenu(t);
 		const keyboard = Markup.inlineKeyboard([
 			[Markup.button.callback(
-				t('buttons.admin.broadcast_new', { defaultValue: '📤 Новая рассылка' }),
+				t('buttons.admin.broadcast_new'),
 				'broadcast_new'
 			)],
 			[Markup.button.callback(
-				t('buttons.admin.broadcast_history', { defaultValue: '📜 История' }),
+				t('buttons.admin.broadcast_history'),
 				'broadcast_history'
 			)],
 			[Markup.button.callback(
-				t('buttons.back', { ns: 'button' }),
-				'admin_panel'
+				t('buttons.back'),
+				'admin_menu'
 			)]
 		]);
 
@@ -89,7 +89,7 @@ class BroadcastCallbacks {
 				'broadcast_filter_new_users'
 			)],
 			[Markup.button.callback(
-				t('buttons.back', { ns: 'button' }),
+				t('buttons.back'),
 				'admin_broadcast'
 			)]
 		]);
@@ -138,7 +138,7 @@ class BroadcastCallbacks {
 			const message = BroadcastMessages.requestMessage(t, filterType, recipientsCount);
 			const keyboard = Markup.inlineKeyboard([
 				[Markup.button.callback(
-					t('buttons.cancel', { ns: 'button', defaultValue: '❌ Отмена' }),
+					t('buttons.cancel'),
 					'broadcast_cancel'
 				)]
 			]);
@@ -206,7 +206,7 @@ class BroadcastCallbacks {
 				'broadcast_lang_all'
 			)],
 			[Markup.button.callback(
-				t('buttons.cancel', { ns: 'button', defaultValue: '❌ Отмена' }),
+				t('buttons.cancel'),
 				'broadcast_cancel'
 			)]
 		]);
@@ -267,16 +267,16 @@ class BroadcastCallbacks {
 			const keyboard = Markup.inlineKeyboard([
 				[
 					Markup.button.callback(
-						t('buttons.confirm', { ns: 'button', defaultValue: '✅ Отправить' }),
+						t('buttons.confirm'),
 						'broadcast_confirm_send'
 					),
 					Markup.button.callback(
-						t('buttons.admin.broadcast_schedule', { defaultValue: '⏰ Отложить' }),
+						t('buttons.admin.broadcast_schedule'),
 						'broadcast_schedule'
 					)
 				],
 				[Markup.button.callback(
-					t('buttons.cancel', { ns: 'button', defaultValue: '❌ Отмена' }),
+					t('buttons.cancel'),
 					'broadcast_cancel'
 				)]
 			]);
@@ -367,7 +367,7 @@ class BroadcastCallbacks {
 
 			const keyboard = Markup.inlineKeyboard([
 				[Markup.button.callback(
-					t('buttons.back', { ns: 'button' }),
+					t('buttons.back'),
 					'admin_broadcast'
 				)]
 			]);

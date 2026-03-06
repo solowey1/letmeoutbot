@@ -43,6 +43,9 @@
       "broadcast_active": "🟢 Активным подписчикам",
       "broadcast_buyers": "💰 Покупавшим",
       "broadcast_non_buyers": "👤 Не покупавшим",
+      "broadcast_new": "📤 Новая рассылка",
+      "broadcast_history": "📜 История",
+      "broadcast_schedule": "⏰ Отложить",
       "settings": "⚙️ Настройки"
     },
     "apps": {
