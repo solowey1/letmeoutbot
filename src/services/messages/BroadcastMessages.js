@@ -57,7 +57,24 @@ class BroadcastMessages {
 	 * @param {Date} scheduledAt - Время отправки (null для немедленной)
 	 * @returns {string}
 	 */
-	static confirmBroadcast(t, messageText, filterType, recipientsCount, scheduledAt = null) {
+	static selectLanguage(t, filterName, totalCount) {
+		return [
+			`🌐 <b>${t('admin.broadcast.select_language', { ns: 'message' })}</b>`,
+			'',
+			`📊 ${t('admin.broadcast.filter', { ns: 'message' })}: ${filterName}`,
+			`👥 ${t('admin.broadcast.total_recipients', { ns: 'message' })}: ${totalCount}`,
+			'',
+			t('admin.broadcast.language_hint', { ns: 'message' })
+		].join('\n');
+	}
+
+	static getLanguageName(t, languageFilter) {
+		if (languageFilter === 'ru') return t('admin.broadcast.language_ru', { ns: 'message' });
+		if (languageFilter === 'en') return t('admin.broadcast.language_en', { ns: 'message' });
+		return t('admin.broadcast.language_all', { ns: 'message' });
+	}
+
+	static confirmBroadcast(t, messageText, filterType, recipientsCount, scheduledAt = null, languageFilter = null) {
 		const filterName = this.getFilterName(t, filterType);
 		const preview = messageText.length > 100 ? messageText.substring(0, 100) + '...' : messageText;
 
@@ -65,6 +82,7 @@ class BroadcastMessages {
 			`📋 <b>${t('admin.broadcast.confirm_title', { ns: 'message' })}</b>`,
 			'',
 			`📊 ${t('admin.broadcast.filter', { ns: 'message' })}: ${filterName}`,
+			`🌐 ${t('admin.broadcast.language_label', { ns: 'message' })}: ${this.getLanguageName(t, languageFilter)}`,
 			`👥 ${t('admin.broadcast.recipients_count', { ns: 'message' })}: ${recipientsCount}`,
 			''
 		];

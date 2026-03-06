@@ -89,16 +89,22 @@ class CallbackHandler {
 				await this.adminCallbacks.handleAdminPendingKeys(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING) {
 				await this.adminCallbacks.handlePendingWithdrawals(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.BROADCAST) {
-				await this.adminCallbacks.handleAdminBroadcast(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.ALL) {
-				await this.adminCallbacks.handleBroadcastAudience(ctx, 'all');
-			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.ACTIVE) {
-				await this.adminCallbacks.handleBroadcastAudience(ctx, 'active');
-			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.BUYERS) {
-				await this.adminCallbacks.handleBroadcastAudience(ctx, 'buyers');
-			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.NON_BUYERS) {
-				await this.adminCallbacks.handleBroadcastAudience(ctx, 'non_buyers');
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.BROADCAST || callbackData === 'admin_broadcast') {
+				await this.broadcastCallbacks.handleBroadcastMenu(ctx);
+			} else if (callbackData === 'broadcast_new') {
+				await this.broadcastCallbacks.handleNewBroadcast(ctx);
+			} else if (callbackData === 'broadcast_history') {
+				await this.broadcastCallbacks.handleBroadcastHistory(ctx);
+			} else if (callbackData.startsWith('broadcast_filter_')) {
+				const filterType = callbackData.replace('broadcast_filter_', '');
+				await this.broadcastCallbacks.handleFilterSelection(ctx, filterType);
+			} else if (callbackData.startsWith('broadcast_lang_')) {
+				const lang = callbackData.replace('broadcast_lang_', '');
+				await this.broadcastCallbacks.handleLanguageSelection(ctx, lang);
+			} else if (callbackData === 'broadcast_confirm_send') {
+				await this.broadcastCallbacks.handleConfirmSend(ctx);
+			} else if (callbackData === 'broadcast_cancel') {
+				await this.broadcastCallbacks.handleCancel(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.SETTINGS) {
 				await this.adminCallbacks.handleAdminSettings(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.MENU) {
