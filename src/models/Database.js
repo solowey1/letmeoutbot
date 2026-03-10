@@ -522,6 +522,25 @@ class Database {
 		});
 	}
 
+	async getKeysByPeriod(days) {
+		return new Promise((resolve, reject) => {
+			const since = new Date();
+			since.setDate(since.getDate() - days);
+			const query = `
+                SELECT k.*, u.telegram_id
+                FROM keys k
+                JOIN users u ON k.user_id = u.id
+                WHERE k.expires_at >= ?
+                  AND k.outline_key_id IS NOT NULL
+                ORDER BY k.created_at DESC
+            `;
+			this.db.all(query, [since.toISOString()], (err, rows) => {
+				if (err) reject(err);
+				else resolve(rows);
+			});
+		});
+	}
+
 	// Методы для работы с рефералами
 	async createReferral(referrerId, referredId) {
 		return new Promise((resolve, reject) => {

@@ -119,6 +119,19 @@ class PostgresDatabase {
 		return result.rows;
 	}
 
+	async getKeysByPeriod(days) {
+		const query = `
+            SELECT k.*, u.telegram_id
+            FROM keys k
+            JOIN users u ON k.user_id = u.id
+            WHERE k.expires_at >= NOW() - INTERVAL '${days} days'
+              AND k.outline_key_id IS NOT NULL
+            ORDER BY k.created_at DESC
+        `;
+		const result = await this.pool.query(query);
+		return result.rows;
+	}
+
 	async getAllUserKeys(userId) {
 		const query = `
             SELECT * FROM keys

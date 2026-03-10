@@ -404,6 +404,57 @@ class KeysService {
 		}
 	}
 
+	// Глубокий аудит ключей за последние N дней (включая suspended/expired).
+	// Синхронизирует использование с Outline и блокирует ключи, вышедшие за лимит.
+	// По умолчанию — 30 дней. Когда подписчиков станет больше, смените на 7 дней
+	// в KeysScheduler.js (параметр DEEP_AUDIT_PERIOD_DAYS в вызове keysService.auditKeysByPeriod).
+	async auditKeysByPeriod(days = 30) {
+		console.log(`🔍 [Audit] Глубокая проверка ключей за последние ${days} дней...`);
+
+		const keys = await this.db.getKeysByPeriod(days);
+		console.log(`📊 [Audit] Найдено ${keys.length} ключей для проверки`);
+
+		let fixed = 0;
+		let errors = 0;
+
+		for (const key of keys) {
+			try {
+				// Синхронизируем использование из Outline
+				let actualUsage = null;
+				try {
+					actualUsage = await this.outlineService.getKeyDataUsage(key.outline_key_id);
+				} catch (usageError) {
+					console.warn(`⚠️ [Audit] Не удалось получить использование ключа ${key.id}:`, usageError.message);
+				}
+
+				if (actualUsage !== null && actualUsage > (key.data_used || 0)) {
+					await this.db.updateKey(key.id, { data_used: actualUsage });
+					key.data_used = actualUsage;
+				}
+
+				// Проверяем, нужна ли блокировка
+				const now = moment();
+				const isExpired = moment(key.expires_at).isBefore(now);
+				const isOverLimit = key.data_used >= key.data_limit;
+
+				if ((isExpired || isOverLimit) && key.status === KEY_STATUS.ACTIVE) {
+					console.log(`🚫 [Audit] Блокируем ключ ${key.id}: истёк=${isExpired}, лимит=${isOverLimit}`);
+					const suspended = await this.outlineService.suspendKey(key.outline_key_id);
+					if (suspended) {
+						await this.db.updateKey(key.id, { status: KEY_STATUS.SUSPENDED });
+						fixed++;
+					}
+				}
+			} catch (keyError) {
+				console.error(`❌ [Audit] Ошибка обработки ключа ${key.id}:`, keyError.message);
+				errors++;
+			}
+		}
+
+		console.log(`✅ [Audit] Завершено: исправлено ${fixed}, ошибок ${errors}`);
+		return { total: keys.length, fixed, errors };
+	}
+
 	// Проверяет пороговые значения и возвращает необходимые уведомления
 	async checkKeyThresholds(key) {
 		const notifications = [];

@@ -15,7 +15,7 @@ class KeysScheduler {
 	start() {
 		console.log('🔑 Запуск планировщика задач по ключам...');
 
-		// Проверка лимитов всех активных ключей (каждые 5 минут)
+		// Проверка лимитов всех активных ключей (каждые 15 минут)
 		const limitsCheckJob = new CronJob('*/15 * * * *', async () => {
 			console.log('⏰ [Keys] Проверка лимитов активных ключей...');
 			try {
@@ -26,6 +26,22 @@ class KeysScheduler {
 		}, null, true);
 
 		this.jobs.push({ name: 'keys_limits_check', job: limitsCheckJob });
+
+		// Глубокий аудит ключей — каждое воскресенье в 03:00.
+		// Проверяет все ключи (включая suspended/expired) за последние 30 дней.
+		// Когда подписчиков станет больше — измените DEEP_AUDIT_PERIOD_DAYS с 30 на 7,
+		// чтобы снизить нагрузку (проверка только за последнюю неделю).
+		const DEEP_AUDIT_PERIOD_DAYS = 30;
+		const deepAuditJob = new CronJob('0 3 * * 0', async () => {
+			console.log(`⏰ [Audit] Еженедельная глубокая проверка ключей за ${DEEP_AUDIT_PERIOD_DAYS} дней...`);
+			try {
+				await this.keysService.auditKeysByPeriod(DEEP_AUDIT_PERIOD_DAYS);
+			} catch (error) {
+				console.error('❌ [Audit] Ошибка глубокой проверки:', error);
+			}
+		}, null, true);
+
+		this.jobs.push({ name: 'keys_deep_audit', job: deepAuditJob });
 
 		console.log(`✅ Запущено ${this.jobs.length} задач по ключам:`);
 		this.jobs.forEach(({ name }) => {
@@ -66,6 +82,9 @@ class KeysScheduler {
 		switch (taskName) {
 			case 'keys_limits_check':
 				await this.keysService.checkAllActiveKeys();
+				break;
+			case 'keys_deep_audit':
+				await this.keysService.auditKeysByPeriod(30);
 				break;
 			default:
 				throw new Error(`Неизвестная задача: ${taskName}`);

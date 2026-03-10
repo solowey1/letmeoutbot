@@ -166,7 +166,8 @@ class OutlineService {
 			const response = await axios.get(
 				`${this.apiUrl}/metrics/transfer`,
 				{
-					httpsAgent: this.agent
+					httpsAgent: this.agent,
+					timeout: 10000 // 10 секунд — предотвращает зависание цикла проверки ключей
 				}
 			);
 			return response.data.bytesTransferredByUserId;

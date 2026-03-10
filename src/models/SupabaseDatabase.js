@@ -236,6 +236,20 @@ class SupabaseDatabase {
 		return data || [];
 	}
 
+	async getKeysByPeriod(days) {
+		const since = new Date();
+		since.setDate(since.getDate() - days);
+
+		const { data, error } = await this.supabase
+			.from('keys')
+			.select('*')
+			.gte('expires_at', since.toISOString())
+			.not('outline_key_id', 'is', null);
+
+		if (error) throw error;
+		return data || [];
+	}
+
 	// ============== PAYMENTS ==============
 
 	async createPayment(userId, planId, amount, currency = 'XTR') {
