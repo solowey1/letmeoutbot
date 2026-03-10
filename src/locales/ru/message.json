@@ -50,6 +50,10 @@
       "instructions": "Используйте /approve_withdrawal <id> или /reject_withdrawal <id>"
     },
     "loading_error": "Ошибка загрузки",
+    "settings": {
+      "title": "Настройки бота",
+      "description": "Конфигурация управляется через переменные окружения (.env)."
+    },
     "broadcast": {
       "title": "Рассылка",
       "description": "Управление рассылками для пользователей бота.",
