@@ -1,3 +1,10 @@
+const { PLANS } = require('../../config/constants');
+
+const PLAN_NAME_MAP = Object.values(PLANS).reduce((map, plan) => {
+	map[plan.id] = `${plan.emoji} ${plan.name}`;
+	return map;
+}, {});
+
 /**
  * Сервис для генерации сообщений админ-панели
  */
@@ -126,7 +133,7 @@ class AdminMessages {
 
 			message.push(`${index + 1}. ${status} ID: ${key.id}`);
 			message.push(`   ${t('common.user')}: ${key.user_id}`);
-			message.push(`   ${t('common.plan')}: ${key.plan_name || 'Unknown'}`);
+			message.push(`   ${t('common.plan')}: ${PLAN_NAME_MAP[key.plan_id] || key.plan_id || 'Unknown'}`);
 			message.push(`   ${t('common.expires')}: ${expiryDate}`);
 			message.push('');
 		});
