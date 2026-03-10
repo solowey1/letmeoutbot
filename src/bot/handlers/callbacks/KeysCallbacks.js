@@ -178,9 +178,10 @@ class KeysCallbacks {
 			await ctx.answerCbQuery(t('keys.refreshing', { ns: 'message' }));
 			const newAccessUrl = await this.keyService.refreshAccessUrl(keyId);
 
-			await ctx.reply(
+			const keyboard = KeyboardUtils.createKeyStatsKeyboard(t, keyId);
+			await ctx.editMessageText(
 				`🔄 <b>${t('keys.refresh_success', { ns: 'message' })}</b>\n\n<code>${newAccessUrl}</code>`,
-				{ parse_mode: 'HTML' }
+				{ ...keyboard, parse_mode: 'HTML' }
 			);
 		} catch (error) {
 			console.error('Ошибка обновления ключа:', error);

@@ -77,6 +77,7 @@ class KeyboardUtils {
 		return Markup.inlineKeyboard([
 			[Markup.button.callback(t('buttons.stats'), `key_stats_${keyId}`)],
 			[Markup.button.callback(t('buttons.refresh_key'), `key_refresh_${keyId}`)],
+			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.KEYS.MENU)],
 			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
 		]);
 	}
