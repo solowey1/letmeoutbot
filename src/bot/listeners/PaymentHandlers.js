@@ -13,25 +13,14 @@ class PaymentHandlers {
 	}
 
 	async handlePreCheckoutQuery(ctx) {
-		const t = ctx.i18n?.t || ((key) => key);
-
 		try {
-			// Проверяем возможность создания ключа (валидация Outline API)
-			const canCreateKey = await this.keysService.checkOutlineAvailability();
-
-			if (!canCreateKey) {
-				console.error('❌ Outline API недоступен');
-				await ctx.answerPreCheckoutQuery(
-					false,
-					KeyMessages.creationFailed(t)
-				);
-				return;
-			}
-
-			// Разрешаем оплату
+			// Отвечаем сразу — Telegram требует ответ в течение 10 секунд.
+			// Проверка Outline API здесь не нужна: если ключ не создастся,
+			// handleSuccessfulPayment имеет retry-логику и fallback на pending_activation.
 			await ctx.answerPreCheckoutQuery(true);
 		} catch (error) {
 			console.error('Ошибка пре-чекаута:', error);
+			const t = ctx.i18n?.t || ((key) => key);
 			await ctx.answerPreCheckoutQuery(false, t('generic.default', { ns: 'error' }));
 		}
 	}
