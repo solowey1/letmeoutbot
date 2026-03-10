@@ -76,6 +76,14 @@ class KeyboardUtils {
 	static createKeyDetailsKeyboard(t, keyId) {
 		return Markup.inlineKeyboard([
 			[Markup.button.callback(t('buttons.stats'), `key_stats_${keyId}`)],
+			[Markup.button.callback(t('buttons.refresh_key'), `key_refresh_${keyId}`)],
+			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
+		]);
+	}
+
+	static createKeyStatsKeyboard(t, keyId) {
+		return Markup.inlineKeyboard([
+			[Markup.button.callback(t('buttons.back'), `key_details_${keyId}`)],
 			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
 		]);
 	}

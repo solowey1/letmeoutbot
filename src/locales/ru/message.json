@@ -159,6 +159,8 @@
     "usage_title": "Использование:",
     "days_until_expiry": "Дней до окончания",
     "access_key_title": "Ключ доступа:",
+    "refreshing": "Обновляем ключ...",
+    "refresh_success": "Ключ обновлён! Скопируйте новый ключ и добавьте его в Outline:",
     "how_to_connect": "Как подключиться:",
     "connect_steps": [
       "Скачайте Outline Client",

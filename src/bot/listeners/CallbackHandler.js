@@ -62,6 +62,9 @@ class CallbackHandler {
 			} else if (callbackData.startsWith('key_stats_')) {
 				const keyId = parseInt(callbackData.split('_')[2]);
 				await this.KeysCallbacks.handleKeyStats(ctx, keyId);
+			} else if (callbackData.startsWith('key_refresh_')) {
+				const keyId = parseInt(callbackData.split('_')[2]);
+				await this.KeysCallbacks.handleRefreshKey(ctx, keyId);
 			} else if (callbackData === CALLBACK_ACTIONS.SETTINGS.MENU) {
 				await this.menuCallbacks.handleSettings(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.SETTINGS.LANGUAGE.SET) {

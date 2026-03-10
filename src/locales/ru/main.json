@@ -23,6 +23,7 @@
     "settings": "⚙️ Настройки",
     "language": "🌐 Язык",
     "retry": "🔄 Попробовать снова",
+    "refresh_key": "🔄 Обновить ключ",
     "referral_actions": {
       "invite": "👥 Пригласить друзей",
       "get_link": "🔗 Получить ссылку",

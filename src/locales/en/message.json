@@ -158,6 +158,8 @@
     "usage_title": "Usage:",
     "days_until_expiry": "Days until expiry",
     "access_key_title": "Access Key:",
+    "refreshing": "Refreshing key...",
+    "refresh_success": "Key refreshed! Copy the new key and add it to Outline:",
     "how_to_connect": "How to connect:",
     "connect_steps": [
       "Download Outline Client",

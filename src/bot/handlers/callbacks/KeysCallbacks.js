@@ -156,7 +156,7 @@ class KeysCallbacks {
 				message += `\n⏰ <b>${t('stats.key_expiring_soon', { ns: 'message' })}</b>`;
 			}
 
-			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId);
+			const keyboard = KeyboardUtils.createKeyStatsKeyboard(t, keyId);
 
 			await ctx.editMessageText(message, {
 				...keyboard,
@@ -168,6 +168,23 @@ class KeysCallbacks {
 				t('generic.loading_error', { ns: 'error' }),
 				KeyboardUtils.createBackToMenuKeyboard(t)
 			);
+		}
+	}
+
+	async handleRefreshKey(ctx, keyId) {
+		const t = ctx.i18n.t;
+
+		try {
+			await ctx.answerCbQuery(t('keys.refreshing', { ns: 'message' }));
+			const newAccessUrl = await this.keyService.refreshAccessUrl(keyId);
+
+			await ctx.reply(
+				`🔄 <b>${t('keys.refresh_success', { ns: 'message' })}</b>\n\n<code>${newAccessUrl}</code>`,
+				{ parse_mode: 'HTML' }
+			);
+		} catch (error) {
+			console.error('Ошибка обновления ключа:', error);
+			await ctx.answerCbQuery(t('generic.default', { ns: 'error' }), { show_alert: true });
 		}
 	}
 

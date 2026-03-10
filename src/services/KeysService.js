@@ -111,6 +111,20 @@ class KeysService {
 		}
 	}
 
+	async refreshAccessUrl(keyId) {
+		const key = await this.db.getKey(keyId);
+		if (!key || !key.outline_key_id) {
+			throw new Error('Ключ не найден или не активирован');
+		}
+
+		const outlineKey = await this.outlineService.getAccessKey(key.outline_key_id);
+		const displayName = `LetMeOut_#${outlineKey.id}_${key.plan_id}`;
+		const newAccessUrl = `${outlineKey.accessUrl}#${encodeURIComponent(displayName)}`;
+
+		await this.db.updateKey(keyId, { access_url: newAccessUrl });
+		return newAccessUrl;
+	}
+
 	async updateUsageStats(keyId) {
 		try {
 			const key = await this.db.getKey(keyId);
