@@ -445,7 +445,7 @@ class KeysService {
 			}
 		}
 
-		if (daysRemaining <= 0) {
+		if (expiryDate.isBefore(now)) {
 			const alreadySent = await this.db.checkNotificationSent(
 				key.id,
 				NOTIFICATION_TYPES.TIME_EXPIRED,
