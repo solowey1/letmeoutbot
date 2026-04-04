@@ -10,25 +10,62 @@ class PlanCallbacks {
 		this.keysService = keysService;
 	}
 
+	// ============== ШАГ 1: выбор типа подключения ==============
+
 	async handleShowPlans(ctx) {
 		const t = ctx.i18n.t;
-		const isAdmin = ADMIN_IDS.includes(ctx.from.id);
-		const plans = PlanService.getAllPlans(isAdmin);
-		const keyboard = KeyboardUtils.createPlansKeyboard(t, isAdmin);
+		const message = [
+			`🔐 <b>Выберите тип подключения</b>`,
+			'',
+			`🌿 <b>Outline</b> — простой и надёжный VPN на базе Shadowsocks`,
+			`⚡ <b>VLESS</b> — современный протокол, сложнее обнаружить`,
+			`👑 <b>Оба протокола</b> — максимальная надёжность со скидкой 20%`
+		].join('\n');
 
-		let message = PlanMessages.choosePlan(t) + '\n';
-
-		plans.forEach(plan => {
-			const formatted = PlanService.formatPlanForDisplay(t, plan);
-			message += `<b>${formatted.displayName}</b>\n`;
-			message += `${formatted.fullDescription}\n\n`;
-		});
+		const keyboard = KeyboardUtils.createTypeSelectionKeyboard(t);
 
 		await ctx.editMessageText(message, {
 			...keyboard,
 			parse_mode: 'HTML'
 		});
 	}
+
+	// ============== ШАГ 2: выбор тарифа ==============
+
+	async handleShowPlansByType(ctx, type) {
+		const t = ctx.i18n.t;
+		const isAdmin = ADMIN_IDS.includes(ctx.from.id);
+		const plans = PlanService.getPlansByType(type, isAdmin);
+
+		const typeNames = {
+			outline: '🌿 Outline VPN',
+			vless: '⚡ VLESS',
+			both: '👑 Outline + VLESS'
+		};
+
+		const typeDescriptions = {
+			outline: 'Shadowsocks протокол, работает везде, легко настроить',
+			vless: 'Reality протокол, максимальная маскировка трафика',
+			both: 'Оба протокола + скидка 20% — переключайтесь в любой момент'
+		};
+
+		let message = `<b>${typeNames[type]}</b>\n<i>${typeDescriptions[type]}</i>\n\n`;
+
+		plans.forEach(plan => {
+			const formatted = PlanService.formatPlanForDisplay(t, plan);
+			const limit = plan.dataLimitGB > 0 ? `${plan.dataLimitGB} GB` : 'Безлимит';
+			message += `${plan.emoji} <b>${limit}</b> — ${formatted.displayPrice}/мес\n`;
+		});
+
+		const keyboard = KeyboardUtils.createPlansKeyboardByType(t, plans, type);
+
+		await ctx.editMessageText(message, {
+			...keyboard,
+			parse_mode: 'HTML'
+		});
+	}
+
+	// ============== ШАГ 3: детали тарифа ==============
 
 	async handleShowPlanDetails(ctx, planId) {
 		const t = ctx.i18n.t;
@@ -45,8 +82,31 @@ class PlanCallbacks {
 		const formatted = PlanService.formatPlanForDisplay(t, plan);
 		const savings = PlanService.calculateSavings(plan);
 
-		const message = PlanMessages.planDetails(t, plan, { ...formatted, savings });
-		const keyboard = KeyboardUtils.createPlanDetailsKeyboard(t, planId);
+		let message = `<b>${formatted.displayName}</b>\n\n`;
+		message += `<b>Что включено:</b>\n`;
+		message += `• Трафик: ${formatted.displayDataLimit}\n`;
+		message += `• Срок: ${formatted.displayDuration}\n`;
+		message += `• Безлимитная скорость\n`;
+		message += `• Все устройства\n`;
+
+		if (plan.type === 'vless' || plan.type === 'both') {
+			message += `• VLESS Reality (сложно заблокировать)\n`;
+		}
+		if (plan.type === 'outline' || plan.type === 'both') {
+			message += `• Outline Shadowsocks\n`;
+		}
+		if (plan.type === 'both') {
+			message += `• Два протокола в одном ключе\n`;
+		}
+
+		if (savings > 0) {
+			message += `\n💰 Экономия: ${savings} ⭐ vs покупки по отдельности\n`;
+		}
+
+		message += `\n<b>Цена: ${formatted.displayPrice}</b>`;
+		message += `\n<i>Оплата через Telegram Stars</i>`;
+
+		const keyboard = KeyboardUtils.createPlanDetailsKeyboard(t, planId, plan.type);
 
 		await ctx.editMessageText(message, {
 			...keyboard,
@@ -67,14 +127,15 @@ class PlanCallbacks {
 		}
 
 		const formatted = PlanService.formatPlanForDisplay(t, plan);
+		const limit = plan.dataLimitGB > 0 ? `${plan.dataLimitGB} GB` : 'Безлимит';
 
-		let message = `🛒 <b>${t('payments.confirmation_title', { ns: 'message' })}</b>\n\n`;
-		message += `📦 ${t('common.plan')}: ${formatted.displayName}\n`;
-		message += `💾 ${t('plans.data_volume', { ns: 'message' })}: ${formatted.dataLimit}\n`;
-		message += `⏰ ${t('plans.validity_period', { ns: 'message' })}: ${formatted.duration}\n`;
-		message += `💰 ${t('payments.to_pay', { ns: 'message' })}: ${formatted.displayPrice}\n\n`;
-		message += `${t('payments.after_payment', { ns: 'message' })}\n\n`;
-		message += `⭐ ${t('payments.via_stars', { ns: 'message' })}`;
+		let message = `🛒 <b>Подтверждение покупки</b>\n\n`;
+		message += `${plan.emoji} <b>${plan.name}</b>\n`;
+		message += `💾 Трафик: ${limit}\n`;
+		message += `⏰ Срок: ${formatted.displayDuration}\n`;
+		message += `💰 К оплате: <b>${formatted.displayPrice}</b>\n\n`;
+		message += `После оплаты вы мгновенно получите ключ(и) для подключения.\n\n`;
+		message += `⭐ Оплата через Telegram Stars`;
 
 		const keyboard = KeyboardUtils.createPaymentConfirmationKeyboard(t, planId);
 
@@ -85,27 +146,7 @@ class PlanCallbacks {
 	}
 
 	async handleDirectCheckout(ctx, planId) {
-		const t = ctx.i18n.t;
-		const plan = PlanService.getPlanById(planId);
-
-		if (!plan) {
-			await ctx.editMessageText(
-				t('keys.plan_not_found', { ns: 'error' }),
-				KeyboardUtils.createBackToMenuKeyboard(t)
-			);
-			return;
-		}
-
-		const formatted = PlanService.formatPlanForDisplay(t, plan);
-		const savings = PlanService.calculateSavings(plan);
-
-		const message = PlanMessages.planDetails(t, plan, { ...formatted, savings });
-		const keyboard = KeyboardUtils.createDirectCheckoutKeyboard(t, planId);
-
-		await ctx.editMessageText(message, {
-			...keyboard,
-			parse_mode: 'HTML'
-		});
+		return this.handleShowPlanDetails(ctx, planId);
 	}
 
 	async handleCreateInvoice(ctx, planId) {
@@ -113,24 +154,18 @@ class PlanCallbacks {
 
 		try {
 			const plan = PlanService.getPlanById(planId);
-			if (!plan) {
-				throw new Error(t('keys.plan_not_found', { ns: 'error' }));
-			}
+			if (!plan) throw new Error(t('keys.plan_not_found', { ns: 'error' }));
 
-			// Получаем локализованную версию плана
 			const localizedPlan = PlanService.formatPlanForDisplay(t, plan);
 
-			// Получаем или создаем пользователя
 			let user = await this.db.getUser(ctx.from.id);
 			if (!user) {
 				await this.db.createUser(ctx.from.id, ctx.from.username, ctx.from.first_name, ctx.from.last_name);
 				user = await this.db.getUser(ctx.from.id);
 			}
 
-			// Создаем инвойс с локализованным планом
 			const { paymentId, invoice } = await this.paymentService.createInvoice(user.id, localizedPlan);
 
-			// Отправляем инвойс пользователю
 			const invoiceMessage = await ctx.replyWithInvoice({
 				title: invoice.title,
 				description: invoice.description,
@@ -138,29 +173,26 @@ class PlanCallbacks {
 				provider_token: invoice.provider_token,
 				currency: invoice.currency,
 				prices: invoice.prices,
-				photo_url: undefined,
-				photo_size: undefined,
-				photo_width: undefined,
-				photo_height: undefined,
 				need_name: false,
 				need_phone_number: false,
 				need_email: false,
 				need_shipping_address: false,
-				send_phone_number_to_provider: false,
-				send_email_to_provider: false,
 				is_flexible: false
 			});
 
-			// Сохраняем message_id инвойса для последующего удаления
 			await this.paymentService.saveInvoiceMessageId(paymentId, invoiceMessage.message_id);
 
-			const message = PlanMessages.invoiceSent(t);
-			await ctx.editMessageText(message, KeyboardUtils.createBackToMenuKeyboard(t));
+			await ctx.editMessageText(
+				'✅ Инвойс отправлен! Нажмите «Оплатить» для завершения покупки.',
+				KeyboardUtils.createBackToMenuKeyboard(t)
+			);
 
 		} catch (error) {
 			console.error('Ошибка создания инвойса:', error);
-			const errorMessage = PlanMessages.paymentError(t, error.message);
-			await ctx.editMessageText(errorMessage, KeyboardUtils.createBackToMenuKeyboard(t));
+			await ctx.editMessageText(
+				`❌ Ошибка: ${error.message}`,
+				KeyboardUtils.createBackToMenuKeyboard(t)
+			);
 		}
 	}
 }

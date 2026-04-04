@@ -273,6 +273,41 @@ class KeyboardUtils {
 	static removeKeyboard() {
 		return Markup.removeKeyboard();
 	}
+
+	// ── Выбор типа подключения ──────────────────────────────────────
+	static createTypeSelectionKeyboard(t) {
+		return Markup.inlineKeyboard([
+			[Markup.button.callback('🌿 Outline VPN', 'plans_type_outline')],
+			[Markup.button.callback('⚡ VLESS Reality', 'plans_type_vless')],
+			[Markup.button.callback('👑 Outline + VLESS (скидка 20%)', 'plans_type_both')],
+			[Markup.button.callback(t('buttons.back_to_menu'), 'back_menu')]
+		]);
+	}
+
+	// ── Список планов по типу ───────────────────────────────────────
+	static createPlansKeyboardByType(t, plans, type) {
+		const buttons = plans.map(plan => {
+			const limit = plan.dataLimitGB > 0 ? `${plan.dataLimitGB} GB` : 'Безлимит';
+			return [Markup.button.callback(
+				`${plan.emoji} ${limit} — ${plan.price} ⭐`,
+				`checkout_${plan.id}`
+			)];
+		});
+
+		buttons.push([Markup.button.callback('◀️ Назад', 'keys_buy')]);
+		buttons.push([Markup.button.callback(t('buttons.back_to_menu'), 'back_menu')]);
+
+		return Markup.inlineKeyboard(buttons);
+	}
+
+	// ── Детали плана ────────────────────────────────────────────────
+	static createPlanDetailsKeyboard(t, planId, planType) {
+		return Markup.inlineKeyboard([
+			[Markup.button.callback('💳 Оплатить', `confirm_payment_${planId}`)],
+			[Markup.button.callback('◀️ Назад', `plans_type_${planType}`)],
+			[Markup.button.callback(t('buttons.back_to_menu'), 'back_menu')]
+		]);
+	}
 }
 
 module.exports = KeyboardUtils;

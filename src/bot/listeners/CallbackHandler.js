@@ -124,6 +124,21 @@ class CallbackHandler {
 				await this.referralCallbacks.handleConfirmWithdraw(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.HISTORY) {
 				await this.referralCallbacks.handleWithdrawalHistory(ctx);
+				// ── Выбор типа подключения ──
+			} else if (callbackData === CALLBACK_ACTIONS.KEYS.BUY) {
+				await this.planCallbacks.handleShowPlans(ctx);
+			} else if (callbackData === 'plans_type_outline') {
+				await this.planCallbacks.handleShowPlansByType(ctx, 'outline');
+			} else if (callbackData === 'plans_type_vless') {
+				await this.planCallbacks.handleShowPlansByType(ctx, 'vless');
+			} else if (callbackData === 'plans_type_both') {
+				await this.planCallbacks.handleShowPlansByType(ctx, 'both');
+			} else if (callbackData.startsWith('checkout_')) {
+				const planId = callbackData.split('_').slice(1).join('_');
+				await this.planCallbacks.handleShowPlanDetails(ctx, planId);
+			} else if (callbackData.startsWith('confirm_payment_')) {
+				const planId = callbackData.split('_').slice(2).join('_');
+				await this.planCallbacks.handleCreateInvoice(ctx, planId);
 			} else {
 				// Неизвестный callback
 				await ctx.editMessageText(t('generic.unknown_command', { ns: 'error' }), KeyboardUtils.createBackToMenuKeyboard(t));

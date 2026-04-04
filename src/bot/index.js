@@ -6,6 +6,7 @@ const SQLiteDatabase = require('../models/Database');
 const PostgresDatabase = require('../models/PostgresDatabase');
 const SupabaseDatabase = require('../models/SupabaseDatabase');
 const OutlineService = require('../services/OutlineService');
+const XRayService = require('../services/XRayService');
 const PaymentService = require('../services/PaymentService');
 const KeysService = require('../services/KeysService');
 const NotificationService = require('../services/NotificationService');
@@ -48,8 +49,9 @@ class TelegramBot {
 		}
 		this.i18nService = new I18nService();
 		this.outlineService = new OutlineService(config.outline.apiUrl);
+		this.xrayService = new XRayService();
 		this.paymentService = new PaymentService(this.db);
-		this.keysService = new KeysService(this.db, this.outlineService);
+		this.keysService = new KeysService(this.db, this.outlineService, this.xrayService);
 		this.notificationService = new NotificationService(this.bot, this.i18nService, this.db);
 		this.adminNotificationService = new AdminNotificationService(this.bot, this.db);
 		this.broadcastService = new BroadcastService(this.bot, this.db);

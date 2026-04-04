@@ -160,11 +160,29 @@ class PaymentHandlers {
 	}
 
 	async sendAccessKeyMessage(ctx, payment, activationResult) {
-		const { accessUrl } = activationResult;
+		const { accessUrl, vlessUrl } = activationResult;
 		const t = ctx.i18n?.t || ((key) => key);
-
-		const message = PlanMessages.paymentSuccess(t, accessUrl);
 		const keyboard = KeyboardUtils.createAppsDownloadKeyboard(t);
+
+		let message = `🎉 <b>Оплата прошла успешно!</b>\n\n`;
+
+		if (accessUrl && vlessUrl) {
+			// Оба протокола
+			message += `✅ Ключи активированы!\n\n`;
+			message += `🌿 <b>Outline ключ:</b>\n<code>${accessUrl}</code>\n\n`;
+			message += `⚡ <b>VLESS ключ:</b>\n<code>${vlessUrl}</code>\n\n`;
+			message += `Добавьте нужный ключ в приложение.`;
+		} else if (vlessUrl) {
+			// Только VLESS
+			message += `✅ VLESS ключ активирован!\n\n`;
+			message += `⚡ <b>Ключ подключения:</b>\n<code>${vlessUrl}</code>\n\n`;
+			message += `Добавьте ключ в Hiddify, FoXray или ShadowRocket.`;
+		} else {
+			// Только Outline
+			message += `✅ Ключ активирован!\n\n`;
+			message += `🌿 <b>Ключ подключения:</b>\n<code>${accessUrl}</code>\n\n`;
+			message += `Добавьте ключ в приложение Outline.`;
+		}
 
 		await ctx.reply(message, {
 			...keyboard,
