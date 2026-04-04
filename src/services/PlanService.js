@@ -1,17 +1,29 @@
-const { PLANS } = require('../config/constants');
+const { PLANS, KEY_TYPE } = require('../config/constants');
 const moment = require('moment');
 
 class PlanService {
-	static getAllPlans(includeTestPlans = false) {
-		const plans = Object.values(PLANS);
-		if (includeTestPlans) {
-			return plans;
-		}
-		return plans.filter(plan => plan.id !== 'test_100mb');
+
+	/**
+	 * Получить все планы определённого типа
+	 * @param {'outline'|'vless'|'both'} type
+	 * @param {boolean} includeHidden - включать тестовые планы
+	 */
+	static getPlansByType(type, includeHidden = false) {
+		return Object.values(PLANS).filter(p =>
+			p.type === type &&
+			(includeHidden || !p.hidden)
+		);
+	}
+
+	/**
+	 * Получить все видимые планы (для пользователя)
+	 */
+	static getAllPlans(includeHidden = false) {
+		return Object.values(PLANS).filter(p => includeHidden || !p.hidden);
 	}
 
 	static getPlanById(planId) {
-		return Object.values(PLANS).find(plan => plan.id === planId);
+		return Object.values(PLANS).find(p => p.id === planId) || null;
 	}
 
 	static formatPlanPrice(price) {
@@ -19,59 +31,84 @@ class PlanService {
 	}
 
 	static formatDataLimit(t, bytes) {
+		if (!bytes || bytes === 0) return t ? t('plans.unlimited') || 'Безлимит' : 'Безлимит';
+		const gb = bytes / (1024 * 1024 * 1024);
 		const mb = bytes / (1024 * 1024);
-		const gb = mb / 1024;
-        
-		if (gb >= 1024) {
-			return `${(gb / 1024).toFixed(0)} ${t('common.memory.tb')}`;
-		}
-		if (gb >= 1) {
-			return `${gb.toFixed(0)} ${t('common.memory.gb')}`;
-		}
-		return `${mb.toFixed(0)} ${t('common.memory.mb')}`;
+		if (gb >= 1) return `${gb.toFixed(0)} ${t ? t('common.memory.gb') : 'GB'}`;
+		return `${mb.toFixed(0)} ${t ? t('common.memory.mb') : 'MB'}`;
 	}
 
 	static getPlural(n, form1, form2, form5 = '') {
 		if (!form5) form5 = form2;
-		let nAbs = Math.abs(n) % 100;
-		let n1 = n % 10;
+		const nAbs = Math.abs(n) % 100;
+		const n1 = n % 10;
 		if (nAbs > 10 && nAbs < 20) return form5;
 		if (n1 > 1 && n1 < 5) return form2;
-		if (n1 == 1) return form1;
+		if (n1 === 1) return form1;
 		return form5;
 	}
 
 	static formatDuration(t, days) {
 		if (days >= 365) {
-			const word = 'year';
 			const years = Math.floor(days / 365);
-			return `${years} ${this.getPlural(years, t(`common.periods.${word}.one`), t(`common.periods.${word}.some`), t(`common.periods.${word}.many`))}`;
+			return `${years} ${this.getPlural(years,
+				t('common.periods.year.one'),
+				t('common.periods.year.some'),
+				t('common.periods.year.many')
+			)}`;
 		} else if (days >= 30) {
-			const word = 'month';
 			const months = Math.floor(days / 30);
-			return `${months} ${this.getPlural(months, t(`common.periods.${word}.one`), t(`common.periods.${word}.some`), t(`common.periods.${word}.many`))}`;
+			return `${months} ${this.getPlural(months,
+				t('common.periods.month.one'),
+				t('common.periods.month.some'),
+				t('common.periods.month.many')
+			)}`;
 		}
-		const word = 'day';
-		return `${days} ${this.getPlural(days, t(`common.periods.${word}.one`), t(`common.periods.${word}.some`), t(`common.periods.${word}.many`))}`;
+		return `${days} ${this.getPlural(days,
+			t('common.periods.day.one'),
+			t('common.periods.day.some'),
+			t('common.periods.day.many')
+		)}`;
 	}
 
 	static calculateExpiryDate(plan) {
 		return moment().add(plan.duration, 'days').toDate();
 	}
 
+	/**
+	 * Отформатировать план для отображения
+	 */
 	static formatPlanForDisplay(t, plan) {
 		const dataLimitFormatted = this.formatDataLimit(t, plan.dataLimit);
 		const durationFormatted = this.formatDuration(t, plan.duration);
 		const priceFormatted = this.formatPlanPrice(plan.price);
 
-		// Получаем локализованные тексты из переводов
-		const description = t(`plans.${plan.id}.description`);
-		const invoice = t(`plans.${plan.id}.invoice`);
+		// Получаем локализованные описание и invoice
+		// Если ключа нет — используем дефолтные строки
+		let description, invoice;
+		try {
+			description = t(`plans.${plan.id}.description`);
+		} catch {
+			description = plan.name;
+		}
+		try {
+			invoice = t(`plans.${plan.id}.invoice`);
+		} catch {
+			invoice = `${plan.name} — ${dataLimitFormatted} / ${durationFormatted}`;
+		}
+
+		// Если t вернул ключ (перевод не найден) — используем дефолт
+		if (description === `plans.${plan.id}.description`) {
+			description = plan.name;
+		}
+		if (invoice === `plans.${plan.id}.invoice`) {
+			invoice = `${plan.name} — ${dataLimitFormatted} / ${durationFormatted}`;
+		}
 
 		return {
 			...plan,
-			description, // Добавляем локализованное описание
-			invoice, // Добавляем локализованный текст инвойса
+			description,
+			invoice,
 			displayName: `${plan.emoji} ${plan.name}`,
 			displayDescription: `${dataLimitFormatted} / ${durationFormatted}`,
 			displayDataLimit: dataLimitFormatted,
@@ -81,63 +118,31 @@ class PlanService {
 		};
 	}
 
-	static getPlansByPriceRange(minPrice, maxPrice) {
-		return Object.values(PLANS).filter(plan => 
-			plan.price >= minPrice && plan.price <= maxPrice
-		);
-	}
-
-	static getRecommendedPlans() {
-		// Возвращаем наиболее популярные планы
-		return [
-			PLANS.BASIC_30GB,
-			PLANS.BASIC_100GB,
-			PLANS.PREMIUM_250GB
-		];
-	}
-
 	static calculateSavings(plan) {
-		// Расчет экономии по сравнению с базовым планом
-		const basePrice = PLANS.BASIC_10GB.price;
-		const baseDuration = PLANS.BASIC_10GB.duration;
-		const baseDataLimit = PLANS.BASIC_10GB.dataLimit;
-        
-		const equivalentBaseCost = (plan.duration / baseDuration) * (plan.dataLimit / baseDataLimit) * basePrice;
-		const savings = equivalentBaseCost - plan.price;
-        
-		if (savings > 0) {
-			return Math.round(savings);
+		// Для bundle планов считаем скидку относительно суммы Outline + VLESS
+		if (plan.type === 'both') {
+			const { PLANS: P } = require('../config/constants');
+			// Ищем соответствующие outline и vless планы по dataLimit
+			const outlinePlan = Object.values(P).find(p =>
+				p.type === 'outline' && p.dataLimit === plan.dataLimit && !p.hidden
+			);
+			const vlessPlan = Object.values(P).find(p =>
+				p.type === 'vless' && p.dataLimit === plan.dataLimit
+			);
+			if (outlinePlan && vlessPlan) {
+				return outlinePlan.price + vlessPlan.price - plan.price;
+			}
 		}
-        
 		return 0;
 	}
 
-	static isLimitedTimeOffer() {
-		// Можно добавить логику для ограниченных предложений
-		return false;
-	}
-
 	static validatePlanData(planData) {
-		const requiredFields = ['id', 'name', 'dataLimit', 'duration', 'price'];
-        
+		const requiredFields = ['id', 'name', 'type', 'duration', 'price'];
 		for (const field of requiredFields) {
-			if (!planData[field]) {
-				throw new Error(`Missing required field: ${field}`);
-			}
+			if (!planData[field]) throw new Error(`Missing required field: ${field}`);
 		}
-
-		if (planData.price <= 0) {
-			throw new Error('Price must be greater than 0');
-		}
-
-		if (planData.duration <= 0) {
-			throw new Error('Duration must be greater than 0');
-		}
-
-		if (planData.dataLimit <= 0) {
-			throw new Error('Data limit must be greater than 0');
-		}
-
+		if (planData.price <= 0) throw new Error('Price must be > 0');
+		if (planData.duration <= 0) throw new Error('Duration must be > 0');
 		return true;
 	}
 }

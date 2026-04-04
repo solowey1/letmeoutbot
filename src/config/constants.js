@@ -1,72 +1,179 @@
+// ============================================================
+// ПЛАНЫ ТАРИФИКАЦИИ
+// Каждый план существует в трёх вариантах:
+//   outline  — только Outline VPN (Shadowsocks)
+//   vless    — только VLESS (WS + Reality)
+//   both     — оба протокола со скидкой ~20%
+//
+// Рыночные цены (Telegram Stars, 1 Star ≈ $0.013):
+//   Конкуренты: ~$2–4/мес за 10–30 GB, ~$5–8/мес за 100 GB
+// ============================================================
+
 const PLANS = {
-	TEST_100MB: {
-		id: 'test_100mb',
+	// ─────────────────────────────────────────
+	// ТЕСТОВЫЙ (только для разработки/отладки)
+	// ─────────────────────────────────────────
+	TEST: {
+		id: 'test',
 		name: 'TEST',
-		dataLimit: 100 * 1024 * 1024, // 100MB в байтах
-		duration: 1, // дней
-		price: 1, // звёзд
+		type: 'outline',
+		dataLimitGB: 0.1,          // 100 MB
+		dataLimit: 100 * 1024 * 1024,
+		duration: 1,
+		price: 1,
 		emoji: '🐌',
+		hidden: true               // не показывать обычным пользователям
 	},
-	BASIC_10GB: {
-		id: 'basic_10gb',
-		name: 'BASIC 10',
-		dataLimit: 10 * 1024 * 1024 * 1024, // 10GB в байтах
-		duration: 30, // дней
-		price: 3, // звёзд ($1.5)
-		emoji: '🐛',
+
+	// ─────────────────────────────────────────
+	// OUTLINE — только Outline VPN
+	// ─────────────────────────────────────────
+	OUTLINE_10GB: {
+		id: 'outline_10gb',
+		name: 'Outline 10 GB',
+		type: 'outline',
+		dataLimitGB: 10,
+		dataLimit: 10 * 1024 * 1024 * 1024,
+		duration: 30,
+		price: 175,                // ~$2.3/мес
+		emoji: '🌿'
 	},
-	BASIC_50GB: {
-		id: 'basic_50gb',
-		name: 'BASIC 50',
-		dataLimit: 50 * 1024 * 1024 * 1024, // 50GB в байтах
-		duration: 30, // дней
-		price: 4, // звёзд ($2.2)
-		emoji: '🦋',
+	OUTLINE_50GB: {
+		id: 'outline_50gb',
+		name: 'Outline 50 GB',
+		type: 'outline',
+		dataLimitGB: 50,
+		dataLimit: 50 * 1024 * 1024 * 1024,
+		duration: 30,
+		price: 300,                // ~$3.9/мес
+		emoji: '🌲'
 	},
-	STANDARD_100GB: {
-		id: 'standard_100gb',
-		name: 'STANDARD 100',
-		dataLimit: 100 * 1024 * 1024 * 1024, // 100GB в байтах
-		duration: 30, // дней
-		price: 5, // звёзд ($2.8)
-		emoji: '🐥',
+	OUTLINE_100GB: {
+		id: 'outline_100gb',
+		name: 'Outline 100 GB',
+		type: 'outline',
+		dataLimitGB: 100,
+		dataLimit: 100 * 1024 * 1024 * 1024,
+		duration: 30,
+		price: 450,                // ~$5.9/мес
+		emoji: '🌳'
 	},
-	STANDARD_300GB: {
-		id: 'standard_300gb',
-		name: 'STANDARD 300',
-		dataLimit: 300 * 1024 * 1024 * 1024, // 300GB в байтах
-		duration: 90, // дней
-		price: 14, // звёзд ($7.8)
-		emoji: '🦆',
+	OUTLINE_UNLIM: {
+		id: 'outline_unlim',
+		name: 'Outline Безлимит',
+		type: 'outline',
+		dataLimitGB: 0,            // 0 = безлимит
+		dataLimit: 0,
+		duration: 30,
+		price: 650,                // ~$8.5/мес
+		emoji: '🌏'
 	},
-	PRO_600GB: {
-		id: 'pro_600gb',
-		name: 'PRO 600',
-		dataLimit: 600 * 1024 * 1024 * 1024, // 600GB в байтах
-		duration: 365, // дней
-		price: 25, // звёзд ($14)
-		emoji: '🦅',
+
+	// ─────────────────────────────────────────
+	// VLESS — только VLESS (WS + Reality)
+	// ─────────────────────────────────────────
+	VLESS_10GB: {
+		id: 'vless_10gb',
+		name: 'VLESS 10 GB',
+		type: 'vless',
+		dataLimitGB: 10,
+		dataLimit: 10 * 1024 * 1024 * 1024,
+		duration: 30,
+		price: 225,                // ~$2.9/мес (дороже Outline)
+		emoji: '⚡'
 	},
-	PRO_1200GB: {
-		id: 'pro_1200gb',
-		name: 'PRO 1200',
-		dataLimit: 1200 * 1024 * 1024 * 1024, // 1200GB в байтах
-		duration: 365, // дней
-		price: 48, // звёзд ($27)
-		emoji: '🐲',
+	VLESS_50GB: {
+		id: 'vless_50gb',
+		name: 'VLESS 50 GB',
+		type: 'vless',
+		dataLimitGB: 50,
+		dataLimit: 50 * 1024 * 1024 * 1024,
+		duration: 30,
+		price: 375,                // ~$4.9/мес
+		emoji: '🚀'
 	},
+	VLESS_100GB: {
+		id: 'vless_100gb',
+		name: 'VLESS 100 GB',
+		type: 'vless',
+		dataLimitGB: 100,
+		dataLimit: 100 * 1024 * 1024 * 1024,
+		duration: 30,
+		price: 550,                // ~$7.2/мес
+		emoji: '🛸'
+	},
+	VLESS_UNLIM: {
+		id: 'vless_unlim',
+		name: 'VLESS Безлимит',
+		type: 'vless',
+		dataLimitGB: 0,
+		dataLimit: 0,
+		duration: 30,
+		price: 800,                // ~$10.4/мес
+		emoji: '🌌'
+	},
+
+	// ─────────────────────────────────────────
+	// BOTH — Outline + VLESS со скидкой ~20%
+	// ─────────────────────────────────────────
+	BOTH_10GB: {
+		id: 'both_10gb',
+		name: 'Outline + VLESS 10 GB',
+		type: 'both',
+		dataLimitGB: 10,
+		dataLimit: 10 * 1024 * 1024 * 1024,
+		duration: 30,
+		price: 320,                // vs 175+225=400, скидка 20%
+		emoji: '💎'
+	},
+	BOTH_50GB: {
+		id: 'both_50gb',
+		name: 'Outline + VLESS 50 GB',
+		type: 'both',
+		dataLimitGB: 50,
+		dataLimit: 50 * 1024 * 1024 * 1024,
+		duration: 30,
+		price: 540,                // vs 300+375=675, скидка 20%
+		emoji: '💠'
+	},
+	BOTH_100GB: {
+		id: 'both_100gb',
+		name: 'Outline + VLESS 100 GB',
+		type: 'both',
+		dataLimitGB: 100,
+		dataLimit: 100 * 1024 * 1024 * 1024,
+		duration: 30,
+		price: 800,                // vs 450+550=1000, скидка 20%
+		emoji: '👑'
+	},
+	BOTH_UNLIM: {
+		id: 'both_unlim',
+		name: 'Outline + VLESS Безлимит',
+		type: 'both',
+		dataLimitGB: 0,
+		dataLimit: 0,
+		duration: 30,
+		price: 1150,               // vs 650+800=1450, скидка 21%
+		emoji: '🔱'
+	}
 };
 
 const KEY_STATUS = {
 	ACTIVE: 'active',
 	EXPIRED: 'expired',
 	SUSPENDED: 'suspended',
-	PENDING: 'pending',
+	PENDING: 'pending'
+};
+
+const KEY_TYPE = {
+	OUTLINE: 'outline',
+	VLESS: 'vless',
+	BOTH: 'both'
 };
 
 const LANG = {
 	EN: 'en',
-	RU: 'ru',
+	RU: 'ru'
 };
 
 const PAYMENT_STATUS = {
@@ -74,7 +181,7 @@ const PAYMENT_STATUS = {
 	COMPLETED: 'completed',
 	FAILED: 'failed',
 	REFUNDED: 'refunded',
-	PENDING_ACTIVATION: 'pending_activation', // Оплачено, но ключ не создан
+	PENDING_ACTIVATION: 'pending_activation'
 };
 
 const CALLBACK_ACTIONS = {
@@ -82,44 +189,39 @@ const CALLBACK_ACTIONS = {
 		MENU: 'admin_menu',
 		KEYS: {
 			MENU: 'admin_keys',
-			PENDING: 'admin_keys_pending_menu',
+			PENDING: 'admin_keys_pending_menu'
 		},
-		PAYMENTS: {
-			MENU: 'admin_payments',
-		},
-		STATS: {
-			MENU: 'admin_stats_menu',
-		},
-		USERS: {
-			MENU: 'admin_users_menu',
-		},
-		WITHDRAWALS: {
-			PENDING: 'admin_withdrawals_pending',
-		},
+		PAYMENTS: { MENU: 'admin_payments' },
+		STATS: { MENU: 'admin_stats_menu' },
+		USERS: { MENU: 'admin_users_menu' },
+		WITHDRAWALS: { PENDING: 'admin_withdrawals_pending' },
 		BROADCAST: 'admin_broadcast',
 		BROADCAST_AUDIENCE: {
 			ALL: 'admin_broadcast_all',
 			ACTIVE: 'admin_broadcast_active',
 			BUYERS: 'admin_broadcast_buyers',
-			NON_BUYERS: 'admin_broadcast_non_buyers',
+			NON_BUYERS: 'admin_broadcast_non_buyers'
 		},
-		SETTINGS: 'admin_settings',
+		SETTINGS: 'admin_settings'
 	},
 	BASIC: {
-		BACK_TO_MENU: 'back_menu',
+		BACK_TO_MENU: 'back_menu'
 	},
 	KEYS: {
 		MENU: 'keys_menu',
-		BUY: 'keys_buy'
+		BUY: 'keys_buy',
+		// Выбор типа подключения
+		SELECT_TYPE: 'keys_select_type',
+		TYPE_OUTLINE: 'keys_type_outline',
+		TYPE_VLESS: 'keys_type_vless',
+		TYPE_BOTH: 'keys_type_both'
 	},
 	PAYMENT: {
-		CONFIRM: 'payment_confirm',
+		CONFIRM: 'payment_confirm'
 	},
 	SETTINGS: {
 		MENU: 'settings_menu',
-		LANGUAGE: {
-			SET: 'lang_set',
-		},
+		LANGUAGE: { SET: 'lang_set' }
 	},
 	REFERRAL: {
 		MENU: 'referral_menu',
@@ -128,8 +230,8 @@ const CALLBACK_ACTIONS = {
 		WITHDRAW: 'referral_withdraw',
 		CONFIRM_WITHDRAW: 'referral_confirm_withdraw',
 		MY_REFERRALS: 'referral_my_referrals',
-		HISTORY: 'referral_history',
-	},
+		HISTORY: 'referral_history'
+	}
 };
 
 const NOTIFICATION_TYPES = {
@@ -138,24 +240,27 @@ const NOTIFICATION_TYPES = {
 	TRAFFIC_EXHAUSTED: 'traffic_exhausted',
 	TIME_WARNING_3: 'time_warning_3',
 	TIME_WARNING_1: 'time_warning_1',
-	TIME_EXPIRED: 'time_expired',
+	TIME_EXPIRED: 'time_expired'
 };
 
 const REFERRAL_CONFIG = {
-	COMMISSION_RATE: 0.3, // 30% комиссия
-	WITHDRAWAL_DELAY_DAYS: 14, // Период ожидания перед выводом (в днях)
-	MIN_WITHDRAWAL_AMOUNT: 1, // Минимальная сумма для вывода (в звездах)
+	COMMISSION_RATE: 0.3,
+	WITHDRAWAL_DELAY_DAYS: 14,
+	MIN_WITHDRAWAL_AMOUNT: 1
 };
 
-const ADMIN_IDS = process.env.ADMIN_IDS ? process.env.ADMIN_IDS.split(',').map(id => parseInt(id)) : [];
+const ADMIN_IDS = process.env.ADMIN_IDS
+	? process.env.ADMIN_IDS.split(',').map(id => parseInt(id))
+	: [];
 
 module.exports = {
 	PLANS,
 	KEY_STATUS,
+	KEY_TYPE,
 	LANG,
 	PAYMENT_STATUS,
 	CALLBACK_ACTIONS,
 	NOTIFICATION_TYPES,
 	REFERRAL_CONFIG,
-	ADMIN_IDS,
+	ADMIN_IDS
 };
