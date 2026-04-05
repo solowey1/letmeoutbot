@@ -79,7 +79,7 @@ class KeysService {
 			if (!this.xrayService) throw new Error('XRayService не инициализирован');
 
 			const totalGB = plan.dataLimitGB || 0;
-			const vlessKey = await this.xrayService.createClient(
+			const vlessKey = await this.xrayService.createRealityClient(
 				xrayEmail,
 				totalGB,
 				expiryTimeMs
@@ -96,10 +96,7 @@ class KeysService {
 
 			result.vlessUrl = vlessKey.accessUrl;
 
-			// Для Outline+VLESS обновляем тип
-			if (plan.type === 'both') {
-				result.accessUrl = result.accessUrl; // уже установлен выше
-			} else {
+			if (plan.type !== 'both') {
 				result.accessUrl = vlessKey.accessUrl;
 			}
 		}

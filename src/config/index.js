@@ -39,6 +39,13 @@ const config = {
 		timeout: 10000 // 10 секунд
 	},
 
+	xray: {
+		panelUrl: process.env.XRAY_PANEL_URL,
+		username: process.env.XRAY_USERNAME,
+		password: process.env.XRAY_PASSWORD,
+		twoFactorSecret: process.env.XRAY_2FA_SECRET || null
+	},
+
 	app: {
 		environment: process.env.NODE_ENV || 'development',
 		logLevel: process.env.LOG_LEVEL || 'info'

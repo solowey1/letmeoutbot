@@ -192,6 +192,30 @@ cmd_install() {
 }
 
 # -----------------------------------------------------------
+# cleanup — очистка неиспользуемых ресурсов Docker
+# -----------------------------------------------------------
+cmd_cleanup() {
+    header "Очистка Docker"
+
+    info "Удаление остановленных контейнеров..."
+    docker container prune -f
+
+    info "Удаление неиспользуемых образов..."
+    docker image prune -f
+
+    info "Удаление неиспользуемых volumes..."
+    docker volume prune -f
+
+    info "Удаление неиспользуемых сетей..."
+    docker network prune -f
+
+    success "Очистка завершена"
+    echo ""
+    info "Освобождённое место:"
+    docker system df
+}
+
+# -----------------------------------------------------------
 # help
 # -----------------------------------------------------------
 cmd_help() {
@@ -218,6 +242,7 @@ cmd_help() {
     echo -e "  ${GREEN}check${NC}              Проверить конфигурацию и зависимости"
     echo -e "  ${GREEN}db-init${NC}            Инициализировать базу данных"
     echo -e "  ${GREEN}install${NC}            Первичная установка на сервер (нужен root)"
+    echo -e "  ${GREEN}cleanup${NC}            Очистить неиспользуемые ресурсы Docker"
     echo ""
     echo -e "  ${GREEN}help${NC}               Показать эту справку"
     echo ""
@@ -247,6 +272,7 @@ case "${1:-help}" in
     check)        cmd_check ;;
     db-init)      cmd_db_init ;;
     install)      cmd_install ;;
+    cleanup)      cmd_cleanup ;;
     help|--help|-h) cmd_help ;;
     *)
         error "Неизвестная команда: $1"

@@ -7,8 +7,8 @@ const { v4: uuidv4 } = require('uuid');
  * Протокол: VLESS + Reality
  */
 class XRayService {
-	constructor(panelUrl, username, password, twoFactorSecret = null) {
-		this.panelUrl = panelUrl.replace(/\/$/, '');
+	constructor(panelUrl, username, password, twoFactorSecret) {
+		this.panelUrl = panelUrl;
 		this.username = username;
 		this.password = password;
 		this.twoFactorSecret = twoFactorSecret;
