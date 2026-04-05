@@ -5,6 +5,7 @@ function createMainMenu(t, isAdmin = false) {
 	const buttons = [
 		[btn(t, 'buy')],
 		[btn(t, 'my_keys')],
+		[btn(t, 'help')],
 		[btn(t, 'referral')],
 		[btn(t, 'settings')],
 	];
@@ -12,8 +13,6 @@ function createMainMenu(t, isAdmin = false) {
 	if (isAdmin) {
 		buttons.push([btn(t, 'admin')]);
 	}
-
-	buttons.push([btn(t, 'help')]);
 
 	return Markup.inlineKeyboard(buttons);
 }
