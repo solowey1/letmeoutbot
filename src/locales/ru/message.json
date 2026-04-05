@@ -141,76 +141,76 @@
       "linux": {
         "title": "🐧 Linux",
         "apps": [
-          "<a href=\"https://github.com/v2rayA/v2rayA/releases\">v2rayA</a> — веб-GUI, прозрачный прокси, легко деплоится на роутер/NAS",
-          "<a href=\"https://github.com/SagerNet/sing-box/releases\">sing-box</a> — универсальная платформа, легковесная, CLI + конфиг",
-          "<a href=\"https://github.com/clash-verge-rev/clash-verge-rev/releases\">Clash Verge Rev</a> — красивый GUI, rule-based роутинг, Meta core",
+          "<a href=\"https://github.com/v2rayA/v2rayA/releases\">v2rayA</a> — веб-интерфейс, прозрачный прокси, подходит для роутеров и NAS",
+          "<a href=\"https://github.com/SagerNet/sing-box/releases\">sing-box</a> — CLI, настройка через конфиг",
+          "<a href=\"https://github.com/clash-verge-rev/clash-verge-rev/releases\">Clash Verge Rev</a> — GUI с rule-based роутингом на Meta core",
           "<a href=\"https://github.com/MatsuriDayo/nekoray/releases\">Nekoray</a> — Qt GUI, поддержка xray/sing-box core",
-          "<a href=\"https://github.com/XTLS/Xray-core/releases\">xray-core (CLI)</a> — голый бинарник, максимум контроля",
-          "<a href=\"https://github.com/MetaCubeX/mihomo/releases\">Mihomo (ex-Clash Meta)</a> — мощный движок, headless",
-          "<a href=\"https://github.com/Qv2ray/Qv2ray/releases\">Qv2ray</a> — Qt GUI, кросс-платформенный, плагины",
-          "<a href=\"https://github.com/LorenEteval/Furious/releases\">Furious</a> — новый GUI для xray/sing-box",
-          "<a href=\"https://github.com/InvisibleManVPN/InvisibleMan-XRayClient/releases\">InvisibleMan-XRayClient</a> — простой десктопный клиент",
-          "<a href=\"https://github.com/GUI-for-Cores/GUI.for.SingBox/releases\">GUI.for.SingBox</a> — минималистичный GUI под sing-box"
+          "<a href=\"https://github.com/XTLS/Xray-core/releases\">xray-core (CLI)</a> — только CLI, без GUI",
+          "<a href=\"https://github.com/MetaCubeX/mihomo/releases\">Mihomo (ex-Clash Meta)</a> — headless-движок, без GUI",
+          "<a href=\"https://github.com/Qv2ray/Qv2ray/releases\">Qv2ray</a> — Qt GUI, система плагинов",
+          "<a href=\"https://github.com/LorenEteval/Furious/releases\">Furious</a> — GUI для xray/sing-box",
+          "<a href=\"https://github.com/InvisibleManVPN/InvisibleMan-XRayClient/releases\">InvisibleMan-XRayClient</a>",
+          "<a href=\"https://github.com/GUI-for-Cores/GUI.for.SingBox/releases\">GUI.for.SingBox</a> — GUI для sing-box"
         ]
       },
       "windows": {
         "title": "🪟 Windows",
         "apps": [
-          "<a href=\"https://github.com/2dust/v2rayN/releases\">v2rayN</a> — де-факто стандарт для Windows, надёжный и практичный",
-          "<a href=\"https://github.com/clash-verge-rev/clash-verge-rev/releases\">Clash Verge Rev</a> — красивый UI, отличный rule-based роутинг",
-          "<a href=\"https://github.com/MatsuriDayo/nekoray/releases\">Nekoray</a> — поддержка xray и sing-box core, русскоязычное сообщество",
-          "<a href=\"https://github.com/SagerNet/sing-box/releases\">sing-box (GUI)</a> — растущая звезда, лёгкий и современный",
-          "<a href=\"https://github.com/LorenEteval/Furious/releases\">Furious</a> — свежий GUI-клиент",
-          "<a href=\"https://github.com/TheMRLL/WinXray/releases\">WinXray</a> — поддержка VLESS/VMess/Shadowsocks/Trojan, автовыбор быстрого сервера",
+          "<a href=\"https://github.com/2dust/v2rayN/releases\">v2rayN</a> — самый популярный клиент для Windows",
+          "<a href=\"https://github.com/clash-verge-rev/clash-verge-rev/releases\">Clash Verge Rev</a> — GUI с rule-based роутингом",
+          "<a href=\"https://github.com/MatsuriDayo/nekoray/releases\">Nekoray</a> — поддержка xray и sing-box core",
+          "<a href=\"https://github.com/SagerNet/sing-box/releases\">sing-box (GUI)</a>",
+          "<a href=\"https://github.com/LorenEteval/Furious/releases\">Furious</a> — GUI для xray/sing-box",
+          "<a href=\"https://github.com/TheMRLL/WinXray/releases\">WinXray</a> — автовыбор быстрого сервера",
           "<a href=\"https://github.com/mihomo-party-org/mihomo-party/releases\">Mihomo Party</a> — GUI для Clash Meta",
-          "<a href=\"https://github.com/Qv2ray/Qv2ray/releases\">Qv2ray</a> — стабильный, с поддержкой плагинов",
-          "<a href=\"https://github.com/chen08209/FlClash/releases\">FlClash</a> — Flutter-based, кросс-платформа",
-          "<a href=\"https://github.com/InvisibleManVPN/InvisibleMan-XRayClient/releases\">Invisible Man XRay</a> — простой и легковесный"
+          "<a href=\"https://github.com/Qv2ray/Qv2ray/releases\">Qv2ray</a> — система плагинов",
+          "<a href=\"https://github.com/chen08209/FlClash/releases\">FlClash</a> — кроссплатформенный, на Flutter",
+          "<a href=\"https://github.com/InvisibleManVPN/InvisibleMan-XRayClient/releases\">Invisible Man XRay</a>"
         ]
       },
       "macos": {
         "title": "🍎 macOS",
         "apps": [
-          "<a href=\"https://github.com/clash-verge-rev/clash-verge-rev/releases\">Clash Verge Rev</a> — лучший GUI с rule-based роутингом",
-          "<a href=\"https://apps.apple.com/app/sing-box-vt/id6673731168\">sing-box</a> — нативный клиент, легковесный",
-          "<a href=\"https://github.com/mihomo-party-org/mihomo-party/releases\">Mihomo Party</a> — удобный Clash Meta GUI",
-          "<a href=\"https://foxray.org\">FoXray</a> — нативный macOS UI",
-          "<a href=\"https://github.com/tzmax/V2RayXS/releases\">V2RayXS</a> — простой, поддержка xray core",
-          "<a href=\"https://github.com/MatsuriDayo/nekoray/releases\">Nekoray</a> — Qt, работает на macOS",
-          "<a href=\"https://github.com/chen08209/FlClash/releases\">FlClash</a> — Flutter, красивый интерфейс",
-          "<a href=\"https://github.com/Qv2ray/Qv2ray/releases\">Qv2ray</a> — классика, стабильный",
-          "<a href=\"https://github.com/GUI-for-Cores/GUI.for.Clash/releases\">GUI.for.Clash</a> — минималистичный",
-          "<a href=\"https://github.com/LorenEteval/Furious/releases\">Furious</a> — кросс-платформенный новичок"
+          "<a href=\"https://github.com/clash-verge-rev/clash-verge-rev/releases\">Clash Verge Rev</a> — GUI с rule-based роутингом",
+          "<a href=\"https://apps.apple.com/app/sing-box-vt/id6673731168\">sing-box</a> — нативное приложение",
+          "<a href=\"https://github.com/mihomo-party-org/mihomo-party/releases\">Mihomo Party</a> — GUI для Clash Meta",
+          "<a href=\"https://foxray.org\">FoXray</a> — нативное приложение для macOS",
+          "<a href=\"https://github.com/tzmax/V2RayXS/releases\">V2RayXS</a> — на xray core",
+          "<a href=\"https://github.com/MatsuriDayo/nekoray/releases\">Nekoray</a> — Qt GUI, поддержка xray/sing-box core",
+          "<a href=\"https://github.com/chen08209/FlClash/releases\">FlClash</a> — кроссплатформенный, на Flutter",
+          "<a href=\"https://github.com/Qv2ray/Qv2ray/releases\">Qv2ray</a> — система плагинов",
+          "<a href=\"https://github.com/GUI-for-Cores/GUI.for.Clash/releases\">GUI.for.Clash</a>",
+          "<a href=\"https://github.com/LorenEteval/Furious/releases\">Furious</a> — GUI для xray/sing-box"
         ]
       },
       "ios": {
         "title": "📱 iOS",
         "apps": [
-          "<a href=\"https://apps.apple.com/app/v2raytun/id6476628951\">v2RayTun</a> — топ-1 выбор, быстрый, отлично работает с Vision flow",
-          "<a href=\"https://apps.apple.com/app/shadowrocket/id932747118\">Shadowrocket</a> — умный роутинг, полированный интерфейс (платный, $2.99)",
+          "<a href=\"https://apps.apple.com/app/v2raytun/id6476628951\">v2RayTun</a> — поддержка Vision flow",
+          "<a href=\"https://apps.apple.com/app/shadowrocket/id932747118\">Shadowrocket</a> — rule-based роутинг (платный)",
           "<a href=\"https://apps.apple.com/app/streisand/id6450534064\">Streisand</a> — бесплатный, поддержка Reality",
-          "<a href=\"https://apps.apple.com/app/hiddify-proxy-vpn/id6596777532\">Hiddify</a> — бесплатный, активно развивается",
-          "<a href=\"https://foxray.org\">FoXray</a> — нативный, поддержка VLESS Reality",
-          "<a href=\"https://apps.apple.com/app/sing-box-vt/id6673731168\">Sing-Box (официальный)</a> — универсальный, конфиг через JSON",
-          "<a href=\"https://apps.apple.com/app/v2box-v2ray-client/id6446814690\">V2BOX</a> — удобный импорт ссылок",
-          "<a href=\"https://apps.apple.com/app/quantumult-x/id1443988620\">Quantumult X</a> — мощный, rule-based (платный)",
-          "<a href=\"https://apps.apple.com/app/surge-5/id1442620678\">Surge</a> — профессиональный инструмент (дорогой)",
-          "<a href=\"https://apps.apple.com/app/loon/id1373567447\">Loon</a> — гибкий скриптовый клиент"
+          "<a href=\"https://apps.apple.com/app/hiddify-proxy-vpn/id6596777532\">Hiddify</a> — бесплатный",
+          "<a href=\"https://foxray.org\">FoXray</a> — нативное приложение, поддержка VLESS Reality",
+          "<a href=\"https://apps.apple.com/app/sing-box-vt/id6673731168\">Sing-Box (официальный)</a> — настройка через JSON-конфиг",
+          "<a href=\"https://apps.apple.com/app/v2box-v2ray-client/id6446814690\">V2BOX</a> — импорт по ссылке",
+          "<a href=\"https://apps.apple.com/app/quantumult-x/id1443988620\">Quantumult X</a> — rule-based роутинг (платный)",
+          "<a href=\"https://apps.apple.com/app/surge-5/id1442620678\">Surge</a> — расширенная диагностика сети (платный)",
+          "<a href=\"https://apps.apple.com/app/loon/id1373567447\">Loon</a> — поддержка скриптов (платный)"
         ]
       },
       "android": {
         "title": "🤖 Android",
         "apps": [
-          "<a href=\"https://github.com/2dust/v2rayNG/releases\">v2rayNG</a> — главный клиент для Android, open-source, split tunneling",
-          "<a href=\"https://github.com/hiddify/hiddify-app/releases\">Hiddify</a> — бесплатный, активно развивается",
-          "<a href=\"https://github.com/SagerNet/sing-box/releases\">sing-box</a> — официальный клиент, активно развивается",
-          "<a href=\"https://github.com/MatsuriDayo/NekoBoxForAndroid/releases\">NekoBox</a> — fork v2rayNG с sing-box core",
-          "<a href=\"https://github.com/MetaCubeX/ClashMetaForAndroid/releases\">Clash Meta for Android</a> — мощный rule-based роутинг",
-          "<a href=\"https://github.com/chen08209/FlClash/releases\">FlClash</a> — Flutter, красивый UI",
-          "<a href=\"https://play.google.com/store/apps/details?id=com.v2raytun.android\">V2RayTun</a> — есть Android-версия",
-          "<a href=\"https://github.com/MatsuriDayo/Matsuri/releases\">Matsuri</a> — sing-box core, гибкая настройка",
-          "<a href=\"https://github.com/XTLS/AnXray/releases\">AnXray</a> — форк v2rayNG с расширенными функциями",
-          "<a href=\"https://github.com/KaringX/karing/releases\">Karing</a> — новый клиент на sing-box core"
+          "<a href=\"https://github.com/2dust/v2rayNG/releases\">v2rayNG</a> — самый популярный клиент для Android, split tunneling",
+          "<a href=\"https://play.google.com/store/apps/details?id=com.v2raytun.android\">V2RayTun</a>",
+          "<a href=\"https://github.com/hiddify/hiddify-app/releases\">Hiddify</a> — бесплатный",
+          "<a href=\"https://github.com/SagerNet/sing-box/releases\">sing-box</a> — официальный клиент sing-box",
+          "<a href=\"https://github.com/MatsuriDayo/NekoBoxForAndroid/releases\">NekoBox</a> — форк v2rayNG на sing-box core",
+          "<a href=\"https://github.com/MetaCubeX/ClashMetaForAndroid/releases\">Clash Meta for Android</a> — rule-based роутинг",
+          "<a href=\"https://github.com/chen08209/FlClash/releases\">FlClash</a> — кроссплатформенный, на Flutter",
+          "<a href=\"https://github.com/MatsuriDayo/Matsuri/releases\">Matsuri</a> — на sing-box core",
+          "<a href=\"https://github.com/XTLS/AnXray/releases\">AnXray</a> — форк v2rayNG",
+          "<a href=\"https://github.com/KaringX/karing/releases\">Karing</a> — на sing-box core"
         ]
       }
     }

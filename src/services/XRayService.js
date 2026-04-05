@@ -73,9 +73,10 @@ class XRayService {
 	async apiRequest(method, path, data = null) {
 		await this.ensureSession();
 
+		const url = `${this.panelUrl}/panel${path}`;
 		const config = {
 			method,
-			url: `${this.panelUrl}/panel/api${path}`,
+			url,
 			headers: { 'Cookie': this.sessionCookie, 'Content-Type': 'application/json' }
 		};
 		if (data) config.data = data;
@@ -97,30 +98,31 @@ class XRayService {
 				await this.ensureSession();
 				return this.apiRequest(method, path, data);
 			}
+			console.error(`❌ 3X-UI API ${method} ${url} → ${error.response?.status || error.message}`);
 			throw error;
 		}
 	}
 
 	async addClient(inboundId, clientData) {
-		return this.apiRequest('POST', '/inbounds/addClient', {
+		return this.apiRequest('POST', '/inbound/addClient', {
 			id: inboundId,
 			settings: JSON.stringify({ clients: [clientData] })
 		});
 	}
 
 	async updateClient(inboundId, uuid, clientData) {
-		return this.apiRequest('POST', `/inbounds/updateClient/${uuid}`, {
+		return this.apiRequest('POST', `/inbound/updateClient/${uuid}`, {
 			id: inboundId,
 			settings: JSON.stringify({ clients: [clientData] })
 		});
 	}
 
 	async deleteClient(inboundId, uuid) {
-		return this.apiRequest('POST', `/inbounds/${inboundId}/delClient/${uuid}`);
+		return this.apiRequest('POST', `/inbound/${inboundId}/delClient/${uuid}`);
 	}
 
 	async getClientStats(email) {
-		return this.apiRequest('GET', `/inbounds/getClientTraffics/${email}`);
+		return this.apiRequest('GET', `/inbound/getClientTraffics/${email}`);
 	}
 
 	/**

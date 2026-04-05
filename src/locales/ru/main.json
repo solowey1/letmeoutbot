@@ -120,6 +120,10 @@
       "description": "Если хочется проверить работоспособность",
       "invoice": "Тестовый ключ Outline VPN на 100 Мб / 1 день"
     },
+    "test_vless": {
+      "description": "Тест VLESS Reality — проверка работоспособности",
+      "invoice": "Тестовый ключ VLESS Reality на 100 Мб / 1 день"
+    },
     "outline_10gb": {
       "description": "Базовый доступ через Outline",
       "invoice": "Ключ Outline VPN — 10 Гб на 1 месяц"
