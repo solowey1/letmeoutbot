@@ -31,7 +31,8 @@
     "moment": "^2.29.4",
     "pg": "^8.16.3",
     "sqlite3": "^5.1.6",
-    "telegraf": "^4.15.0"
+    "telegraf": "^4.15.0",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "eslint": "^8.57.1",
