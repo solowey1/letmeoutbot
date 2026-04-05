@@ -57,7 +57,7 @@ class KeyboardUtils {
 
 	// protocols
 	static createHowToAddKeyKeyboard(t) { return protocols.createHowToAddKeyKeyboard(t); }
-	static createHowToAddKeyBackKeyboard(t) { return protocols.createHowToAddKeyBackKeyboard(t); }
+	static createHowToAddKeyProtocolKeyboard(t) { return protocols.createHowToAddKeyProtocolKeyboard(t); }
 	static createVpnAppsProtocolKeyboard(t) { return protocols.createVpnAppsProtocolKeyboard(t); }
 	static createOutlineAppsKeyboard(t) { return protocols.createOutlineAppsKeyboard(t); }
 	static createVlessOsKeyboard(t) { return protocols.createVlessOsKeyboard(t); }

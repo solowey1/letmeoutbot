@@ -58,7 +58,7 @@ class MenuCallbacks {
 	async handleHowToAddKeyProtocol(ctx, protocol) {
 		const t = ctx.i18n.t;
 		const message = MenuMessages.howToAddKeyProtocol(t, protocol);
-		const keyboard = KeyboardUtils.createHowToAddKeyBackKeyboard(t);
+		const keyboard = KeyboardUtils.createHowToAddKeyProtocolKeyboard(t, protocol);
 
 		await ctx.editMessageText(message, {
 			...keyboard,

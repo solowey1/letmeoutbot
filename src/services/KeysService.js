@@ -15,22 +15,32 @@ class KeysService {
 	/**
 	 * Создать и активировать ключ с retry-логикой
 	 */
-	async createAndActivateKeyWithRetry(userId, planId, paymentId, userTID, maxRetries = 3) {
+	async createAndActivateKeyWithRetry(userId, planId, paymentId, userTID, maxRetries = 5) {
+		const RETRY_DELAYS = [0, 100, 1000, 5000, 10000]; // прогрессивные задержки в мс
 		let lastError;
+
+		// Создаём запись в БД один раз, до retry-цикла
+		const plan = PlanService.getPlanById(planId);
+		if (!plan) throw new Error('План не найден');
+
+		const expiresAt = PlanService.calculateExpiryDate(plan);
+		const keyId = await this.db.createKey(userId, planId, plan.dataLimit, expiresAt);
+		await this.db.updatePayment(paymentId, { key_id: keyId });
 
 		for (let attempt = 1; attempt <= maxRetries; attempt++) {
 			try {
-				console.log(`🔄 Попытка ${attempt}/${maxRetries} создания ключа...`);
-				const result = await this.createAndActivateKey(userId, planId, paymentId, userTID);
-				console.log(`✅ Ключ создан с попытки ${attempt}`);
+				const delay = RETRY_DELAYS[attempt - 1] || 10000;
+				if (delay > 0) {
+					console.log(`⏳ Ожидание ${delay}мс перед попыткой ${attempt}/${maxRetries}...`);
+					await new Promise(resolve => setTimeout(resolve, delay));
+				}
+				console.log(`🔄 Попытка ${attempt}/${maxRetries} создания ключа (key=${keyId})...`);
+				const result = await this.activateKeyOnVpnServer(keyId, plan, userTID, expiresAt);
+				console.log(`✅ Ключ ${keyId} создан с попытки ${attempt}`);
 				return result;
 			} catch (error) {
 				lastError = error;
 				console.error(`❌ Попытка ${attempt}/${maxRetries} не удалась:`, error.message);
-				if (attempt < maxRetries) {
-					const delay = Math.pow(2, attempt - 1) * 1000;
-					await new Promise(resolve => setTimeout(resolve, delay));
-				}
 			}
 		}
 
@@ -38,19 +48,11 @@ class KeysService {
 	}
 
 	/**
-	 * Создать и активировать ключ (одна попытка)
+	 * Активировать ключ на VPN-сервере (без создания записи в БД)
+	 * Используется внутри retry-цикла
 	 */
-	async createAndActivateKey(userId, planId, paymentId, userTID) {
-		const plan = PlanService.getPlanById(planId);
-		if (!plan) throw new Error('План не найден');
-
-		const expiresAt = PlanService.calculateExpiryDate(plan);
+	async activateKeyOnVpnServer(keyId, plan, userTID, expiresAt) {
 		const expiryTimeMs = expiresAt.getTime();
-
-		// Создаём запись в БД
-		const keyId = await this.db.createKey(userId, planId, plan.dataLimit, expiresAt);
-		await this.db.updatePayment(paymentId, { key_id: keyId });
-
 		let result = { keyId, accessUrl: null, vlessUrl: null };
 
 		// Генерируем уникальный email для 3X-UI
@@ -59,7 +61,7 @@ class KeysService {
 		if (plan.type === 'outline' || plan.type === 'both') {
 			// Создаём Outline ключ
 			const outlineKey = await this.outlineService.createKey(
-				{ plan_id: planId, data_limit: plan.dataLimit },
+				{ plan_id: plan.id, data_limit: plan.dataLimit },
 				userTID
 			);
 
@@ -103,6 +105,20 @@ class KeysService {
 
 		result.key = await this.db.getKey(keyId);
 		return result;
+	}
+
+	/**
+	 * Создать и активировать ключ за одну попытку (legacy, для вызовов без retry)
+	 */
+	async createAndActivateKey(userId, planId, paymentId, userTID) {
+		const plan = PlanService.getPlanById(planId);
+		if (!plan) throw new Error('План не найден');
+
+		const expiresAt = PlanService.calculateExpiryDate(plan);
+		const keyId = await this.db.createKey(userId, planId, plan.dataLimit, expiresAt);
+		await this.db.updatePayment(paymentId, { key_id: keyId });
+
+		return this.activateKeyOnVpnServer(keyId, plan, userTID, expiresAt);
 	}
 
 	// ============== ПОЛУЧЕНИЕ КЛЮЧЕЙ ==============

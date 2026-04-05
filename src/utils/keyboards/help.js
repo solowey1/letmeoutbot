@@ -5,7 +5,6 @@ const { btn } = require('./common');
 function createHelpKeyboard(t) {
 	return Markup.inlineKeyboard([
 		[btn(t, 'buy')],
-		[btn(t, 'vpn_apps')],
 		[btn(t, 'how_to_add_key')],
 		[btn(t, 'contact_support')],
 		[btn(t, 'home')]

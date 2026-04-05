@@ -82,7 +82,7 @@ class PaymentHandlers {
 				completedPayment.plan_id,
 				paymentId,
 				ctx.from.id,
-				3 // максимум 3 попытки
+				5 // максимум 5 попыток с прогрессивной задержкой
 			);
 
 			console.log('✅ Ключ создан и активирован:', result);

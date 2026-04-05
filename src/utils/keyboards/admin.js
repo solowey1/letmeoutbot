@@ -11,12 +11,13 @@ function createAdminKeyboard(t) {
 		],
 		[
 			btn(t, 'admin_payments'),
-			btn(t, 'admin_withdrawals'),
+			btn(t, 'admin_pending_keys'),
 		],
 		[
+			btn(t, 'admin_withdrawals'),
 			btn(t, 'admin_broadcast'),
-			btn(t, 'admin_settings'),
 		],
+		[btn(t, 'admin_settings')],
 		[btn(t, 'back', CALLBACK_ACTIONS.BASIC.HOME)]
 	]);
 }

@@ -56,18 +56,19 @@ const BUTTON_PRESETS = {
 	vless:           { text: 'buttons.protocols.vless',             action: null,                                    style: null,        icon: null },
 
 	// ── Outline: ссылки на приложения ───────────────────────────────
-	outline_app_website: { text: 'buttons.apps.website', method: 'url', url: 'https://getoutline.org/ru/get-started/#step-3',                             style: null, icon: '5776233299424843260' },
-	outline_app_android: { text: 'buttons.apps.android', method: 'url', url: 'https://play.google.com/store/apps/details?id=org.outline.android.client',  style: null, icon: '6030400221232501136' },
-	outline_app_ios:     { text: 'buttons.apps.ios',     method: 'url', url: 'https://apps.apple.com/app/outline-app/id1356177741',                       style: null, icon: '5775870512127283512' },
-	outline_app_windows: { text: 'buttons.apps.windows', method: 'url', url: 'https://s3.amazonaws.com/outline-releases/client/windows/stable/Outline-Client.exe', style: null, icon: '5837069325034331827' },
-	outline_app_macos:   { text: 'buttons.apps.macos',   method: 'url', url: 'https://s3.amazonaws.com/outline-releases/client/macos/stable/Outline-Client.dmg',   style: null, icon: '5942734685976138521' },
+	outline_app_website: { text: 'buttons.apps.website', method: 'url', url: 'https://getoutline.org/ru/get-started/#step-3',                             						style: null, icon: '5776233299424843260' },
+	outline_app_android: { text: 'buttons.apps.android', method: 'url', url: 'https://play.google.com/store/apps/details?id=org.outline.android.client',  						style: null, icon: '6030400221232501136' },
+	outline_app_ios:     { text: 'buttons.apps.ios',     method: 'url', url: 'https://apps.apple.com/app/outline-app/id1356177741',                       						style: null, icon: '5775870512127283512' },
+	outline_app_windows: { text: 'buttons.apps.windows', method: 'url', url: 'https://s3.amazonaws.com/outline-releases/client/windows/stable/Outline-Client.exe', 		style: null, icon: '5837069325034331827' },
+	outline_app_macos:   { text: 'buttons.apps.macos',   method: 'url', url: 'https://s3.amazonaws.com/outline-releases/client/macos/stable/Outline-Client.dmg', 			style: null, icon: '5942734685976138521' },
+	outline_app_linux:   { text: 'buttons.apps.linux',   method: 'url', url: 'https://s3.amazonaws.com/outline-releases/client/linux/stable/Outline-Client.AppImage', style: null, icon: '5323366978457445319' },
 
 	// ── ОС (VLESS приложения) ───────────────────────────────────────
-	os_android:      { text: 'buttons.apps.android',                  action: CALLBACK_ACTIONS.BASIC.VLESS_APPS_ANDROID, style: null,      icon: '6030400221232501136' },
-	os_ios:          { text: 'buttons.apps.ios',                      action: CALLBACK_ACTIONS.BASIC.VLESS_APPS_IOS,     style: null,      icon: '5775870512127283512' },
-	os_windows:      { text: 'buttons.apps.windows',                  action: CALLBACK_ACTIONS.BASIC.VLESS_APPS_WINDOWS, style: null,      icon: '5837069325034331827' },
-	os_macos:        { text: 'buttons.apps.macos',                    action: CALLBACK_ACTIONS.BASIC.VLESS_APPS_MACOS,   style: null,      icon: '5942734685976138521' },
-	os_linux:        { text: 'buttons.apps.linux',                    action: CALLBACK_ACTIONS.BASIC.VLESS_APPS_LINUX,   style: null,      icon: '5323366978457445319' },
+	vless_app_android:   { text: 'buttons.apps.android',                  action: CALLBACK_ACTIONS.BASIC.VLESS_APPS_ANDROID, style: null,      icon: '6030400221232501136' },
+	vless_app_ios:       { text: 'buttons.apps.ios',                      action: CALLBACK_ACTIONS.BASIC.VLESS_APPS_IOS,     style: null,      icon: '5775870512127283512' },
+	vless_app_windows:   { text: 'buttons.apps.windows',                  action: CALLBACK_ACTIONS.BASIC.VLESS_APPS_WINDOWS, style: null,      icon: '5837069325034331827' },
+	vless_app_macos:     { text: 'buttons.apps.macos',                    action: CALLBACK_ACTIONS.BASIC.VLESS_APPS_MACOS,   style: null,      icon: '5942734685976138521' },
+	vless_app_linux:     { text: 'buttons.apps.linux',                    action: CALLBACK_ACTIONS.BASIC.VLESS_APPS_LINUX,   style: null,      icon: '5323366978457445319' },
 
 	// ── Настройки ───────────────────────────────────────────────────
 	language:        { text: 'buttons.language',                    action: CALLBACK_ACTIONS.SETTINGS.LANGUAGE.SET,   style: null,        icon: '5769403725898584391' },
@@ -80,6 +81,7 @@ const BUTTON_PRESETS = {
 	admin_stats:     { text: 'buttons.admin.stats',                 action: CALLBACK_ACTIONS.ADMIN.STATS.MENU,       style: null,        icon: '5938539885907415367' },
 	admin_payments:  { text: 'buttons.admin.payments',              action: CALLBACK_ACTIONS.ADMIN.PAYMENTS.MENU,    style: null,        icon: '5769126056262898415' },
 	admin_keys:      { text: 'buttons.admin.keys',                  action: CALLBACK_ACTIONS.ADMIN.KEYS.MENU,        style: null,        icon: '5766994197705921104' },
+	admin_pending_keys: { text: 'buttons.admin.pending_keys',       action: CALLBACK_ACTIONS.ADMIN.KEYS.PENDING,     style: null,        icon: '5368324170671202286' },
 	admin_withdrawals: { text: 'buttons.admin.pending_withdrawals', action: CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING, style: null,     icon: '5805331990618053402' },
 	admin_broadcast: { text: 'buttons.admin.broadcast',             action: CALLBACK_ACTIONS.ADMIN.BROADCAST,        style: null,        icon: '6030329749409108167' },
 	admin_settings:  { text: 'buttons.admin.settings',              action: CALLBACK_ACTIONS.ADMIN.SETTINGS,         style: null,        icon: '5850332476102153487' },

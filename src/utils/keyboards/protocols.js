@@ -1,11 +1,11 @@
 const { Markup } = require('telegraf');
-const { CALLBACK_ACTIONS } = require('../../config/constants');
+const { CALLBACK_ACTIONS, PROTOCOLS, OS_VARIANTS } = require('../../config/constants');
 const { btn } = require('./common');
 
 function createHowToAddKeyKeyboard(t) {
 	return Markup.inlineKeyboard([
-		[btn(t, 'outline', CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_OUTLINE)],
-		[btn(t, 'vless', CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_VLESS)],
+		[btn(t, PROTOCOLS.OUTLINE, CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_OUTLINE)],
+		[btn(t, PROTOCOLS.VLESS, CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_VLESS)],
 		[
 			btn(t, 'back', CALLBACK_ACTIONS.BASIC.HELP),
 			btn(t, 'home')
@@ -13,8 +13,9 @@ function createHowToAddKeyKeyboard(t) {
 	]);
 }
 
-function createHowToAddKeyBackKeyboard(t) {
+function createHowToAddKeyProtocolKeyboard(t, protocol) {
 	return Markup.inlineKeyboard([
+		[btn(t, 'vpn_apps', CALLBACK_ACTIONS.BASIC[`VPN_APPS_${protocol.toUpperCase()}`])],
 		[
 			btn(t, 'back', CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY),
 			btn(t, 'home')
@@ -24,8 +25,8 @@ function createHowToAddKeyBackKeyboard(t) {
 
 function createVpnAppsProtocolKeyboard(t) {
 	return Markup.inlineKeyboard([
-		[btn(t, 'outline', CALLBACK_ACTIONS.BASIC.VPN_APPS_OUTLINE)],
-		[btn(t, 'vless', CALLBACK_ACTIONS.BASIC.VPN_APPS_VLESS)],
+		[btn(t, PROTOCOLS.OUTLINE, CALLBACK_ACTIONS.BASIC.VPN_APPS_OUTLINE)],
+		[btn(t, PROTOCOLS.VLESS, CALLBACK_ACTIONS.BASIC.VPN_APPS_VLESS)],
 		[
 			btn(t, 'back', CALLBACK_ACTIONS.BASIC.HELP),
 			btn(t, 'home')
@@ -34,10 +35,11 @@ function createVpnAppsProtocolKeyboard(t) {
 }
 
 function createOutlineAppsKeyboard(t) {
+	const buttons = Object.values(OS_VARIANTS)
+		.map(os => btn(t, `${PROTOCOLS.OUTLINE}_app_${os}`));
+
 	return Markup.inlineKeyboard([
-		[btn(t, 'outline_app_website')],
-		[btn(t, 'outline_app_android'), btn(t, 'outline_app_ios')],
-		[btn(t, 'outline_app_windows'), btn(t, 'outline_app_macos')],
+		...buttons,
 		[
 			btn(t, 'back', CALLBACK_ACTIONS.BASIC.VPN_APPS),
 			btn(t, 'home')
@@ -46,12 +48,12 @@ function createOutlineAppsKeyboard(t) {
 }
 
 function createVlessOsKeyboard(t) {
+	const buttons = Object.values(OS_VARIANTS)
+		.filter(os => os !== OS_VARIANTS.WEBSITE)
+		.map(os => btn(t, `${PROTOCOLS.VLESS}_app_${os}`));
+
 	return Markup.inlineKeyboard([
-		[btn(t, 'os_android')],
-		[btn(t, 'os_ios')],
-		[btn(t, 'os_windows')],
-		[btn(t, 'os_macos')],
-		[btn(t, 'os_linux')],
+		...buttons,
 		[
 			btn(t, 'back', CALLBACK_ACTIONS.BASIC.VPN_APPS),
 			btn(t, 'home')
@@ -70,7 +72,7 @@ function createVlessAppsBackKeyboard(t) {
 
 module.exports = {
 	createHowToAddKeyKeyboard,
-	createHowToAddKeyBackKeyboard,
+	createHowToAddKeyProtocolKeyboard,
 	createVpnAppsProtocolKeyboard,
 	createOutlineAppsKeyboard,
 	createVlessOsKeyboard,

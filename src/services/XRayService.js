@@ -73,7 +73,7 @@ class XRayService {
 	async apiRequest(method, path, data = null) {
 		await this.ensureSession();
 
-		const url = `${this.panelUrl}/panel${path}`;
+		const url = `${this.panelUrl}/panel/api${path}`;
 		const config = {
 			method,
 			url,
@@ -104,25 +104,25 @@ class XRayService {
 	}
 
 	async addClient(inboundId, clientData) {
-		return this.apiRequest('POST', '/inbound/addClient', {
+		return this.apiRequest('POST', '/inbounds/addClient', {
 			id: inboundId,
 			settings: JSON.stringify({ clients: [clientData] })
 		});
 	}
 
 	async updateClient(inboundId, uuid, clientData) {
-		return this.apiRequest('POST', `/inbound/updateClient/${uuid}`, {
+		return this.apiRequest('POST', `/inbounds/updateClient/${uuid}`, {
 			id: inboundId,
 			settings: JSON.stringify({ clients: [clientData] })
 		});
 	}
 
 	async deleteClient(inboundId, uuid) {
-		return this.apiRequest('POST', `/inbound/${inboundId}/delClient/${uuid}`);
+		return this.apiRequest('POST', `/inbounds/${inboundId}/delClient/${uuid}`);
 	}
 
 	async getClientStats(email) {
-		return this.apiRequest('GET', `/inbound/getClientTraffics/${email}`);
+		return this.apiRequest('GET', `/inbounds/getClientTraffics/${email}`);
 	}
 
 	/**

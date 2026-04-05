@@ -96,7 +96,8 @@ class AdminMessages {
 
 		payments.forEach((payment, index) => {
 			const date = new Date(payment.created_at).toLocaleString();
-			const status = payment.status === 'completed' ? '✅' : payment.status === 'pending' ? '⏳' : '❌';
+			const statusMap = { completed: '✅', pending: '⏳', pending_activation: '⚠️', failed: '❌', refunded: '↩️' };
+			const status = statusMap[payment.status] || '❓';
 
 			message.push(`${index + 1}. ${status} ${payment.amount} ⭐`);
 			message.push(`   ${t('common.user')}: ${payment.user_id}`);

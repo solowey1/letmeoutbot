@@ -11,6 +11,8 @@ services:
       - LOG_LEVEL=info
     env_file:
       - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - vpnbot-data:/app/data
       - vpnbot-logs:/app/logs

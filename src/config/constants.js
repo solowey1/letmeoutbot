@@ -187,7 +187,8 @@ const CALLBACK_ACTIONS = {
 	ADMIN: {
 		MENU: 'admin_menu',
 		KEYS: {
-			MENU: 'admin_keys'
+			MENU: 'admin_keys',
+			PENDING: 'admin_keys_pending'
 		},
 		PAYMENTS: { MENU: 'admin_payments' },
 		STATS: { MENU: 'admin_stats_menu' },
@@ -264,6 +265,20 @@ const NOTIFICATION_TYPES = {
 	TIME_EXPIRED: 'time_expired'
 };
 
+const PROTOCOLS = {
+	OUTLINE: 'outline',
+	VLESS: 'vless',
+};
+
+const OS_VARIANTS = {
+	WEBSITE: 'website',
+	ANDROID: 'android',
+	IOS: 'ios',
+	WINDOWS: 'windows',
+	MACOS: 'macos',
+	LINUX: 'linux',
+};
+
 const REFERRAL_CONFIG = {
 	COMMISSION_RATE: 0.3,
 	WITHDRAWAL_DELAY_DAYS: 14,
@@ -283,6 +298,8 @@ module.exports = {
 	PAYMENT_STATUS,
 	CALLBACK_ACTIONS,
 	NOTIFICATION_TYPES,
+	PROTOCOLS,
+	OS_VARIANTS,
 	REFERRAL_CONFIG,
 	ADMIN_IDS
 };

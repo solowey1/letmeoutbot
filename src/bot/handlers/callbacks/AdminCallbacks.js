@@ -204,6 +204,44 @@ class AdminCallbacks {
 		}
 	}
 
+	async handleAdminPendingKeys(ctx) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		try {
+			const pendingKeys = await this.db.getPendingKeys(20);
+			const message = await AdminMessages.pendingKeysList(t, pendingKeys, (userId) => this.db.getUserById(userId));
+			const keyboard = KeyboardUtils.createAdminKeyboard(t);
+
+			try {
+				await ctx.editMessageText(message, {
+					...keyboard,
+					parse_mode: 'HTML'
+				});
+			} catch (editError) {
+				if (editError.description && editError.description.includes('message is not modified')) {
+					console.log('Pending ключи: сообщение не изменилось');
+				} else {
+					throw editError;
+				}
+			}
+		} catch (error) {
+			console.error('Ошибка получения pending ключей:', error);
+			try {
+				await ctx.editMessageText(
+					t('admin.loading_error', { ns: 'message' }),
+					KeyboardUtils.createAdminKeyboard(t)
+				);
+			} catch (editError) {
+				console.error('Не удалось отредактировать сообщение об ошибке:', editError.message);
+			}
+		}
+	}
+
 	async handleAdminBroadcast(ctx) {
 		const t = ctx.i18n.t;
 

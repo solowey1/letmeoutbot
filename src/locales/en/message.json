@@ -234,7 +234,7 @@
     "vless": {
       "title": "⚡ How to add a VLESS key",
       "steps": [
-        "Download a compatible app (v2rayN, v2rayNG, Streisand, etc.)",
+        "Download a compatible app (v2rayN, v2rayNG, Streisand, etc.) for your OS",
         "Copy your access key (starts with <code>vless://</code>)",
         "In the app, tap <b>\"+\"</b> or <b>\"Import from clipboard\"</b>",
         "The key will be automatically recognized and added",
