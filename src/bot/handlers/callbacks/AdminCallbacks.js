@@ -128,46 +128,6 @@ class AdminCallbacks {
 		}
 	}
 
-	async handleAdminPendingKeys(ctx) {
-		const t = ctx.i18n.t;
-
-		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
-			return;
-		}
-
-		try {
-			const pendingKeys = await this.db.getPendingKeys();
-			const message = await AdminMessages.pendingKeysList(t, pendingKeys, this.db.getUserById.bind(this.db));
-			const keyboard = KeyboardUtils.createAdminKeyboard(t);
-
-			try {
-				await ctx.editMessageText(message, {
-					...keyboard,
-					parse_mode: 'HTML'
-				});
-			} catch (editError) {
-				if (editError.description && editError.description.includes('message is not modified')) {
-					console.log('Pending ключи: сообщение не изменилось');
-				} else {
-					throw editError;
-				}
-			}
-		} catch (error) {
-			console.error('Ошибка получения pending подписок:', error);
-			console.error('Детали ошибки:', error.message);
-
-			try {
-				await ctx.editMessageText(
-					t('admin.loading_error', { ns: 'message' }),
-					KeyboardUtils.createAdminKeyboard(t)
-				);
-			} catch (editError) {
-				console.error('Не удалось отредактировать сообщение об ошибке:', editError.message);
-			}
-		}
-	}
-
 	async handleAdminPayments(ctx) {
 		const t = ctx.i18n.t;
 

@@ -21,9 +21,16 @@ class ReferralCallbacks {
 		// Получаем статистику рефералов
 		const stats = await this.referralService.getReferralStats(user.id);
 
+		// Генерируем реферальную ссылку
+		const botInfo = await ctx.telegram.getMe();
+		const referralLink = ReferralService.generateReferralLink(botInfo.username, user.telegram_id);
+		
+		// Текст для приглашения
+		const inviteText = ReferralMessages.inviteText(t, referralLink);
+
 		// Генерируем сообщение
 		const message = ReferralMessages.menu(t, stats);
-		const keyboard = KeyboardUtils.createReferralMenuKeyboard(t);
+		const keyboard = KeyboardUtils.createReferralMenuKeyboard(t, inviteText);
 
 		await ctx.editMessageText(message, {
 			...keyboard,

@@ -24,6 +24,17 @@ const PLANS = {
 		emoji: '🐌',
 		hidden: true               // не показывать обычным пользователям
 	},
+	TEST_VLESS: {
+		id: 'test_vless',
+		name: 'TEST VLESS',
+		type: 'vless',
+		dataLimitGB: 0.1,          // 100 MB
+		dataLimit: 100 * 1024 * 1024,
+		duration: 1,
+		price: 1,
+		emoji: '⚡',
+		hidden: true
+	},
 
 	// ─────────────────────────────────────────
 	// OUTLINE — только Outline VPN
@@ -188,8 +199,7 @@ const CALLBACK_ACTIONS = {
 	ADMIN: {
 		MENU: 'admin_menu',
 		KEYS: {
-			MENU: 'admin_keys',
-			PENDING: 'admin_keys_pending_menu'
+			MENU: 'admin_keys'
 		},
 		PAYMENTS: { MENU: 'admin_payments' },
 		STATS: { MENU: 'admin_stats_menu' },
@@ -248,8 +258,8 @@ const CALLBACK_ACTIONS = {
 	},
 	REFERRAL: {
 		MENU: 'referral_menu',
-		INVITE: 'referral_invite',
 		GET_LINK: 'referral_get_link',
+		INVITE: 'referral_invite',
 		WITHDRAW: 'referral_withdraw',
 		CONFIRM_WITHDRAW: 'referral_confirm_withdraw',
 		MY_REFERRALS: 'referral_my_referrals',

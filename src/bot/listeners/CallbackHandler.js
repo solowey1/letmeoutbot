@@ -37,8 +37,6 @@ class CallbackHandler {
 			// Роутинг callback'ов к соответствующим модулям
 			if (callbackData === CALLBACK_ACTIONS.BASIC.HOME) {
 				await this.menuCallbacks.handleBackToMenu(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.KEYS.BUY) {
-				await this.planCallbacks.handleShowPlans(ctx);
 			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.KEYS.BUY}_`)) {
 				const planId = callbackData.split('_').slice(2).join('_');
 				await this.planCallbacks.handleShowPlanDetails(ctx, planId);
@@ -108,8 +106,6 @@ class CallbackHandler {
 				await this.adminCallbacks.handleAdminPayments(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.KEYS.MENU) {
 				await this.adminCallbacks.handleAdminKeys(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.KEYS.PENDING) {
-				await this.adminCallbacks.handleAdminPendingKeys(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING) {
 				await this.adminCallbacks.handlePendingWithdrawals(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.BROADCAST || callbackData === 'admin_broadcast') {

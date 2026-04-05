@@ -3,66 +3,73 @@
     "buy": {
       "first": "Купить первый ключ",
       "key": "Купить ключ",
-      "more": "➕ Купить еще"
+      "more": "Купить еще"
     },
-    "my_keys": "📋 Мои ключи",
-    "referral": "🎁 Реферальная программа",
-    "admin_panel": "👨‍💼 Админка",
-    "help": "ℹ️ Помощь",
+    "my_keys": "Мои ключи",
+    "referral": "Реферальная программа",
+    "admin_panel": "Админка",
+    "help": "Помощь",
     "home": "Домой",
-    "stats": "📊 Статистика",
-    "vpn_apps": "📱 Приложения для VPN",
-    "how_to_add_key": "🔑 Как добавить ключ?",
-    "support": "🆘 Поддержка",
-    "contact_support": "✉️ Написать",
-    "confirm_purchase": "✅ Подтверждаю покупку",
+    "stats": "Статистика",
+    "vpn_apps": "Приложения для VPN",
+    "how_to_add_key": "Как добавить ключ?",
+    "support": "Поддержка",
+    "contact_support": "Написать",
+    "confirm_purchase": "Подтверждаю покупку",
     "pay": "Оплатить",
-    "cancel": "❌ Отменить",
-    "confirm": "✅ Подтвердить",
+    "cancel": "Отменить",
+    "confirm": "Подтвердить",
     "back": "Назад",
-    "settings": "⚙️ Настройки",
-    "language": "🌐 Язык",
-    "retry": "🔄 Попробовать снова",
-    "refresh_key": "🔄 Обновить ключ",
+    "settings": "Настройки",
+    "language": "Язык",
+    "retry": "Попробовать снова",
+    "refresh_key": "Обновить ключ",
     "referral_actions": {
-      "invite": "👥 Пригласить друзей",
-      "get_link": "🔗 Получить ссылку",
-      "withdraw": "💰 Вывести средства",
-      "withdraw_confirm": "✅ Подтвердить вывод",
-      "my_referrals": "📋 Мои рефералы",
-      "history": "📜 История выводов"
+      "invite": "Пригласить друзей",
+      "get_link": "Получить ссылку",
+      "withdraw": "Вывести средства",
+      "withdraw_confirm": "Подтвердить вывод",
+      "my_referrals": "Мои рефералы",
+      "history": "История выводов"
     },
     "admin": {
-      "users": "👥 Пользователи",
-      "stats": "📊 Статистика",
-      "payments": "💰 Платежи",
-      "keys": "🔑 Ключи",
-      "pending_keys": "⏳ Pending подписки",
-      "pending_withdrawals": "💸 Выплаты",
-      "broadcast": "📢 Рассылка",
-      "broadcast_all": "👥 Всем пользователям",
-      "broadcast_active": "🟢 Активным подписчикам",
-      "broadcast_buyers": "💰 Покупавшим",
-      "broadcast_non_buyers": "👤 Не покупавшим",
-      "broadcast_new": "📤 Новая рассылка",
-      "broadcast_history": "📜 История",
-      "broadcast_schedule": "⏰ Отложить",
-      "settings": "⚙️ Настройки"
+      "users": "Пользователи",
+      "stats": "Статистика",
+      "payments": "Платежи",
+      "keys": "Ключи",
+      "pending_withdrawals": "Выплаты",
+      "broadcast": "Рассылка",
+      "broadcast_all": "Всем пользователям",
+      "broadcast_active": "Активным подписчикам",
+      "broadcast_buyers": "Покупавшим",
+      "broadcast_non_buyers": "Не покупавшим",
+      "broadcast_new": "Новая рассылка",
+      "broadcast_history": "История",
+      "broadcast_schedule": "Отложить",
+      "settings": "Настройки"
     },
     "apps": {
-      "website": "🌐 Веб-сайт",
-      "android": "📱 Android",
-      "ios": "📱 iOS",
-      "windows": "💻 Windows",
-      "macos": "💻 macOS"
+      "android": "Android",
+      "ios": "iOS",
+      "linux": "Linux",
+      "macos": "macOS",
+      "website": "Веб-сайт",
+      "windows": "Windows"
     },
     "languages": {
-      "russian": "🇷🇺 Русский",
-      "english": "🇬🇧 English"
+      "russian": "Русский",
+      "english": "English"
+    },
+    "type_outline": "Outline VPN",
+    "type_vless": "VLESS Reality",
+    "type_both": "Outline + VLESS (скидка 20%)",
+    "protocols": {
+      "outline": "Outline",
+      "vless": "VLESS"
     },
     "pagination": {
-      "prev": "◀️",
-      "next": "▶️"
+      "prev": "Назад",
+      "next": "Вперёд"
     }
   },
   "common": {
@@ -164,7 +171,7 @@
   },
   "statuses": {
     "payment": {
-      "success": "Оплачено ✅"
+      "success": "Оплачено"
     },
     "vpn": {
       "active": "Активен",
