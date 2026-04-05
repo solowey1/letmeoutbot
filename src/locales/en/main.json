@@ -38,6 +38,7 @@
       "payments": "Payments",
       "keys": "Keys",
       "pending_keys": "Pending Keys",
+      "activate_key": "Activate key #{{id}}",
       "pending_withdrawals": "Withdrawals",
       "broadcast": "Broadcast",
       "broadcast_all": "All users",
@@ -176,7 +177,7 @@
   },
   "statuses": {
     "payment": {
-      "success": "Paid ✅"
+      "success": "Paid"
     },
     "vpn": {
       "active": "Active",

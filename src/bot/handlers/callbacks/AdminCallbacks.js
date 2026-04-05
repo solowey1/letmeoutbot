@@ -222,7 +222,7 @@ class AdminCallbacks {
 			const buttons = pendingKeys.map(key =>
 				[{
 					...Markup.button.callback(
-						t('admin.pending_keys.activate_btn', { ns: 'message', id: key.id }),
+						t('buttons.admin.activate_key', { id: key.id }),
 						`${CALLBACK_ACTIONS.ADMIN.KEYS.RETRY_ACTIVATE}_${key.id}`
 					),
 					icon_custom_emoji_id: '5850346984501680054'

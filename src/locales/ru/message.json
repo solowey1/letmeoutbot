@@ -44,7 +44,6 @@
       "plan": "План",
       "created": "Создан",
       "status_label": "Статус",
-      "activate_btn": "🔄 Активировать ключ #{{id}}",
       "activating": "🔄 Активируем ключ...",
       "activate_error": "❌ Ошибка: {{error}}",
       "activated_title": "🎉 Ваш ключ активирован!",

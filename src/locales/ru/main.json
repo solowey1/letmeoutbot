@@ -38,6 +38,7 @@
       "payments": "Платежи",
       "keys": "Ключи",
       "pending_keys": "Неактивированные",
+      "activate_key": "Активировать ключ #{{id}}",
       "pending_withdrawals": "Выплаты",
       "broadcast": "Рассылка",
       "broadcast_all": "Всем пользователям",
