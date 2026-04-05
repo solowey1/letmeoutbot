@@ -26,8 +26,9 @@ class KeysCallbacks {
 			}
 
 			const keys = await this.keyService.getUserActiveKeys(t, user.id);
+			const pendingKeys = await this.keyService.getUserPendingKeys(t, user.id);
 
-			if (keys.length === 0) {
+			if (keys.length === 0 && pendingKeys.length === 0) {
 				const message = KeyMessages.myKeys(t, []);
 				const keyboard = KeyboardUtils.createKeysKeyboard(t, []);
 				await ctx.editMessageText(message, {
@@ -37,21 +38,35 @@ class KeysCallbacks {
 				return;
 			}
 
-			let message = `📋 <b>${t('keys.active_list', { ns: 'message' })}</b>\n\n`;
+			let message = '';
 
-			for (let i = 0; i < keys.length; i++) {
-				const sub = keys[i];
-				const usage = await this.keyService.getUsageStats(sub.id);
+			if (keys.length > 0) {
+				message += `📋 <b>${t('keys.active_list', { ns: 'message' })}</b>\n\n`;
 
-				message += `${i + 1}. ${sub.plan.displayName}\n`;
-				message += `   • ${t('common.status')}: ${sub.status === 'active' ? t('keys.status_active', { ns: 'message' }) : t('keys.status_inactive', { ns: 'message' })}\n`;
+				for (let i = 0; i < keys.length; i++) {
+					const sub = keys[i];
+					const usage = await this.keyService.getUsageStats(sub.id);
 
-				if (usage) {
-					message += `   • ${t('common.used')}: ${usage.formattedUsed} ${t('common.of')} ${usage.formattedLimit} (${usage.usagePercentage}%)\n`;
-					message += `   • ${t('common.days_left')}: ${usage.daysRemaining}\n`;
+					message += `${i + 1}. ${sub.plan.displayName}\n`;
+					message += `   • ${t('common.status')}: ${sub.status === 'active' ? t('keys.status_active', { ns: 'message' }) : t('keys.status_inactive', { ns: 'message' })}\n`;
+
+					if (usage) {
+						message += `   • ${t('common.used')}: ${usage.formattedUsed} ${t('common.of')} ${usage.formattedLimit} (${usage.usagePercentage}%)\n`;
+						message += `   • ${t('common.days_left')}: ${usage.daysRemaining}\n`;
+					}
+
+					message += `   • ${t('common.valid_until')}: ${new Date(sub.expires_at).toLocaleDateString()}\n\n`;
 				}
+			}
 
-				message += `   • ${t('common.valid_until')}: ${new Date(sub.expires_at).toLocaleDateString()}\n\n`;
+			if (pendingKeys.length > 0) {
+				message += `⏳ <b>${t('keys.pending_list', { ns: 'message' })}</b>\n\n`;
+
+				for (const pk of pendingKeys) {
+					const planName = pk.plan?.displayName || pk.plan_id;
+					message += `• ${planName} — ${t('keys.pending_status', { ns: 'message' })}\n`;
+				}
+				message += '\n';
 			}
 
 			const keyboard = KeyboardUtils.createKeysKeyboard(t, keys);

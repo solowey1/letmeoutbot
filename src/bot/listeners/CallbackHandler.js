@@ -108,6 +108,9 @@ class CallbackHandler {
 				await this.adminCallbacks.handleAdminKeys(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.KEYS.PENDING) {
 				await this.adminCallbacks.handleAdminPendingKeys(ctx);
+			} else if (callbackData.startsWith(CALLBACK_ACTIONS.ADMIN.KEYS.RETRY_ACTIVATE + '_')) {
+				const keyId = parseInt(callbackData.split('_').pop());
+				await this.adminCallbacks.handleRetryActivateKey(ctx, keyId);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING) {
 				await this.adminCallbacks.handlePendingWithdrawals(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.BROADCAST || callbackData === 'admin_broadcast') {

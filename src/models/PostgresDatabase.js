@@ -142,6 +142,16 @@ class PostgresDatabase {
 		return result.rows;
 	}
 
+	async getUserPendingKeys(userId) {
+		const query = `
+            SELECT * FROM keys
+            WHERE user_id = $1 AND status = 'pending'
+            ORDER BY created_at DESC
+        `;
+		const result = await this.pool.query(query, [userId]);
+		return result.rows;
+	}
+
 	async getPendingKeys() {
 		const query = `
             SELECT * FROM keys

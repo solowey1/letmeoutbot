@@ -41,7 +41,13 @@
       "id": "ID",
       "plan": "Plan",
       "created": "Created",
-      "status_label": "Status"
+      "status_label": "Status",
+      "activate_btn": "🔄 Activate key #{{id}}",
+      "activating": "🔄 Activating key...",
+      "activate_error": "❌ Error: {{error}}",
+      "activated_title": "🎉 Your key has been activated!",
+      "vless_label": "⚡ VLESS key:",
+      "outline_label": "🌿 Outline key:"
     },
     "withdrawals": {
       "title": "📜 Pending Withdrawals",
@@ -246,6 +252,8 @@
   "keys": {
     "no_active": "You don't have any active keys yet.\n\nChoose a plan to purchase VPN access.",
     "active_list": "Your active keys:",
+    "pending_list": "Awaiting activation:",
+    "pending_status": "⏳ awaiting activation",
     "status_active": "🟢 Active",
     "status_inactive": "🔴 Inactive",
     "details_title": "Key Details",

@@ -1,5 +1,7 @@
-const { ADMIN_IDS } = require('../../../config/constants');
+const { ADMIN_IDS, CALLBACK_ACTIONS } = require('../../../config/constants');
+const { Markup } = require('telegraf');
 const KeyboardUtils = require('../../../utils/keyboards');
+const { btn } = require('../../../utils/keyboards/common');
 const { AdminMessages } = require('../../../services/messages');
 const pendingBroadcast = require('../../../utils/broadcastState');
 
@@ -215,7 +217,19 @@ class AdminCallbacks {
 		try {
 			const pendingKeys = await this.db.getPendingKeys(20);
 			const message = await AdminMessages.pendingKeysList(t, pendingKeys, (userId) => this.db.getUserById(userId));
-			const keyboard = KeyboardUtils.createAdminKeyboard(t);
+
+			// Кнопки для повторной активации каждого pending ключа
+			const buttons = pendingKeys.map(key =>
+				[{
+					...Markup.button.callback(
+						t('admin.pending_keys.activate_btn', { ns: 'message', id: key.id }),
+						`${CALLBACK_ACTIONS.ADMIN.KEYS.RETRY_ACTIVATE}_${key.id}`
+					),
+					icon_custom_emoji_id: '5850346984501680054'
+				}]
+			);
+			buttons.push([btn(t, 'back', CALLBACK_ACTIONS.ADMIN.MENU)]);
+			const keyboard = Markup.inlineKeyboard(buttons);
 
 			try {
 				await ctx.editMessageText(message, {
@@ -239,6 +253,51 @@ class AdminCallbacks {
 			} catch (editError) {
 				console.error('Не удалось отредактировать сообщение об ошибке:', editError.message);
 			}
+		}
+	}
+
+	async handleRetryActivateKey(ctx, keyId) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		try {
+			await ctx.answerCbQuery(t('admin.pending_keys.activating', { ns: 'message' }));
+			const result = await this.keysService.retryActivateKey(keyId);
+
+			// Уведомляем пользователя через Telegram на его языке
+			if (result.key) {
+				try {
+					const user = await this.db.getUserById(result.key.user_id);
+					if (user) {
+						const savedLocale = ctx.i18n.locale;
+						ctx.i18n.locale = user.language || 'ru';
+						const ut = ctx.i18n.t;
+
+						let msg = `<b>${ut('admin.pending_keys.activated_title', { ns: 'message' })}</b>\n\n`;
+						if (result.vlessUrl) {
+							msg += `<b>${ut('admin.pending_keys.vless_label', { ns: 'message' })}</b>\n<code>${result.vlessUrl}</code>\n\n`;
+						}
+						if (result.accessUrl && result.accessUrl !== result.vlessUrl) {
+							msg += `<b>${ut('admin.pending_keys.outline_label', { ns: 'message' })}</b>\n<code>${result.accessUrl}</code>\n\n`;
+						}
+						await ctx.telegram.sendMessage(user.telegram_id, msg, { parse_mode: 'HTML' });
+
+						ctx.i18n.locale = savedLocale;
+					}
+				} catch (notifyError) {
+					console.error('⚠️ Не удалось уведомить пользователя:', notifyError.message);
+				}
+			}
+
+			// Обновляем список pending ключей
+			await this.handleAdminPendingKeys(ctx);
+		} catch (error) {
+			console.error('❌ Ошибка активации ключа:', error);
+			await ctx.answerCbQuery(t('admin.pending_keys.activate_error', { ns: 'message', error: error.message }), { show_alert: true });
 		}
 	}
 
@@ -306,50 +365,6 @@ class AdminCallbacks {
 				console.log('Настройки: сообщение не изменилось');
 			} else {
 				console.error('Ошибка редактирования настроек:', editError.message);
-			}
-		}
-	}
-
-	async handlePendingWithdrawals(ctx) {
-		const t = ctx.i18n.t;
-
-		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
-			return;
-		}
-
-		try {
-			const withdrawals = await this.db.getPendingWithdrawals();
-			const message = await AdminMessages.pendingWithdrawalsList(
-				t,
-				withdrawals,
-				this.db.getUserById.bind(this.db)
-			);
-			const keyboard = KeyboardUtils.createAdminKeyboard(t);
-
-			try {
-				await ctx.editMessageText(message, {
-					...keyboard,
-					parse_mode: 'HTML'
-				});
-			} catch (editError) {
-				if (editError.description && editError.description.includes('message is not modified')) {
-					console.log('Pending выплаты: сообщение не изменилось');
-				} else {
-					throw editError;
-				}
-			}
-		} catch (error) {
-			console.error('Ошибка получения pending выплат:', error);
-			console.error('Детали ошибки:', error.message);
-
-			try {
-				await ctx.editMessageText(
-					t('admin.loading_error', { ns: 'message' }),
-					KeyboardUtils.createAdminKeyboard(t)
-				);
-			} catch (editError) {
-				console.error('Не удалось отредактировать сообщение об ошибке:', editError.message);
 			}
 		}
 	}

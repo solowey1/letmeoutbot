@@ -76,20 +76,20 @@ const BUTTON_PRESETS = {
 	lang_en:         { text: 'buttons.languages.english',           action: CALLBACK_ACTIONS.SETTINGS.LANGUAGE.EN,    style: null,        icon: '5458416160586342331' },
 
 	// ── Админка ─────────────────────────────────────────────────────
-	admin:           { text: 'buttons.admin_panel',                 action: CALLBACK_ACTIONS.ADMIN.MENU,             style: 'danger',    icon: '5805553606635559688' },
-	admin_users:     { text: 'buttons.admin.users',                 action: CALLBACK_ACTIONS.ADMIN.USERS.MENU,       style: null,        icon: '6032609071373226027' },
-	admin_stats:     { text: 'buttons.admin.stats',                 action: CALLBACK_ACTIONS.ADMIN.STATS.MENU,       style: null,        icon: '5938539885907415367' },
-	admin_payments:  { text: 'buttons.admin.payments',              action: CALLBACK_ACTIONS.ADMIN.PAYMENTS.MENU,    style: null,        icon: '5769126056262898415' },
-	admin_keys:      { text: 'buttons.admin.keys',                  action: CALLBACK_ACTIONS.ADMIN.KEYS.MENU,        style: null,        icon: '5766994197705921104' },
-	admin_pending_keys: { text: 'buttons.admin.pending_keys',       action: CALLBACK_ACTIONS.ADMIN.KEYS.PENDING,     style: null,        icon: '5368324170671202286' },
-	admin_withdrawals: { text: 'buttons.admin.pending_withdrawals', action: CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING, style: null,     icon: '5805331990618053402' },
-	admin_broadcast: { text: 'buttons.admin.broadcast',             action: CALLBACK_ACTIONS.ADMIN.BROADCAST,        style: null,        icon: '6030329749409108167' },
-	admin_settings:  { text: 'buttons.admin.settings',              action: CALLBACK_ACTIONS.ADMIN.SETTINGS,         style: null,        icon: '5850332476102153487' },
+	admin:           		{ text: 'buttons.admin_panel',               action: CALLBACK_ACTIONS.ADMIN.MENU,             style: 'danger',    icon: '5805553606635559688' },
+	admin_users:     		{ text: 'buttons.admin.users',               action: CALLBACK_ACTIONS.ADMIN.USERS.MENU,       style: null,        icon: '6032609071373226027' },
+	admin_stats:     		{ text: 'buttons.admin.stats',               action: CALLBACK_ACTIONS.ADMIN.STATS.MENU,       style: null,        icon: '5938539885907415367' },
+	admin_payments:  		{ text: 'buttons.admin.payments',            action: CALLBACK_ACTIONS.ADMIN.PAYMENTS.MENU,    style: null,        icon: '5769126056262898415' },
+	admin_keys:     	 	{ text: 'buttons.admin.keys',                action: CALLBACK_ACTIONS.ADMIN.KEYS.MENU,        style: null,        icon: '5766994197705921104' },
+	admin_pending_keys: { text: 'buttons.admin.pending_keys',        action: CALLBACK_ACTIONS.ADMIN.KEYS.PENDING,     style: null,        icon: '5891211339170326418' },
+	admin_withdrawals: 	{ text: 'buttons.admin.pending_withdrawals', action: CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING, style: null,     icon: '5805331990618053402' },
+	admin_broadcast: 		{ text: 'buttons.admin.broadcast',           action: CALLBACK_ACTIONS.ADMIN.BROADCAST,        style: null,        icon: '6030329749409108167' },
+	admin_settings:  		{ text: 'buttons.admin.settings',            action: CALLBACK_ACTIONS.ADMIN.SETTINGS,         style: null,        icon: '5850332476102153487' },
 
 	// ── Рассылка: аудитория ─────────────────────────────────────────
-	broadcast_all:       { text: 'buttons.admin.broadcast_all',         action: CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.ALL,     style: null, icon: '6032594876506312598' },
-	broadcast_active:    { text: 'buttons.admin.broadcast_active',      action: CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.ACTIVE,  style: null, icon: '5879905000972358125' },
-	broadcast_buyers:    { text: 'buttons.admin.broadcast_buyers',      action: CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.BUYERS,  style: null, icon: '6035084557378654059' },
+	broadcast_all:     	  { text: 'buttons.admin.broadcast_all',        action: CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.ALL,     style: null, icon: '6032594876506312598' },
+	broadcast_active:  	  { text: 'buttons.admin.broadcast_active',     action: CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.ACTIVE,  style: null, icon: '5879905000972358125' },
+	broadcast_buyers:    	{ text: 'buttons.admin.broadcast_buyers',     action: CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.BUYERS,  style: null, icon: '6035084557378654059' },
 	broadcast_non_buyers: { text: 'buttons.admin.broadcast_non_buyers', action: CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.NON_BUYERS, style: null, icon: '5893192487324880883' },
 
 	// ── Рассылка: управление ────────────────────────────────────────

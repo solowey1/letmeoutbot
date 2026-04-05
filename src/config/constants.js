@@ -188,7 +188,8 @@ const CALLBACK_ACTIONS = {
 		MENU: 'admin_menu',
 		KEYS: {
 			MENU: 'admin_keys',
-			PENDING: 'admin_keys_pending'
+			PENDING: 'admin_keys_pending',
+			RETRY_ACTIVATE: 'admin_key_retry'
 		},
 		PAYMENTS: { MENU: 'admin_payments' },
 		STATS: { MENU: 'admin_stats_menu' },

@@ -43,7 +43,13 @@
       "id": "ID",
       "plan": "План",
       "created": "Создан",
-      "status_label": "Статус"
+      "status_label": "Статус",
+      "activate_btn": "🔄 Активировать ключ #{{id}}",
+      "activating": "🔄 Активируем ключ...",
+      "activate_error": "❌ Ошибка: {{error}}",
+      "activated_title": "🎉 Ваш ключ активирован!",
+      "vless_label": "⚡ VLESS ключ:",
+      "outline_label": "🌿 Outline ключ:"
     },
     "withdrawals": {
       "title": "📜 Ожидающие выплаты",
@@ -252,6 +258,8 @@
   "keys": {
     "no_active": "У вас пока нет активных ключей.\n\nВыберите тарифный план для покупки доступа к VPN.",
     "active_list": "Ваши активные ключи:",
+    "pending_list": "Ожидают активации:",
+    "pending_status": "⏳ ожидает активации",
     "status_active": "🟢 Активен",
     "status_inactive": "🔴 Неактивен",
     "details_title": "Детали ключа",

@@ -227,6 +227,23 @@ class Database {
 		});
 	}
 
+	async getUserPendingKeys(userId) {
+		return new Promise((resolve, reject) => {
+			const query = `
+                SELECT * FROM keys
+                WHERE user_id = ? AND status = 'pending'
+                ORDER BY created_at DESC
+            `;
+			this.db.all(query, [userId], (err, rows) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(rows);
+				}
+			});
+		});
+	}
+
 	async getPendingKeys() {
 		return new Promise((resolve, reject) => {
 			const query = `

@@ -121,7 +121,36 @@ class KeysService {
 		return this.activateKeyOnVpnServer(keyId, plan, userTID, expiresAt);
 	}
 
+	/**
+	 * Повторная активация pending-ключа (для админки)
+	 */
+	async retryActivateKey(keyId) {
+		const key = await this.db.getKey(keyId);
+		if (!key) throw new Error('Ключ не найден');
+		if (key.status !== 'pending') throw new Error(`Ключ имеет статус "${key.status}", ожидался "pending"`);
+
+		const plan = PlanService.getPlanById(key.plan_id);
+		if (!plan) throw new Error('План не найден');
+
+		const user = await this.db.getUserById(key.user_id);
+		if (!user) throw new Error('Пользователь не найден');
+
+		const expiresAt = new Date(key.expires_at);
+		return this.activateKeyOnVpnServer(keyId, plan, user.telegram_id, expiresAt);
+	}
+
 	// ============== ПОЛУЧЕНИЕ КЛЮЧЕЙ ==============
+
+	async getUserPendingKeys(t, userId) {
+		const keys = await this.db.getUserPendingKeys(userId);
+		return keys.map(key => {
+			const plan = PlanService.getPlanById(key.plan_id);
+			return {
+				...key,
+				plan: plan ? PlanService.formatPlanForDisplay(t, plan) : null
+			};
+		});
+	}
 
 	async getUserActiveKeys(t, userId) {
 		const keys = await this.db.getActiveKeys(userId);
