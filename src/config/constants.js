@@ -3,11 +3,13 @@
 // Каждый план существует в трёх вариантах:
 //   outline  — только Outline VPN (Shadowsocks)
 //   vless    — только VLESS (WS + Reality)
-//   both     — оба протокола со скидкой ~20%
+//   both     — оба протокола со скидкой (см. COMBO_DISCOUNT)
 //
 // Рыночные цены (Telegram Stars, 1 Star ≈ $0.013):
 //   Конкуренты: ~$2–4/мес за 10–30 GB, ~$5–8/мес за 100 GB
 // ============================================================
+
+const COMBO_DISCOUNT = 0.20; // 20% скидка на тариф «оба протокола»
 
 const PLANS = {
 	// ─────────────────────────────────────────
@@ -124,50 +126,36 @@ const PLANS = {
 		emoji: '🌌'
 	},
 
-	// ─────────────────────────────────────────
-	// BOTH — Outline + VLESS со скидкой ~20%
-	// ─────────────────────────────────────────
-	BOTH_10GB: {
-		id: 'both_10gb',
-		name: 'Outline + VLESS 10 GB',
-		type: 'both',
-		dataLimitGB: 10,
-		dataLimit: 10 * 1024 * 1024 * 1024,
-		duration: 30,
-		price: 320,                // vs 175+225=400, скидка 20%
-		emoji: '💎'
-	},
-	BOTH_50GB: {
-		id: 'both_50gb',
-		name: 'Outline + VLESS 50 GB',
-		type: 'both',
-		dataLimitGB: 50,
-		dataLimit: 50 * 1024 * 1024 * 1024,
-		duration: 30,
-		price: 540,                // vs 300+375=675, скидка 20%
-		emoji: '💠'
-	},
-	BOTH_100GB: {
-		id: 'both_100gb',
-		name: 'Outline + VLESS 100 GB',
-		type: 'both',
-		dataLimitGB: 100,
-		dataLimit: 100 * 1024 * 1024 * 1024,
-		duration: 30,
-		price: 800,                // vs 450+550=1000, скидка 20%
-		emoji: '👑'
-	},
-	BOTH_UNLIM: {
-		id: 'both_unlim',
-		name: 'Outline + VLESS Безлимит',
-		type: 'both',
-		dataLimitGB: 0,
-		dataLimit: 0,
-		duration: 30,
-		price: 1150,               // vs 650+800=1450, скидка 21%
-		emoji: '🔱'
-	}
 };
+
+// ─────────────────────────────────────────
+// BOTH — Outline + VLESS со скидкой (авто)
+// ─────────────────────────────────────────
+const BOTH_EMOJIS = { 10: '💎', 50: '💠', 100: '👑', 0: '🔱' };
+
+const outlinePlans = Object.values(PLANS).filter(p => p.type === 'outline' && !p.hidden);
+const vlessPlans   = Object.values(PLANS).filter(p => p.type === 'vless'   && !p.hidden);
+
+for (const outline of outlinePlans) {
+	const vless = vlessPlans.find(v => v.dataLimitGB === outline.dataLimitGB);
+	if (!vless) continue;
+
+	const gb = outline.dataLimitGB;
+	const label = gb === 0 ? 'Безлимит' : `${gb} GB`;
+	const key = `BOTH_${gb === 0 ? 'UNLIM' : gb + 'GB'}`;
+	const fullPrice = outline.price + vless.price;
+
+	PLANS[key] = {
+		id: `both_${gb === 0 ? 'unlim' : gb + 'gb'}`,
+		name: `Outline + VLESS ${label}`,
+		type: 'both',
+		dataLimitGB: gb,
+		dataLimit: outline.dataLimit,
+		duration: outline.duration,
+		price: Math.round(fullPrice * (1 - COMBO_DISCOUNT)),
+		emoji: BOTH_EMOJIS[gb] || '💎'
+	};
+}
 
 const KEY_STATUS = {
 	ACTIVE: 'active',
@@ -288,6 +276,7 @@ const ADMIN_IDS = process.env.ADMIN_IDS
 
 module.exports = {
 	PLANS,
+	COMBO_DISCOUNT,
 	KEY_STATUS,
 	KEY_TYPE,
 	LANG,

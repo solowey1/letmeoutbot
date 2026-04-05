@@ -279,7 +279,29 @@
     "all_devices": "All devices supported",
     "support": "Technical support",
     "savings": "Savings",
-    "price": "Price"
+    "savings_vs_separate": "Savings: {{amount}} ⭐ vs buying separately",
+    "price": "Price",
+    "per_month": "/mo",
+    "select_type_title": "Choose connection type",
+    "type_outline_desc": "simple and reliable VPN based on Shadowsocks",
+    "type_vless_desc": "modern protocol, harder to detect",
+    "type_both_desc": "maximum reliability with {{discount}}% discount",
+    "type_names": {
+      "outline": "Outline VPN",
+      "vless": "VLESS",
+      "both": "Outline + VLESS"
+    },
+    "type_descriptions": {
+      "outline": "Shadowsocks protocol, works everywhere, easy to set up",
+      "vless": "Reality protocol, maximum traffic masking",
+      "both": "Both protocols + {{discount}}% off — switch anytime"
+    },
+    "features": {
+      "vless_reality": "VLESS Reality (hard to block)",
+      "outline_ss": "Outline Shadowsocks",
+      "two_protocols": "Two protocols in one key"
+    },
+    "via_stars": "Payment via Telegram Stars"
   },
   "payments": {
     "confirmation_title": "Purchase Confirmation",
@@ -289,7 +311,15 @@
     "via_stars": "Payment via Telegram Stars",
     "invoice_sent": "Invoice sent! Click \"Pay\" to complete the purchase.",
     "success_title": "Payment successful!",
+    "keys_activated": "Keys activated!",
     "key_activated": "Your VPN key is activated!",
+    "vless_key_activated": "VLESS key activated!",
+    "outline_key_label": "Outline key:",
+    "vless_key_label": "VLESS key:",
+    "connection_key_label": "Connection key:",
+    "add_key_to_app": "Add the key you need to the app.",
+    "add_key_hiddify": "Add the key to Hiddify, FoXray or ShadowRocket.",
+    "add_key_outline": "Add the key to the Outline app.",
     "connect_instructions": "How to connect:",
     "connect_steps": [
       "Download the app",
@@ -401,6 +431,21 @@
       "Try reconnecting",
       "Check if the key has traffic"
     ],
-    "action_text": "Support: @letmeoutsupportbot"
+    "action_text": "Support: @letmeoutsupportbot",
+    "bot": {
+      "admin_welcome": "Welcome to the support panel!\n\nYou will receive messages from users here. Use the \"Reply\" button under a message to respond.",
+      "user_welcome": "Welcome to support!\n\nWrite your question and our team will respond shortly.",
+      "message_received": "Your message has been received!\n\nOur support team will respond shortly.",
+      "error_generic": "An error occurred. Please try again later.",
+      "new_message_title": "New support message",
+      "from_label": "From",
+      "reply_button": "Reply",
+      "write_reply": "Write your reply to the user.\n\nThe next message will be sent to the user.",
+      "not_in_reply_mode": "You are not in reply mode.\n\nPress the \"Reply\" button under a user message to respond.",
+      "reply_from_support": "Reply from support:",
+      "reply_sent": "Reply sent to user!",
+      "reply_failed": "Failed to send reply. Try again.",
+      "default_name": "User"
+    }
   }
 }

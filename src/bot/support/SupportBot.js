@@ -8,6 +8,10 @@ const PostgresDatabase = require('../../models/PostgresDatabase');
 const SupabaseDatabase = require('../../models/SupabaseDatabase');
 const config = require('../../config');
 
+// Простой хелпер для переводов (SupportBot не использует i18n middleware)
+const ruMessages = require('../../locales/ru/message.json');
+const supportStrings = ruMessages.support.bot;
+
 class SupportBot {
 	constructor() {
 		// Инициализируем Telegraf бота с токеном support бота
@@ -46,16 +50,9 @@ class SupportBot {
 			const isAdmin = ADMIN_IDS.includes(ctx.from.id);
 
 			if (isAdmin) {
-				await ctx.reply(
-					'👨‍💼 Добро пожаловать в панель поддержки!\n\n' +
-					'Здесь вы будете получать сообщения от пользователей. ' +
-					'Используйте кнопку "Ответить" под сообщением, чтобы ответить пользователю.'
-				);
+				await ctx.reply(`👨‍💼 ${supportStrings.admin_welcome}`);
 			} else {
-				await ctx.reply(
-					'👋 Добро пожаловать в службу поддержки!\n\n' +
-					'Напишите ваш вопрос, и наша команда ответит вам в ближайшее время.'
-				);
+				await ctx.reply(`👋 ${supportStrings.user_welcome}`);
 			}
 		});
 
@@ -92,7 +89,7 @@ class SupportBot {
 
 	async handleUserMessage(ctx) {
 		const userId = ctx.from.id;
-		const firstName = ctx.from.first_name || 'Пользователь';
+		const firstName = ctx.from.first_name || supportStrings.default_name;
 		const username = ctx.from.username;
 		const messageText = ctx.message.text;
 
@@ -107,31 +104,28 @@ class SupportBot {
 			});
 
 			// Подтверждаем пользователю
-			await ctx.reply(
-				'✅ Ваше сообщение получено!\n\n' +
-				'Наша служба поддержки ответит вам в ближайшее время.'
-			);
+			await ctx.reply(`✅ ${supportStrings.message_received}`);
 
 			// Отправляем уведомление всем админам
 			await this.notifyAdmins(userId, firstName, username, messageText, messageId);
 
 		} catch (error) {
 			console.error('Ошибка обработки сообщения пользователя:', error);
-			await ctx.reply('❌ Произошла ошибка. Попробуйте позже.');
+			await ctx.reply(`❌ ${supportStrings.error_generic}`);
 		}
 	}
 
 	async notifyAdmins(userId, firstName, username, messageText, messageId) {
 		const userInfo = username ? `${firstName} (@${username})` : firstName;
 		const message =
-			`📩 <b>Новое сообщение в поддержку</b>\n\n` +
-			`От: <b>${userInfo}</b>\n` +
+			`📩 <b>${supportStrings.new_message_title}</b>\n\n` +
+			`${supportStrings.from_label}: <b>${userInfo}</b>\n` +
 			`ID: <code>${userId}</code>\n\n` +
 			`<i>${messageText}</i>`;
 
 		const keyboard = {
 			inline_keyboard: [
-				[{ text: '💬 Ответить', callback_data: `reply_${userId}_${messageId}` }]
+				[{ text: `💬 ${supportStrings.reply_button}`, callback_data: `reply_${userId}_${messageId}` }]
 			]
 		};
 
@@ -160,10 +154,7 @@ class SupportBot {
 
 		await this.db.setAdminReplyState(adminId, userId, messageId);
 
-		await ctx.reply(
-			'✍️ Напишите ваш ответ пользователю.\n\n' +
-			'Следующее сообщение будет отправлено пользователю.'
-		);
+		await ctx.reply(`✍️ ${supportStrings.write_reply}`);
 	}
 
 	async handleAdminReply(ctx) {
@@ -175,10 +166,7 @@ class SupportBot {
 			const dbState = await this.db.getAdminReplyState(adminId);
 
 			if (!dbState) {
-				await ctx.reply(
-					'ℹ️ Вы не находитесь в режиме ответа.\n\n' +
-					'Нажмите кнопку "Ответить" под сообщением пользователя, чтобы ответить.'
-				);
+				await ctx.reply(`ℹ️ ${supportStrings.not_in_reply_mode}`);
 				return;
 			}
 
@@ -196,7 +184,7 @@ class SupportBot {
 			// Отправляем ответ пользователю
 			await this.bot.telegram.sendMessage(
 				userId,
-				`💬 <b>Ответ от службы поддержки:</b>\n\n${replyText}`,
+				`💬 <b>${supportStrings.reply_from_support}</b>\n\n${replyText}`,
 				{ parse_mode: 'HTML' }
 			);
 
@@ -213,7 +201,7 @@ class SupportBot {
 			await this.db.markSupportMessageReplied(messageId, adminId);
 
 			// Подтверждаем админу
-			await ctx.reply('✅ Ответ отправлен пользователю!');
+			await ctx.reply(`✅ ${supportStrings.reply_sent}`);
 
 			// Очищаем состояние
 			this.adminReplyState.delete(adminId);
@@ -221,7 +209,7 @@ class SupportBot {
 
 		} catch (error) {
 			console.error('Ошибка отправки ответа:', error);
-			await ctx.reply('❌ Не удалось отправить ответ. Попробуйте снова.');
+			await ctx.reply(`❌ ${supportStrings.reply_failed}`);
 		}
 	}
 

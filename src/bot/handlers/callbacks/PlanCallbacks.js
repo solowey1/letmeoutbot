@@ -1,7 +1,10 @@
-const { ADMIN_IDS } = require('../../../config/constants');
+const { ADMIN_IDS, COMBO_DISCOUNT } = require('../../../config/constants');
 const KeyboardUtils = require('../../../utils/keyboards');
 const PlanService = require('../../../services/PlanService');
 const { PlanMessages } = require('../../../services/messages');
+
+const discountPercent = Math.round(COMBO_DISCOUNT * 100);
+const TYPE_EMOJIS = { outline: '🌿', vless: '⚡', both: '👑' };
 
 class PlanCallbacks {
 	constructor(database, paymentService, keysService) {
@@ -14,12 +17,13 @@ class PlanCallbacks {
 
 	async handleShowPlans(ctx) {
 		const t = ctx.i18n.t;
+		const d = { discount: discountPercent };
 		const message = [
-			`🔐 <b>Выберите тип подключения</b>`,
+			`🔐 <b>${t('plans.select_type_title', { ns: 'message' })}</b>`,
 			'',
-			`🌿 <b>Outline</b> — простой и надёжный VPN на базе Shadowsocks`,
-			`⚡ <b>VLESS</b> — современный протокол, сложнее обнаружить`,
-			`👑 <b>Оба протокола</b> — максимальная надёжность со скидкой 20%`
+			`🌿 <b>Outline</b> — ${t('plans.type_outline_desc', { ns: 'message' })}`,
+			`⚡ <b>VLESS</b> — ${t('plans.type_vless_desc', { ns: 'message' })}`,
+			`👑 <b>${t('plans.type_names.both', { ns: 'message' })}</b> — ${t('plans.type_both_desc', { ns: 'message', ...d })}`
 		].join('\n');
 
 		const keyboard = KeyboardUtils.createTypeSelectionKeyboard(t);
@@ -36,25 +40,19 @@ class PlanCallbacks {
 		const t = ctx.i18n.t;
 		const isAdmin = ADMIN_IDS.includes(ctx.from.id);
 		const plans = PlanService.getPlansByType(type, isAdmin);
+		const d = { discount: discountPercent };
 
-		const typeNames = {
-			outline: '🌿 Outline VPN',
-			vless: '⚡ VLESS',
-			both: '👑 Outline + VLESS'
-		};
+		const typeName = `${TYPE_EMOJIS[type]} ${t(`plans.type_names.${type}`, { ns: 'message' })}`;
+		const typeDesc = t(`plans.type_descriptions.${type}`, { ns: 'message', ...d });
 
-		const typeDescriptions = {
-			outline: 'Shadowsocks протокол, работает везде, легко настроить',
-			vless: 'Reality протокол, максимальная маскировка трафика',
-			both: 'Оба протокола + скидка 20% — переключайтесь в любой момент'
-		};
-
-		let message = `<b>${typeNames[type]}</b>\n<i>${typeDescriptions[type]}</i>\n\n`;
+		let message = `<b>${typeName}</b>\n<i>${typeDesc}</i>\n\n`;
 
 		plans.forEach(plan => {
 			const formatted = PlanService.formatPlanForDisplay(t, plan);
-			const limit = plan.dataLimitGB > 0 ? `${plan.dataLimitGB} GB` : 'Безлимит';
-			message += `${plan.emoji} <b>${limit}</b> — ${formatted.displayPrice}/мес\n`;
+			const limit = plan.dataLimitGB > 0
+				? `${plan.dataLimitGB} ${t('common.memory.gb')}`
+				: t('plans.unlimited');
+			message += `${plan.emoji} <b>${limit}</b> — ${formatted.displayPrice}${t('plans.per_month', { ns: 'message' })}\n`;
 		});
 
 		const keyboard = KeyboardUtils.createPlansKeyboardByType(t, plans, type);
@@ -83,28 +81,28 @@ class PlanCallbacks {
 		const savings = PlanService.calculateSavings(plan);
 
 		let message = `<b>${formatted.displayName}</b>\n\n`;
-		message += `<b>Что включено:</b>\n`;
-		message += `• Трафик: ${formatted.displayDataLimit}\n`;
-		message += `• Срок: ${formatted.displayDuration}\n`;
-		message += `• Безлимитная скорость\n`;
-		message += `• Все устройства\n`;
+		message += `<b>${t('plans.whats_included', { ns: 'message' })}:</b>\n`;
+		message += `• ${t('plans.data_volume', { ns: 'message' })}: ${formatted.displayDataLimit}\n`;
+		message += `• ${t('plans.validity_period', { ns: 'message' })}: ${formatted.displayDuration}\n`;
+		message += `• ${t('plans.unlimited_speed', { ns: 'message' })}\n`;
+		message += `• ${t('plans.all_devices', { ns: 'message' })}\n`;
 
 		if (plan.type === 'vless' || plan.type === 'both') {
-			message += `• VLESS Reality (сложно заблокировать)\n`;
+			message += `• ${t('plans.features.vless_reality', { ns: 'message' })}\n`;
 		}
 		if (plan.type === 'outline' || plan.type === 'both') {
-			message += `• Outline Shadowsocks\n`;
+			message += `• ${t('plans.features.outline_ss', { ns: 'message' })}\n`;
 		}
 		if (plan.type === 'both') {
-			message += `• Два протокола в одном ключе\n`;
+			message += `• ${t('plans.features.two_protocols', { ns: 'message' })}\n`;
 		}
 
 		if (savings > 0) {
-			message += `\n💰 Экономия: ${savings} ⭐ vs покупки по отдельности\n`;
+			message += `\n💰 ${t('plans.savings_vs_separate', { ns: 'message', amount: savings })}\n`;
 		}
 
-		message += `\n<b>Цена: ${formatted.displayPrice}</b>`;
-		message += `\n<i>Оплата через Telegram Stars</i>`;
+		message += `\n<b>${t('plans.price', { ns: 'message' })}: ${formatted.displayPrice}</b>`;
+		message += `\n<i>${t('plans.via_stars', { ns: 'message' })}</i>`;
 
 		const keyboard = KeyboardUtils.createPlanDetailsKeyboard(t, planId, plan.type);
 
@@ -127,15 +125,17 @@ class PlanCallbacks {
 		}
 
 		const formatted = PlanService.formatPlanForDisplay(t, plan);
-		const limit = plan.dataLimitGB > 0 ? `${plan.dataLimitGB} GB` : 'Безлимит';
+		const limit = plan.dataLimitGB > 0
+			? `${plan.dataLimitGB} ${t('common.memory.gb')}`
+			: t('plans.unlimited');
 
-		let message = `🛒 <b>Подтверждение покупки</b>\n\n`;
-		message += `${plan.emoji} <b>${plan.name}</b>\n`;
-		message += `💾 Трафик: ${limit}\n`;
-		message += `⏰ Срок: ${formatted.displayDuration}\n`;
-		message += `💰 К оплате: <b>${formatted.displayPrice}</b>\n\n`;
-		message += `После оплаты вы мгновенно получите ключ(и) для подключения.\n\n`;
-		message += `⭐ Оплата через Telegram Stars`;
+		let message = `🛒 <b>${t('payments.confirmation_title', { ns: 'message' })}</b>\n\n`;
+		message += `${plan.emoji} <b>${formatted.displayName}</b>\n`;
+		message += `💾 ${t('plans.data_volume', { ns: 'message' })}: ${limit}\n`;
+		message += `⏰ ${t('plans.validity_period', { ns: 'message' })}: ${formatted.displayDuration}\n`;
+		message += `💰 ${t('payments.to_pay', { ns: 'message' })}: <b>${formatted.displayPrice}</b>\n\n`;
+		message += `${t('payments.after_payment', { ns: 'message' })}\n\n`;
+		message += `⭐ ${t('payments.via_stars', { ns: 'message' })}`;
 
 		const keyboard = KeyboardUtils.createPaymentConfirmationKeyboard(t, planId);
 
@@ -183,14 +183,14 @@ class PlanCallbacks {
 			await this.paymentService.saveInvoiceMessageId(paymentId, invoiceMessage.message_id);
 
 			await ctx.editMessageText(
-				'✅ Инвойс отправлен! Нажмите «Оплатить» для завершения покупки.',
+				`✅ ${t('payments.invoice_sent', { ns: 'message' })}`,
 				KeyboardUtils.createBackToMenuKeyboard(t)
 			);
 
 		} catch (error) {
-			console.error('Ошибка создания инвойса:', error);
+			console.error('Error creating invoice:', error);
 			await ctx.editMessageText(
-				`❌ Ошибка: ${error.message}`,
+				t('generic.default', { ns: 'error' }),
 				KeyboardUtils.createBackToMenuKeyboard(t)
 			);
 		}

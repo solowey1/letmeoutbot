@@ -90,12 +90,12 @@ class AdminCallbacks {
 		try {
 			const stats = await this.db.getStats();
 
-			// Normalize stats object
+			// Normalize stats object (SupabaseDatabase returns snake_case, others return camelCase)
 			const normalizedStats = {
-				totalUsers: stats.totalUsers || 0,
+				totalUsers: stats.totalUsers || stats.total_users || 0,
 				activeKeys: stats.activeKeys || stats.active_keys || 0,
-				totalRevenue: stats.totalRevenue || 0,
-				successfulPayments: stats.totalPayments || stats.successfulPayments || 0
+				totalRevenue: stats.totalRevenue || stats.total_revenue || 0,
+				successfulPayments: stats.totalPayments || stats.total_payments || 0
 			};
 
 			const message = AdminMessages.stats(t, normalizedStats);

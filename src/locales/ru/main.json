@@ -62,7 +62,7 @@
     },
     "type_outline": "Outline VPN",
     "type_vless": "VLESS Reality",
-    "type_both": "Outline + VLESS (скидка 20%)",
+    "type_both": "Outline + VLESS (скидка {{discount}}%)",
     "protocols": {
       "outline": "Outline",
       "vless": "VLESS"
@@ -153,7 +153,7 @@
       "invoice": "Ключ VLESS Reality — Безлимит на 1 месяц"
     },
     "both_10gb": {
-      "description": "Два протокола со скидкой 20%",
+      "description": "Два протокола со скидкой {{discount}}%",
       "invoice": "Outline + VLESS — 10 Гб на 1 месяц"
     },
     "both_50gb": {

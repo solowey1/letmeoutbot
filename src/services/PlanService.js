@@ -1,4 +1,4 @@
-const { PLANS, KEY_TYPE } = require('../config/constants');
+const { PLANS, KEY_TYPE, COMBO_DISCOUNT } = require('../config/constants');
 const moment = require('moment');
 
 class PlanService {
@@ -87,7 +87,7 @@ class PlanService {
 		// Если ключа нет — используем дефолтные строки
 		let description, invoice;
 		try {
-			description = t(`plans.${plan.id}.description`);
+			description = t(`plans.${plan.id}.description`, { discount: Math.round(COMBO_DISCOUNT * 100) });
 		} catch {
 			description = plan.name;
 		}
@@ -119,18 +119,16 @@ class PlanService {
 	}
 
 	static calculateSavings(plan) {
-		// Для bundle планов считаем скидку относительно суммы Outline + VLESS
 		if (plan.type === 'both') {
-			const { PLANS: P } = require('../config/constants');
-			// Ищем соответствующие outline и vless планы по dataLimit
-			const outlinePlan = Object.values(P).find(p =>
+			const outlinePlan = Object.values(PLANS).find(p =>
 				p.type === 'outline' && p.dataLimit === plan.dataLimit && !p.hidden
 			);
-			const vlessPlan = Object.values(P).find(p =>
+			const vlessPlan = Object.values(PLANS).find(p =>
 				p.type === 'vless' && p.dataLimit === plan.dataLimit
 			);
 			if (outlinePlan && vlessPlan) {
-				return outlinePlan.price + vlessPlan.price - plan.price;
+				const fullPrice = outlinePlan.price + vlessPlan.price;
+				return fullPrice - Math.round(fullPrice * (1 - COMBO_DISCOUNT));
 			}
 		}
 		return 0;

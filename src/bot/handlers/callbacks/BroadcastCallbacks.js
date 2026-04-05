@@ -1,4 +1,3 @@
-const { Markup } = require('telegraf');
 const { ADMIN_IDS } = require('../../../config/constants');
 const KeyboardUtils = require('../../../utils/keyboards');
 const { BroadcastMessages } = require('../../../services/messages');
@@ -26,20 +25,7 @@ class BroadcastCallbacks {
 		}
 
 		const message = BroadcastMessages.mainMenu(t);
-		const keyboard = Markup.inlineKeyboard([
-			[Markup.button.callback(
-				t('buttons.admin.broadcast_new'),
-				'broadcast_new'
-			)],
-			[Markup.button.callback(
-				t('buttons.admin.broadcast_history'),
-				'broadcast_history'
-			)],
-			[Markup.button.callback(
-				t('buttons.back'),
-				'admin_menu'
-			)]
-		]);
+		const keyboard = KeyboardUtils.createBroadcastMenuKeyboard(t);
 
 		await ctx.editMessageText(message, {
 			...keyboard,
@@ -59,40 +45,7 @@ class BroadcastCallbacks {
 		}
 
 		const message = BroadcastMessages.selectFilter(t);
-		const keyboard = Markup.inlineKeyboard([
-			[Markup.button.callback(
-				t('admin.broadcast.filters.all', { ns: 'message' }),
-				'broadcast_filter_all'
-			)],
-			[Markup.button.callback(
-				t('admin.broadcast.filters.active_keys', { ns: 'message' }),
-				'broadcast_filter_active_keys'
-			)],
-			[Markup.button.callback(
-				t('admin.broadcast.filters.expired_keys', { ns: 'message' }),
-				'broadcast_filter_expired_keys'
-			)],
-			[Markup.button.callback(
-				t('admin.broadcast.filters.no_keys', { ns: 'message' }),
-				'broadcast_filter_no_keys'
-			)],
-			[Markup.button.callback(
-				t('admin.broadcast.filters.paid_users', { ns: 'message' }),
-				'broadcast_filter_paid_users'
-			)],
-			[Markup.button.callback(
-				t('admin.broadcast.filters.free_users', { ns: 'message' }),
-				'broadcast_filter_free_users'
-			)],
-			[Markup.button.callback(
-				t('admin.broadcast.filters.new_users', { ns: 'message' }),
-				'broadcast_filter_new_users'
-			)],
-			[Markup.button.callback(
-				t('buttons.back'),
-				'admin_broadcast'
-			)]
-		]);
+		const keyboard = KeyboardUtils.createBroadcastFilterKeyboard(t);
 
 		await ctx.editMessageText(message, {
 			...keyboard,
@@ -118,10 +71,7 @@ class BroadcastCallbacks {
 
 			if (recipientsCount === 0) {
 				await ctx.answerCbQuery(
-					t('admin.broadcast.no_recipients', {
-						ns: 'message',
-						defaultValue: 'Нет получателей для этого фильтра'
-					}),
+					t('admin.broadcast.no_recipients', { ns: 'message' }),
 					{ show_alert: true }
 				);
 				return;
@@ -136,12 +86,7 @@ class BroadcastCallbacks {
 			this.broadcastSessions.set(ctx.from.id, session);
 
 			const message = BroadcastMessages.requestMessage(t, filterType, recipientsCount);
-			const keyboard = Markup.inlineKeyboard([
-				[Markup.button.callback(
-					t('buttons.cancel'),
-					'broadcast_cancel'
-				)]
-			]);
+			const keyboard = KeyboardUtils.createBroadcastCancelKeyboard(t);
 
 			await ctx.editMessageText(message, {
 				...keyboard,
@@ -172,12 +117,7 @@ class BroadcastCallbacks {
 		const messageText = ctx.message.text;
 
 		if (!messageText || messageText.trim().length === 0) {
-			await ctx.reply(
-				t('admin.broadcast.empty_message', {
-					ns: 'message',
-					defaultValue: 'Сообщение не может быть пустым'
-				})
-			);
+			await ctx.reply(t('admin.broadcast.empty_message', { ns: 'message' }));
 			return;
 		}
 
@@ -189,27 +129,7 @@ class BroadcastCallbacks {
 		// Показываем выбор языка аудитории
 		const filterName = BroadcastMessages.getFilterName(t, session.filterType);
 		const message = BroadcastMessages.selectLanguage(t, filterName, session.recipientsCount);
-
-		const keyboard = Markup.inlineKeyboard([
-			[
-				Markup.button.callback(
-					t('admin.broadcast.language_ru', { ns: 'message', defaultValue: '🇷🇺 Русский' }),
-					'broadcast_lang_ru'
-				),
-				Markup.button.callback(
-					t('admin.broadcast.language_en', { ns: 'message', defaultValue: '🌍 English' }),
-					'broadcast_lang_en'
-				)
-			],
-			[Markup.button.callback(
-				t('admin.broadcast.language_all', { ns: 'message', defaultValue: '👥 Все языки' }),
-				'broadcast_lang_all'
-			)],
-			[Markup.button.callback(
-				t('buttons.cancel'),
-				'broadcast_cancel'
-			)]
-		]);
+		const keyboard = KeyboardUtils.createBroadcastLanguageKeyboard(t);
 
 		await ctx.reply(message, {
 			...keyboard,
@@ -241,10 +161,7 @@ class BroadcastCallbacks {
 
 			if (filtered.length === 0) {
 				await ctx.answerCbQuery(
-					t('admin.broadcast.no_recipients', {
-						ns: 'message',
-						defaultValue: 'Нет получателей для этого фильтра'
-					}),
+					t('admin.broadcast.no_recipients', { ns: 'message' }),
 					{ show_alert: true }
 				);
 				return;
@@ -264,22 +181,7 @@ class BroadcastCallbacks {
 				lang
 			);
 
-			const keyboard = Markup.inlineKeyboard([
-				[
-					Markup.button.callback(
-						t('buttons.confirm'),
-						'broadcast_confirm_send'
-					),
-					Markup.button.callback(
-						t('buttons.admin.broadcast_schedule'),
-						'broadcast_schedule'
-					)
-				],
-				[Markup.button.callback(
-					t('buttons.cancel'),
-					'broadcast_cancel'
-				)]
-			]);
+			const keyboard = KeyboardUtils.createBroadcastConfirmKeyboard(t);
 
 			await ctx.editMessageText(message, {
 				...keyboard,
@@ -364,13 +266,7 @@ class BroadcastCallbacks {
 		try {
 			const broadcasts = await this.broadcastService.getBroadcastHistory(10);
 			const message = BroadcastMessages.broadcastHistory(t, broadcasts);
-
-			const keyboard = Markup.inlineKeyboard([
-				[Markup.button.callback(
-					t('buttons.back'),
-					'admin_broadcast'
-				)]
-			]);
+			const keyboard = KeyboardUtils.createBroadcastHistoryKeyboard(t);
 
 			await ctx.editMessageText(message, {
 				...keyboard,

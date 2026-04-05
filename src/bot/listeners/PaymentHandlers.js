@@ -164,24 +164,21 @@ class PaymentHandlers {
 		const t = ctx.i18n?.t || ((key) => key);
 		const keyboard = KeyboardUtils.createAppsDownloadKeyboard(t);
 
-		let message = `🎉 <b>Оплата прошла успешно!</b>\n\n`;
+		let message = `🎉 <b>${t('payments.success_title', { ns: 'message' })}</b>\n\n`;
 
 		if (accessUrl && vlessUrl) {
-			// Оба протокола
-			message += `✅ Ключи активированы!\n\n`;
-			message += `🌿 <b>Outline ключ:</b>\n<code>${accessUrl}</code>\n\n`;
-			message += `⚡ <b>VLESS ключ:</b>\n<code>${vlessUrl}</code>\n\n`;
-			message += `Добавьте нужный ключ в приложение.`;
+			message += `✅ ${t('payments.keys_activated', { ns: 'message' })}\n\n`;
+			message += `🌿 <b>${t('payments.outline_key_label', { ns: 'message' })}</b>\n<code>${accessUrl}</code>\n\n`;
+			message += `⚡ <b>${t('payments.vless_key_label', { ns: 'message' })}</b>\n<code>${vlessUrl}</code>\n\n`;
+			message += t('payments.add_key_to_app', { ns: 'message' });
 		} else if (vlessUrl) {
-			// Только VLESS
-			message += `✅ VLESS ключ активирован!\n\n`;
-			message += `⚡ <b>Ключ подключения:</b>\n<code>${vlessUrl}</code>\n\n`;
-			message += `Добавьте ключ в Hiddify, FoXray или ShadowRocket.`;
+			message += `✅ ${t('payments.vless_key_activated', { ns: 'message' })}\n\n`;
+			message += `⚡ <b>${t('payments.connection_key_label', { ns: 'message' })}</b>\n<code>${vlessUrl}</code>\n\n`;
+			message += t('payments.add_key_hiddify', { ns: 'message' });
 		} else {
-			// Только Outline
-			message += `✅ Ключ активирован!\n\n`;
-			message += `🌿 <b>Ключ подключения:</b>\n<code>${accessUrl}</code>\n\n`;
-			message += `Добавьте ключ в приложение Outline.`;
+			message += `✅ ${t('payments.key_activated', { ns: 'message' })}\n\n`;
+			message += `🌿 <b>${t('payments.connection_key_label', { ns: 'message' })}</b>\n<code>${accessUrl}</code>\n\n`;
+			message += t('payments.add_key_outline', { ns: 'message' });
 		}
 
 		await ctx.reply(message, {
