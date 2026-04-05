@@ -205,23 +205,46 @@ const CALLBACK_ACTIONS = {
 		SETTINGS: 'admin_settings'
 	},
 	BASIC: {
-		BACK_TO_MENU: 'back_menu'
+		HOME: 'home',
+		HELP: 'help',
+		VPN_APPS: 'vpn_apps',
+		VPN_APPS_OUTLINE: 'vpn_apps_outline',
+		VPN_APPS_VLESS: 'vpn_apps_vless',
+		VLESS_APPS_LINUX: 'vless_apps_linux',
+		VLESS_APPS_WINDOWS: 'vless_apps_windows',
+		VLESS_APPS_MACOS: 'vless_apps_macos',
+		VLESS_APPS_IOS: 'vless_apps_ios',
+		VLESS_APPS_ANDROID: 'vless_apps_android',
+		HOW_TO_ADD_KEY: 'how_to_add_key',
+		HOW_TO_ADD_KEY_OUTLINE: 'how_to_add_key_outline',
+		HOW_TO_ADD_KEY_VLESS: 'how_to_add_key_vless',
+		SUPPORT: 'support',
+		RETRY: 'retry'
 	},
 	KEYS: {
 		MENU: 'keys_menu',
 		BUY: 'keys_buy',
+		DETAILS: 'key_details',
+		STATS: 'key_stats',
+		REFRESH: 'key_refresh',
+		CHECKOUT: 'checkout',
 		// Выбор типа подключения
 		SELECT_TYPE: 'keys_select_type',
-		TYPE_OUTLINE: 'keys_type_outline',
-		TYPE_VLESS: 'keys_type_vless',
-		TYPE_BOTH: 'keys_type_both'
+		TYPE_OUTLINE: 'plans_type_outline',
+		TYPE_VLESS: 'plans_type_vless',
+		TYPE_BOTH: 'plans_type_both'
 	},
 	PAYMENT: {
-		CONFIRM: 'payment_confirm'
+		CONFIRM: 'payment_confirm',
+		CREATE_INVOICE: 'confirm_payment'
 	},
 	SETTINGS: {
 		MENU: 'settings_menu',
-		LANGUAGE: { SET: 'lang_set' }
+		LANGUAGE: {
+			SET: 'lang_set',
+			RU: 'set_lang_ru',
+			EN: 'set_lang_en'
+		}
 	},
 	REFERRAL: {
 		MENU: 'referral_menu',

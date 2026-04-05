@@ -1,21 +1,36 @@
 const { Markup } = require('telegraf');
 const { CALLBACK_ACTIONS } = require('../config/constants');
+const { BUTTON_PRESETS } = require('../config/buttonPresets');
 const PlanService = require('../services/PlanService');
 
 class KeyboardUtils {
+	static btn(t, preset, action = null) {
+		const config = BUTTON_PRESETS[preset] || {};
+		const text = config.text ? t(config.text) : preset;
+		const data = action || config.action;
+		const button = Markup.button.callback(text, data);
+		if (config.style) button.style = config.style;
+		if (config.icon) button.icon_custom_emoji_id = config.icon;
+		return button;
+	}
+
+	static removeKeyboard() {
+		return Markup.removeKeyboard();
+	}
+
 	static createMainMenu(t, isAdmin = false) {
 		const buttons = [
-			[KeyboardUtils.btn(t('buttons.buy.key'), CALLBACK_ACTIONS.KEYS.BUY, 'primary', '5427168083074628963')],
-			[KeyboardUtils.btn(t('buttons.my_keys'), CALLBACK_ACTIONS.KEYS.MENU)],
-			[KeyboardUtils.btn(t('buttons.referral'), CALLBACK_ACTIONS.REFERRAL.MENU)],
-			[KeyboardUtils.btn(t('buttons.settings'), CALLBACK_ACTIONS.SETTINGS.MENU)],
+			[KeyboardUtils.btn(t, 'buy')],
+			[Markup.button.callback(t('buttons.my_keys'), CALLBACK_ACTIONS.KEYS.MENU)],
+			[Markup.button.callback(t('buttons.referral'), CALLBACK_ACTIONS.REFERRAL.MENU)],
+			[Markup.button.callback(t('buttons.settings'), CALLBACK_ACTIONS.SETTINGS.MENU)],
 		];
 
 		if (isAdmin) {
-			buttons.push([KeyboardUtils.btn(t('buttons.admin_panel'), CALLBACK_ACTIONS.ADMIN.MENU, 'danger')]);
+			buttons.push([KeyboardUtils.btn(t, 'admin')]);
 		}
 
-		buttons.push([KeyboardUtils.btn(t('buttons.help'), 'help')]);
+		buttons.push([KeyboardUtils.btn(t, 'help')]);
 
 		return Markup.inlineKeyboard(buttons);
 	}
@@ -28,20 +43,21 @@ class KeyboardUtils {
 			const formatted = PlanService.formatPlanForDisplay(t, plan);
 			buttons.push([Markup.button.callback(
 				`${formatted.displayName} - ${formatted.displayPrice}`,
-				`checkout_${plan.id}`
+				`${CALLBACK_ACTIONS.KEYS.CHECKOUT}_${plan.id}`
 			)]);
 		});
 
-		buttons.push([Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]);
+		buttons.push([KeyboardUtils.btn(t, 'home')]);
 
 		return Markup.inlineKeyboard(buttons);
 	}
 
-	static createPlanDetailsKeyboard(t, planId) {
+	// ── Детали плана ────────────────────────────────────────────────
+	static createPlanDetailsKeyboard(t, planId, planType) {
 		return Markup.inlineKeyboard([
-			[KeyboardUtils.btn(t('buttons.pay'), `${CALLBACK_ACTIONS.PAYMENT.CONFIRM}_${planId}`, 'success', '5942783678668085067')],
-			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.KEYS.BUY)],
-			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
+			[KeyboardUtils.btn(t, 'pay', `${CALLBACK_ACTIONS.PAYMENT.CREATE_INVOICE}_${planId}`)],
+			[KeyboardUtils.btn(t, 'back', `plans_type_${planType}`)],
+			[KeyboardUtils.btn(t, 'home')]
 		]);
 	}
 
@@ -57,7 +73,7 @@ class KeyboardUtils {
 					buttons.push([
 						Markup.button.callback(
 							`${status} ${formatted.displayName}`,
-							`key_details_${key.id}`
+							`${CALLBACK_ACTIONS.KEYS.DETAILS}_${key.id}`
 						)
 					]);
 				}
@@ -65,41 +81,41 @@ class KeyboardUtils {
 
 			buttons.push([Markup.button.callback(t('buttons.buy.more'), CALLBACK_ACTIONS.KEYS.BUY)]);
 		} else {
-			buttons.push([KeyboardUtils.btn(t('buttons.buy.first'), CALLBACK_ACTIONS.KEYS.BUY, 'primary', '5427168083074628963')]);
+			buttons.push([KeyboardUtils.btn(t, 'buy_first')]);
 		}
 
-		buttons.push([Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]);
+		buttons.push([KeyboardUtils.btn(t, 'home')]);
 
 		return Markup.inlineKeyboard(buttons);
 	}
 
 	static createKeyDetailsKeyboard(t, keyId) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.stats'), `key_stats_${keyId}`)],
-			[Markup.button.callback(t('buttons.refresh_key'), `key_refresh_${keyId}`)],
-			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.KEYS.MENU)],
-			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
+			[Markup.button.callback(t('buttons.stats'), `${CALLBACK_ACTIONS.KEYS.STATS}_${keyId}`)],
+			[Markup.button.callback(t('buttons.refresh_key'), `${CALLBACK_ACTIONS.KEYS.REFRESH}_${keyId}`)],
+			[KeyboardUtils.btn(t, 'back', CALLBACK_ACTIONS.KEYS.MENU)],
+			[KeyboardUtils.btn(t, 'home')]
 		]);
 	}
 
 	static createKeyStatsKeyboard(t, keyId) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.back'), `key_details_${keyId}`)],
-			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
+			[KeyboardUtils.btn(t, 'back', `${CALLBACK_ACTIONS.KEYS.DETAILS}_${keyId}`)],
+			[KeyboardUtils.btn(t, 'home')]
 		]);
 	}
 
 	static createPaymentConfirmationKeyboard(t, planId) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.confirm_purchase'), `confirm_payment_${planId}`)],
+			[Markup.button.callback(t('buttons.confirm_purchase'), `${CALLBACK_ACTIONS.PAYMENT.CREATE_INVOICE}_${planId}`)],
 			[Markup.button.callback(t('buttons.cancel'), CALLBACK_ACTIONS.KEYS.BUY)]
 		]);
 	}
 
 	static createDirectCheckoutKeyboard(t, planId) {
 		return Markup.inlineKeyboard([
-			[KeyboardUtils.btn(t('buttons.pay'), `confirm_payment_${planId}`, 'success', '5942783678668085067')],
-			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.KEYS.BUY)]
+			[KeyboardUtils.btn(t, 'pay', `${CALLBACK_ACTIONS.PAYMENT.CREATE_INVOICE}_${planId}`)],
+			[KeyboardUtils.btn(t, 'back', CALLBACK_ACTIONS.KEYS.BUY)]
 		]);
 	}
 
@@ -121,7 +137,7 @@ class KeyboardUtils {
 				Markup.button.callback(t('buttons.admin.broadcast'), CALLBACK_ACTIONS.ADMIN.BROADCAST),
 				Markup.button.callback(t('buttons.admin.settings'), CALLBACK_ACTIONS.ADMIN.SETTINGS)
 			],
-			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
+			[KeyboardUtils.btn(t, 'back', CALLBACK_ACTIONS.BASIC.HOME)]
 		]);
 	}
 
@@ -133,30 +149,58 @@ class KeyboardUtils {
 				Markup.button.callback(t('buttons.admin.broadcast_buyers'), CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.BUYERS),
 				Markup.button.callback(t('buttons.admin.broadcast_non_buyers'), CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.NON_BUYERS),
 			],
-			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.ADMIN.MENU)],
+			[KeyboardUtils.btn(t, 'back', CALLBACK_ACTIONS.ADMIN.MENU)],
 		]);
 	}
 
 	static createBackToMenuKeyboard(t) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
+			[KeyboardUtils.btn(t, 'home')]
 		]);
 	}
 
 	static createHelpKeyboard(t) {
 		return Markup.inlineKeyboard([
-			[KeyboardUtils.btn(t('buttons.buy.key'), CALLBACK_ACTIONS.KEYS.BUY, 'primary', '5427168083074628963')],
-			[Markup.button.callback(t('buttons.download_apps'), 'download_apps')],
-			[Markup.button.callback(t('buttons.support'), 'support')],
-			[Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
+			[KeyboardUtils.btn(t, 'buy')],
+			[Markup.button.callback(t('buttons.vpn_apps'), CALLBACK_ACTIONS.BASIC.VPN_APPS)],
+			[Markup.button.callback(t('buttons.how_to_add_key'), CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY)],
+			[Markup.button.callback(t('buttons.support'), CALLBACK_ACTIONS.BASIC.SUPPORT)],
+			[KeyboardUtils.btn(t, 'home')]
 		]);
 	}
 
-	static createAppsDownloadKeyboard(t) {
+	// ── Как добавить ключ: выбор протокола ──────��───────────────────
+	static createHowToAddKeyKeyboard(t) {
 		return Markup.inlineKeyboard([
-			[
-				Markup.button.url(t('buttons.apps.website'), 'https://getoutline.org/ru/get-started/#step-3'),
-			],
+			[Markup.button.callback('🌿 Outline', CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_OUTLINE)],
+			[Markup.button.callback('⚡ VLESS', CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_VLESS)],
+			[KeyboardUtils.btn(t, 'back', CALLBACK_ACTIONS.BASIC.HELP)],
+			[KeyboardUtils.btn(t, 'home')]
+		]);
+	}
+
+	// ── Как добавить ключ: инструкция ───────────────────────────────
+	static createHowToAddKeyBackKeyboard(t) {
+		return Markup.inlineKeyboard([
+			[KeyboardUtils.btn(t, 'back', CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY)],
+			[KeyboardUtils.btn(t, 'home')]
+		]);
+	}
+
+	// ── Приложения для VPN: выбор протокола ─────────────────────────
+	static createVpnAppsProtocolKeyboard(t) {
+		return Markup.inlineKeyboard([
+			[Markup.button.callback('🌿 Outline', CALLBACK_ACTIONS.BASIC.VPN_APPS_OUTLINE)],
+			[Markup.button.callback('⚡ VLESS', CALLBACK_ACTIONS.BASIC.VPN_APPS_VLESS)],
+			[KeyboardUtils.btn(t, 'back', CALLBACK_ACTIONS.BASIC.HELP)],
+			[KeyboardUtils.btn(t, 'home')]
+		]);
+	}
+
+	// ── Outline: список приложений ──────────────────────────────────
+	static createOutlineAppsKeyboard(t) {
+		return Markup.inlineKeyboard([
+			[Markup.button.url(t('buttons.apps.website'), 'https://getoutline.org/ru/get-started/#step-3')],
 			[
 				Markup.button.url(t('buttons.apps.android'), 'https://play.google.com/store/apps/details?id=org.outline.android.client'),
 				Markup.button.url(t('buttons.apps.ios'), 'https://apps.apple.com/app/outline-app/id1356177741')
@@ -165,36 +209,59 @@ class KeyboardUtils {
 				Markup.button.url(t('buttons.apps.windows'), 'https://s3.amazonaws.com/outline-releases/client/windows/stable/Outline-Client.exe'),
 				Markup.button.url(t('buttons.apps.macos'), 'https://s3.amazonaws.com/outline-releases/client/macos/stable/Outline-Client.dmg')
 			],
-			[Markup.button.callback(t('buttons.back'), 'help')]
+			[KeyboardUtils.btn(t, 'back', CALLBACK_ACTIONS.BASIC.VPN_APPS)],
+			[KeyboardUtils.btn(t, 'home')]
+		]);
+	}
+
+	// ── VLESS: выбор ОС ─────────────────────────────────────────────
+	static createVlessOsKeyboard(t) {
+		return Markup.inlineKeyboard([
+			[Markup.button.callback('🤖 Android', CALLBACK_ACTIONS.BASIC.VLESS_APPS_ANDROID)],
+			[Markup.button.callback('📱 iOS', CALLBACK_ACTIONS.BASIC.VLESS_APPS_IOS)],
+			[Markup.button.callback('🪟 Windows', CALLBACK_ACTIONS.BASIC.VLESS_APPS_WINDOWS)],
+			[Markup.button.callback('🍎 macOS', CALLBACK_ACTIONS.BASIC.VLESS_APPS_MACOS)],
+			[Markup.button.callback('🐧 Linux', CALLBACK_ACTIONS.BASIC.VLESS_APPS_LINUX)],
+			[KeyboardUtils.btn(t, 'back', CALLBACK_ACTIONS.BASIC.VPN_APPS)],
+			[KeyboardUtils.btn(t, 'home')]
+		]);
+	}
+
+	// ── VLESS: список приложений для конкретной ОС ──────────────────
+	static createVlessAppsBackKeyboard(t) {
+		return Markup.inlineKeyboard([
+			[KeyboardUtils.btn(t, 'back', CALLBACK_ACTIONS.BASIC.VPN_APPS_VLESS)],
+			[KeyboardUtils.btn(t, 'home')]
 		]);
 	}
 
 	static createSupportKeyboard(t) {
 		return Markup.inlineKeyboard([
 			[Markup.button.url(t('buttons.contact_support'), 'https://t.me/letmeoutsupportbot')],
-			[Markup.button.callback(t('buttons.main_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
+			[KeyboardUtils.btn(t, 'back', CALLBACK_ACTIONS.BASIC.HELP)],
+			[KeyboardUtils.btn(t, 'home')]
 		]);
 	}
 
 	static createSettingsKeyboard(t) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.language'), CALLBACK_ACTIONS.SETTINGS.LANGUAGE.SET)],
-			[Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
+			[KeyboardUtils.btn(t, 'language')],
+			[KeyboardUtils.btn(t, 'home')]
 		]);
 	}
 
 	static createLanguageKeyboard(t) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.languages.russian'), 'set_lang_ru')],
-			[Markup.button.callback(t('buttons.languages.english'), 'set_lang_en')],
-			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.SETTINGS.MENU)]
+			[KeyboardUtils.btn(t, 'lang_ru')],
+			[KeyboardUtils.btn(t, 'lang_en')],
+			[KeyboardUtils.btn(t, 'back', CALLBACK_ACTIONS.SETTINGS.MENU)]
 		]);
 	}
 
-	static createErrorKeyboard(t, backAction = CALLBACK_ACTIONS.BASIC.BACK_TO_MENU) {
+	static createErrorKeyboard(t, backAction = CALLBACK_ACTIONS.BASIC.HOME) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.retry'), 'retry')],
-			[Markup.button.callback(t('buttons.back'), backAction)]
+			[Markup.button.callback(t('buttons.retry'), CALLBACK_ACTIONS.BASIC.RETRY)],
+			[KeyboardUtils.btn(t, 'back', backAction)]
 		]);
 	}
 
@@ -223,7 +290,7 @@ class KeyboardUtils {
 			buttons.push(navButtons);
 		}
 
-		buttons.push([Markup.button.callback(t('buttons.back'), backAction)]);
+		buttons.push([KeyboardUtils.btn(t, 'back', backAction)]);
 
 		return Markup.inlineKeyboard(buttons);
 	}
@@ -239,20 +306,20 @@ class KeyboardUtils {
 				Markup.button.callback(t('buttons.referral_actions.withdraw'), CALLBACK_ACTIONS.REFERRAL.WITHDRAW),
 				Markup.button.callback(t('buttons.referral_actions.history'), CALLBACK_ACTIONS.REFERRAL.HISTORY)
 			],
-			[Markup.button.callback(t('buttons.back_to_menu'), CALLBACK_ACTIONS.BASIC.BACK_TO_MENU)]
+			[KeyboardUtils.btn(t, 'home')]
 		]);
 	}
 
 	static createReferralInviteKeyboard(t, shareText) {
 		return Markup.inlineKeyboard([
 			[Markup.button.switchToChat(t('buttons.referral_actions.invite'), shareText)],
-			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.REFERRAL.MENU)]
+			[KeyboardUtils.btn(t, 'back', CALLBACK_ACTIONS.REFERRAL.MENU)]
 		]);
 	}
 
 	static createReferralBackKeyboard(t) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback(t('buttons.back'), CALLBACK_ACTIONS.REFERRAL.MENU)]
+			[KeyboardUtils.btn(t, 'back', CALLBACK_ACTIONS.REFERRAL.MENU)]
 		]);
 	}
 
@@ -263,24 +330,13 @@ class KeyboardUtils {
 		]);
 	}
 
-	static btn(text, data, style = null, icon = null) {
-		const button = Markup.button.callback(text, data);
-		if (style) button.style = style;
-		if (icon) button.icon_custom_emoji_id = icon;
-		return button;
-	}
-
-	static removeKeyboard() {
-		return Markup.removeKeyboard();
-	}
-
 	// ── Выбор типа подключения ──────────────────────────────────────
 	static createTypeSelectionKeyboard(t) {
 		return Markup.inlineKeyboard([
-			[Markup.button.callback('🌿 Outline VPN', 'plans_type_outline')],
-			[Markup.button.callback('⚡ VLESS Reality', 'plans_type_vless')],
-			[Markup.button.callback('👑 Outline + VLESS (скидка 20%)', 'plans_type_both')],
-			[Markup.button.callback(t('buttons.back_to_menu'), 'back_menu')]
+			[Markup.button.callback('🌿 Outline VPN', CALLBACK_ACTIONS.KEYS.TYPE_OUTLINE)],
+			[Markup.button.callback('⚡ VLESS Reality', CALLBACK_ACTIONS.KEYS.TYPE_VLESS)],
+			[Markup.button.callback('👑 Outline + VLESS (скидка 20%)', CALLBACK_ACTIONS.KEYS.TYPE_BOTH)],
+			[KeyboardUtils.btn(t, 'home')]
 		]);
 	}
 
@@ -290,23 +346,14 @@ class KeyboardUtils {
 			const limit = plan.dataLimitGB > 0 ? `${plan.dataLimitGB} GB` : 'Безлимит';
 			return [Markup.button.callback(
 				`${plan.emoji} ${limit} — ${plan.price} ⭐`,
-				`checkout_${plan.id}`
+				`${CALLBACK_ACTIONS.KEYS.CHECKOUT}_${plan.id}`
 			)];
 		});
 
-		buttons.push([Markup.button.callback('◀️ Назад', 'keys_buy')]);
-		buttons.push([Markup.button.callback(t('buttons.back_to_menu'), 'back_menu')]);
+		buttons.push([KeyboardUtils.btn(t, 'back', CALLBACK_ACTIONS.KEYS.BUY)]);
+		buttons.push([KeyboardUtils.btn(t, 'home')]);
 
 		return Markup.inlineKeyboard(buttons);
-	}
-
-	// ── Детали плана ────────────────────────────────────────────────
-	static createPlanDetailsKeyboard(t, planId, planType) {
-		return Markup.inlineKeyboard([
-			[Markup.button.callback('💳 Оплатить', `confirm_payment_${planId}`)],
-			[Markup.button.callback('◀️ Назад', `plans_type_${planType}`)],
-			[Markup.button.callback(t('buttons.back_to_menu'), 'back_menu')]
-		]);
 	}
 }
 

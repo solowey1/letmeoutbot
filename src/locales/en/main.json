@@ -9,17 +9,17 @@
     "referral": "🎁 Referral Program",
     "admin_panel": "👨‍💼 Admin Panel",
     "help": "ℹ️ Help",
-    "back_to_menu": "◀️ Back to Menu",
-    "main_menu": "🏠 Main Menu",
+    "home": "Home",
     "stats": "📊 Statistics",
-    "download_apps": "📱 Download Apps",
+    "vpn_apps": "📱 VPN Apps",
+    "how_to_add_key": "🔑 How to add a key?",
     "support": "🆘 Support",
     "contact_support": "✉️ Contact",
     "confirm_purchase": "✅ Confirm Purchase",
     "pay": "Pay",
     "cancel": "❌ Cancel",
     "confirm": "✅ Confirm",
-    "back": "◀️ Back",
+    "back": "Back",
     "settings": "⚙️ Settings",
     "language": "🌐 Language",
     "retry": "🔄 Try Again",
@@ -108,33 +108,58 @@
     }
   },
   "plans": {
-    "test_100mb": {
+    "unlimited": "Unlimited",
+    "test": {
       "description": "Perfect for testing the service",
-      "invoice": "Outline VPN key with 100MB limit for 1 day"
+      "invoice": "Test Outline VPN key — 100 MB for 1 day"
     },
-    "basic_10gb": {
-      "description": "Ideal for basic usage",
-      "invoice": "Outline VPN key with 10GB limit for 1 month"
+    "outline_10gb": {
+      "description": "Basic access via Outline",
+      "invoice": "Outline VPN key — 10 GB for 1 month"
     },
-    "basic_50gb": {
+    "outline_50gb": {
       "description": "Popular choice for daily use",
-      "invoice": "Outline VPN key with 50GB limit for 1 month"
+      "invoice": "Outline VPN key — 50 GB for 1 month"
     },
-    "standard_100gb": {
+    "outline_100gb": {
       "description": "For active usage",
-      "invoice": "Outline VPN key with 100GB limit for 1 month"
+      "invoice": "Outline VPN key — 100 GB for 1 month"
     },
-    "standard_300gb": {
-      "description": "Great value plan for 3 months",
-      "invoice": "Outline VPN key with 300GB limit for 3 months"
+    "outline_unlim": {
+      "description": "Outline with unlimited traffic",
+      "invoice": "Outline VPN key — Unlimited for 1 month"
     },
-    "pro_600gb": {
-      "description": "Annual plan with maximum savings",
-      "invoice": "Outline VPN key with 600GB limit for 1 year"
+    "vless_10gb": {
+      "description": "Modern protocol, hard to detect",
+      "invoice": "VLESS Reality key — 10 GB for 1 month"
     },
-    "pro_1200gb": {
-      "description": "Maximum plan for those who want to download the entire internet",
-      "invoice": "Outline VPN key with 1200GB limit for 1 year"
+    "vless_50gb": {
+      "description": "VLESS for daily use",
+      "invoice": "VLESS Reality key — 50 GB for 1 month"
+    },
+    "vless_100gb": {
+      "description": "VLESS for active usage",
+      "invoice": "VLESS Reality key — 100 GB for 1 month"
+    },
+    "vless_unlim": {
+      "description": "VLESS with unlimited traffic",
+      "invoice": "VLESS Reality key — Unlimited for 1 month"
+    },
+    "both_10gb": {
+      "description": "Two protocols with 20% discount",
+      "invoice": "Outline + VLESS — 10 GB for 1 month"
+    },
+    "both_50gb": {
+      "description": "Two protocols for daily use",
+      "invoice": "Outline + VLESS — 50 GB for 1 month"
+    },
+    "both_100gb": {
+      "description": "Two protocols for active usage",
+      "invoice": "Outline + VLESS — 100 GB for 1 month"
+    },
+    "both_unlim": {
+      "description": "Maximum reliability with no limits",
+      "invoice": "Outline + VLESS — Unlimited for 1 month"
     }
   },
   "statuses": {

@@ -35,7 +35,7 @@ class CallbackHandler {
 			await ctx.answerCbQuery();
 
 			// Роутинг callback'ов к соответствующим модулям
-			if (callbackData === CALLBACK_ACTIONS.BASIC.BACK_TO_MENU) {
+			if (callbackData === CALLBACK_ACTIONS.BASIC.HOME) {
 				await this.menuCallbacks.handleBackToMenu(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.KEYS.BUY) {
 				await this.planCallbacks.handleShowPlans(ctx);
@@ -45,24 +45,24 @@ class CallbackHandler {
 			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.PAYMENT.CONFIRM}_`)) {
 				const planId = callbackData.split('_').slice(2).join('_');
 				await this.planCallbacks.handleConfirmPurchase(ctx, planId);
-			} else if (callbackData.startsWith('confirm_payment_')) {
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.PAYMENT.CREATE_INVOICE}_`)) {
 				const planId = callbackData.split('_').slice(2).join('_');
 				await this.planCallbacks.handleCreateInvoice(ctx, planId);
-			} else if (callbackData.startsWith('checkout_')) {
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.KEYS.CHECKOUT}_`)) {
 				const planId = callbackData.split('_').slice(1).join('_');
 				await this.planCallbacks.handleDirectCheckout(ctx, planId);
 			} else if (callbackData === CALLBACK_ACTIONS.KEYS.MENU) {
 				await this.KeysCallbacks.handleMyKeys(ctx);
-			} else if (callbackData.startsWith('key_details_') || callbackData.startsWith('sub_details_')) {
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.KEYS.DETAILS}_`) || callbackData.startsWith('sub_details_')) {
 				const keyId = parseInt(callbackData.split('_')[2]);
 				await this.KeysCallbacks.handleKeyDetails(ctx, keyId);
 			} else if (callbackData.startsWith('sub_stats_')) {
 				const keyId = parseInt(callbackData.split('_')[2]);
 				await this.KeysCallbacks.handleKeyStats(ctx, keyId);
-			} else if (callbackData.startsWith('key_stats_')) {
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.KEYS.STATS}_`)) {
 				const keyId = parseInt(callbackData.split('_')[2]);
 				await this.KeysCallbacks.handleKeyStats(ctx, keyId);
-			} else if (callbackData.startsWith('key_refresh_')) {
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.KEYS.REFRESH}_`)) {
 				const keyId = parseInt(callbackData.split('_')[2]);
 				await this.KeysCallbacks.handleRefreshKey(ctx, keyId);
 			} else if (callbackData === CALLBACK_ACTIONS.SETTINGS.MENU) {
@@ -72,11 +72,31 @@ class CallbackHandler {
 			} else if (callbackData.startsWith('set_lang_')) {
 				const lang = callbackData.split('_')[2];
 				await this.languageCallbacks.handleSetLanguage(ctx, lang);
-			} else if (callbackData === 'help') {
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HELP) {
 				await this.menuCallbacks.handleHelp(ctx);
-			} else if (callbackData === 'download_apps') {
-				await this.menuCallbacks.handleDownloadApps(ctx);
-			} else if (callbackData === 'support') {
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY) {
+				await this.menuCallbacks.handleHowToAddKey(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_OUTLINE) {
+				await this.menuCallbacks.handleHowToAddKeyProtocol(ctx, 'outline');
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_VLESS) {
+				await this.menuCallbacks.handleHowToAddKeyProtocol(ctx, 'vless');
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VPN_APPS) {
+				await this.menuCallbacks.handleVpnApps(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VPN_APPS_OUTLINE) {
+				await this.menuCallbacks.handleOutlineApps(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VPN_APPS_VLESS) {
+				await this.menuCallbacks.handleVlessChooseOs(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VLESS_APPS_LINUX) {
+				await this.menuCallbacks.handleVlessApps(ctx, 'linux');
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VLESS_APPS_WINDOWS) {
+				await this.menuCallbacks.handleVlessApps(ctx, 'windows');
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VLESS_APPS_MACOS) {
+				await this.menuCallbacks.handleVlessApps(ctx, 'macos');
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VLESS_APPS_IOS) {
+				await this.menuCallbacks.handleVlessApps(ctx, 'ios');
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VLESS_APPS_ANDROID) {
+				await this.menuCallbacks.handleVlessApps(ctx, 'android');
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.SUPPORT) {
 				await this.menuCallbacks.handleSupport(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.MENU) {
 				await this.adminCallbacks.handleAdminPanel(ctx);
@@ -127,18 +147,12 @@ class CallbackHandler {
 				// ── Выбор типа подключения ──
 			} else if (callbackData === CALLBACK_ACTIONS.KEYS.BUY) {
 				await this.planCallbacks.handleShowPlans(ctx);
-			} else if (callbackData === 'plans_type_outline') {
+			} else if (callbackData === CALLBACK_ACTIONS.KEYS.TYPE_OUTLINE) {
 				await this.planCallbacks.handleShowPlansByType(ctx, 'outline');
-			} else if (callbackData === 'plans_type_vless') {
+			} else if (callbackData === CALLBACK_ACTIONS.KEYS.TYPE_VLESS) {
 				await this.planCallbacks.handleShowPlansByType(ctx, 'vless');
-			} else if (callbackData === 'plans_type_both') {
+			} else if (callbackData === CALLBACK_ACTIONS.KEYS.TYPE_BOTH) {
 				await this.planCallbacks.handleShowPlansByType(ctx, 'both');
-			} else if (callbackData.startsWith('checkout_')) {
-				const planId = callbackData.split('_').slice(1).join('_');
-				await this.planCallbacks.handleShowPlanDetails(ctx, planId);
-			} else if (callbackData.startsWith('confirm_payment_')) {
-				const planId = callbackData.split('_').slice(2).join('_');
-				await this.planCallbacks.handleCreateInvoice(ctx, planId);
 			} else {
 				// Неизвестный callback
 				await ctx.editMessageText(t('generic.unknown_command', { ns: 'error' }), KeyboardUtils.createBackToMenuKeyboard(t));
