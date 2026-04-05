@@ -1,7 +1,7 @@
 {
   "welcome": {
     "title": "Welcome to Let me Out VPN!",
-    "description": "Here you can purchase access to secure and fast VPN via Outline.",
+    "description": "Here you can purchase access to secure and fast VPN via Outline and VLESS.",
     "steps": [
       "⭐️ Payment via Telegram Stars",
       "🚀 Instant activation after purchase",
@@ -253,10 +253,10 @@
     "days_until_expiry": "Days until expiry",
     "access_key_title": "Access Key:",
     "refreshing": "Refreshing key...",
-    "refresh_success": "Key refreshed! Copy the new key and add it to Outline:",
+    "refresh_success": "Key refreshed! Copy the new key and add it to the app:",
     "how_to_connect": "How to connect:",
     "connect_steps": [
-      "Download Outline Client",
+      "Download the app",
       "Copy the key above",
       "Add the key to the app"
     ],
@@ -292,14 +292,14 @@
     "key_activated": "Your VPN key is activated!",
     "connect_instructions": "How to connect:",
     "connect_steps": [
-      "Download Outline Client app",
+      "Download the app",
       "Copy the access key above",
       "Add the key to the app",
       "Enjoy secure internet!"
     ],
     "access_key": "Access Key",
     "how_to_connect": "How to connect:",
-    "step1": "Download Outline Client app",
+    "step1": "Download the app",
     "step2": "Copy the access key above",
     "step3": "Add the key to the app",
     "step4": "Enjoy secure internet!",
