@@ -20,12 +20,28 @@ const GIFT_PLAN_ID = 'gift_vless_10gb';
 
 function buildMessage(lang, accessUrl) {
 	if (lang === 'ru') {
-		return `🎁 Ваш ключ:
-<pre>${accessUrl}</pre>`;
+		return `🎉 <b>Обновление сервиса!</b>
+
+Мы обновили наш сервис и добавили новый протокол <b>VLESS</b>, а также улучшили визуальную часть.
+
+В честь этого события хотим подарить вам бесплатный ключ с лимитом в <b>10 ГБ</b> и <b>7 дней</b>, чтобы вы могли протестировать его.
+
+🎁 Ваш ключ:
+<pre>${accessUrl}</pre>
+
+Спасибо, что вы с нами! ❤️`;
 	}
 
-	return `🎁 Your key:
-<pre>${accessUrl}</pre>`;
+	return `🎉 <b>Service Update!</b>
+
+We've updated our service and added a new <b>VLESS</b> protocol, as well as improved the visual design.
+
+To celebrate, we'd like to give you a free key with a <b>10 GB</b> limit and <b>7 days</b> so you can test it out.
+
+🎁 Your key:
+<pre>${accessUrl}</pre>
+
+Thank you for being with us! ❤️`;
 }
 
 const DRY_RUN = process.argv.includes('--dry-run');
@@ -88,7 +104,7 @@ async function main() {
 			if (keyError) throw keyError;
 
 			const keyId = keyData.id;
-			const xrayEmail = `lmo_${user.telegram_id}_${keyId}`;
+			const xrayEmail = `LetMeOut_gift_${keyId}_${GIFT_PLAN_ID}`;
 
 			// 2. Создаём VLESS Reality ключ на сервере
 			const vlessKey = await xray.createRealityClient(xrayEmail, GIFT_DATA_LIMIT_GB, expiryTimeMs);

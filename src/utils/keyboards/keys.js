@@ -31,15 +31,21 @@ function createKeysKeyboard(t, keys) {
 	return Markup.inlineKeyboard(buttons);
 }
 
-function createKeyDetailsKeyboard(t, keyId) {
-	return Markup.inlineKeyboard([
+function createKeyDetailsKeyboard(t, keyId, keyType) {
+	const rows = [
 		[btn(t, 'stats', `${CALLBACK_ACTIONS.KEYS.STATS}_${keyId}`)],
-		[btn(t, 'refresh_key', `${CALLBACK_ACTIONS.KEYS.REFRESH}_${keyId}`)],
-		[
-			btn(t, 'back', CALLBACK_ACTIONS.KEYS.MENU),
-			btn(t, 'home')
-		]
+	];
+
+	if (keyType !== 'vless') {
+		rows.push([btn(t, 'refresh_key', `${CALLBACK_ACTIONS.KEYS.REFRESH}_${keyId}`)]);
+	}
+
+	rows.push([
+		btn(t, 'back', CALLBACK_ACTIONS.KEYS.MENU),
+		btn(t, 'home')
 	]);
+
+	return Markup.inlineKeyboard(rows);
 }
 
 function createKeyStatsKeyboard(t, keyId) {

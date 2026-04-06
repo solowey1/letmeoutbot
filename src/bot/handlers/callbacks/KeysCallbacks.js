@@ -128,7 +128,7 @@ class KeysCallbacks {
 				});
 			}
 
-			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId);
+			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId, key.key_type);
 
 			await ctx.editMessageText(message, {
 				...keyboard,
