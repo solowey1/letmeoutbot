@@ -13,7 +13,7 @@ class I18nMiddleware {
 	middleware() {
 		return async (ctx, next) => {
 			// Получаем пользователя из БД
-			const user = await this.database.getUser(ctx.from?.id);
+			const user = await this.database.getUserByTelegramId(ctx.from?.id);
 
 			// Определяем язык
 			let locale;

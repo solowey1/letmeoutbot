@@ -12,7 +12,7 @@ class NotificationService {
 	async sendNotificationToUser(telegramId, notification) {
 		try {
 			// Получаем язык пользователя из БД
-			const user = await this.database.getUser(telegramId);
+			const user = await this.database.getUserByTelegramId(telegramId);
 			const locale = user?.language || 'en';
 			const t = (key, params) => this.i18nService.t(locale, key, params);
 

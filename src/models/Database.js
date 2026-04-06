@@ -150,7 +150,7 @@ class Database {
 		});
 	}
 
-	async getUser(telegramId) {
+	async getUserByTelegramId(telegramId) {
 		return new Promise((resolve, reject) => {
 			const query = 'SELECT * FROM users WHERE telegram_id = ?';
 			this.db.get(query, [telegramId], (err, row) => {

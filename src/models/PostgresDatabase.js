@@ -44,7 +44,7 @@ class PostgresDatabase {
 		return result.rows[0]?.id || 0;
 	}
 
-	async getUser(telegramId) {
+	async getUserByTelegramId(telegramId) {
 		const query = 'SELECT * FROM users WHERE telegram_id = $1';
 		const result = await this.pool.query(query, [telegramId]);
 		return result.rows[0];
