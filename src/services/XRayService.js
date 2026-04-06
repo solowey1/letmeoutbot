@@ -175,11 +175,12 @@ class XRayService {
 		});
 	}
 
-	async suspendClient(uuid, email) {
+	async suspendClient(uuid, email, totalGB = 0, expiryTime = 0) {
 		return this.updateClient(this.REALITY_INBOUND_ID, uuid, {
 			id: uuid, email, enable: false,
 			flow: 'xtls-rprx-vision', limitIp: 0,
-			totalGB: 1, expiryTime: 1, reset: 0
+			totalGB: totalGB > 0 ? Math.round(totalGB * 1024 * 1024 * 1024) : 0,
+			expiryTime, reset: 0
 		});
 	}
 

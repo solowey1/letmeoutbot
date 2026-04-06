@@ -309,7 +309,9 @@ class KeysService {
 			}
 
 			if (key.key_type === KEY_TYPE.VLESS && key.external_key_id && this.xrayService) {
-				await this.xrayService.suspendClient(key.external_key_id, key.external_client_id);
+				const dataLimitGB = key.data_limit > 0 ? key.data_limit / (1024 * 1024 * 1024) : 0;
+				const expiryTimeMs = new Date(key.expires_at).getTime();
+				await this.xrayService.suspendClient(key.external_key_id, key.external_client_id, dataLimitGB, expiryTimeMs);
 			}
 
 			await this.db.updateKey(keyId, { status: KEY_STATUS.SUSPENDED });
