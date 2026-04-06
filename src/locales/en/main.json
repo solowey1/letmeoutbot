@@ -118,11 +118,11 @@
   },
   "plans": {
     "unlimited": "Unlimited",
-    "test": {
+    "outline_test": {
       "description": "Perfect for testing the service",
       "invoice": "Test Outline VPN key — 100 MB for 1 day"
     },
-    "test_vless": {
+    "vless_test": {
       "description": "Test VLESS Reality — check if it works",
       "invoice": "Test VLESS Reality key — 100 MB for 1 day"
     },

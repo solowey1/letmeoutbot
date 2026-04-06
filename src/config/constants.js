@@ -16,25 +16,25 @@ const PLANS = {
 	// ТЕСТОВЫЙ (только для разработки/отладки)
 	// ─────────────────────────────────────────
 	TEST: {
-		id: 'test',
+		id: 'outline_test',
 		name: 'TEST',
 		type: 'outline',
-		dataLimitGB: 0.1,          // 100 MB
+		dataLimitGB: 1,
 		dataLimit: 100 * 1024 * 1024,
 		duration: 1,
 		price: 1,
 		emoji: '🐌',
-		hidden: true               // не показывать обычным пользователям
+		hidden: true    // не показывать обычным пользователям
 	},
 	TEST_VLESS: {
-		id: 'test_vless',
+		id: 'vless_test',
 		name: 'TEST VLESS',
 		type: 'vless',
-		dataLimitGB: 0.1,          // 100 MB
+		dataLimitGB: 1,
 		dataLimit: 100 * 1024 * 1024,
 		duration: 1,
 		price: 1,
-		emoji: '⚡',
+		emoji: '🐌',
 		hidden: true
 	},
 
@@ -73,7 +73,7 @@ const PLANS = {
 	},
 	OUTLINE_UNLIM: {
 		id: 'outline_unlim',
-		name: 'Outline Безлимит',
+		name: 'Outline Unlimited',
 		type: 'outline',
 		dataLimitGB: 0,            // 0 = безлимит
 		dataLimit: 0,
@@ -117,7 +117,7 @@ const PLANS = {
 	},
 	VLESS_UNLIM: {
 		id: 'vless_unlim',
-		name: 'VLESS Безлимит',
+		name: 'VLESS Unlimited',
 		type: 'vless',
 		dataLimitGB: 0,
 		dataLimit: 0,
