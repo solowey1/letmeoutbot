@@ -32,6 +32,7 @@ class KeysService {
 			let lastError;
 			const expiresAt = PlanService.calculateExpiryDate(plan);
 			const keyId = await this.db.createKey(userId, planId, plan.dataLimit, expiresAt);
+			await this.db.updateKey(keyId, { key_type: protocol });
 
 			// Привязываем первый ключ к платежу
 			if (results.length === 0) {
@@ -143,9 +144,8 @@ class KeysService {
 		if (!user) throw new Error('Пользователь не найден');
 
 		const expiresAt = new Date(key.expires_at);
-		// Для retry определяем протокол: если ключ уже имеет key_type — используем его,
-		// иначе берём из плана (для single-protocol планов)
-		const protocol = key.key_type || plan.type;
+		// Берём протокол из плана; для both — смотрим key_type, записанный при создании
+		const protocol = plan.type === 'both' ? key.key_type : plan.type;
 		return this.activateKeyOnVpnServer(keyId, plan, protocol, user.telegram_id, expiresAt);
 	}
 

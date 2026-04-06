@@ -47,7 +47,7 @@ class KeysCallbacks {
 					const sub = keys[i];
 					const usage = await this.keyService.getUsageStats(sub.id);
 
-					message += `${i + 1}. ${sub.plan.displayName}\n`;
+					message += `${i + 1}. ${sub.plan?.displayName || sub.plan_id}\n`;
 					message += `   • ${t('common.status')}: ${sub.status === 'active' ? t('keys.status_active', { ns: 'message' }) : t('keys.status_inactive', { ns: 'message' })}\n`;
 
 					if (usage) {
@@ -98,7 +98,7 @@ class KeysCallbacks {
 			}
 
 			let message = `🔑 <b>${t('keys.details_title', { ns: 'message' })}</b>\n\n`;
-			message += `📦 ${t('common.plan')}: ${key.plan.displayName}\n`;
+			message += `📦 ${t('common.plan')}: ${key.plan?.displayName || key.plan_id}\n`;
 			message += `🟢 ${t('common.status')}: ${key.status === 'active' ? t('keys.status_active', { ns: 'message' }) : t('keys.status_inactive', { ns: 'message' })}\n\n`;
 
 			if (key.usage) {

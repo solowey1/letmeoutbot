@@ -44,7 +44,7 @@ class Database {
                 external_key_id TEXT,
                 external_client_id TEXT,
                 external_sub_id TEXT,
-                key_type TEXT DEFAULT 'outline',
+                key_type TEXT,
                 access_url TEXT,
                 data_limit INTEGER NOT NULL,
                 data_used INTEGER DEFAULT 0,

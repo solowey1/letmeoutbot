@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS keys (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     plan_id TEXT NOT NULL,
-    key_type TEXT DEFAULT 'outline' CHECK (key_type IN ('outline', 'vless')),
+    key_type TEXT CHECK (key_type IN ('outline', 'vless')),
     external_key_id TEXT,
     external_client_id TEXT,
     external_sub_id TEXT,
