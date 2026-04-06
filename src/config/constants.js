@@ -39,6 +39,21 @@ const PLANS = {
 	},
 
 	// ─────────────────────────────────────────
+	// ПОДАРОЧНЫЙ VLESS
+	// ─────────────────────────────────────────
+	GIFT_VLESS_10GB: {
+		id: 'gift_vless_10gb',
+		name: 'VLESS 10 GB (Gift)',
+		type: 'vless',
+		dataLimitGB: 10,
+		dataLimit: 10 * 1024 * 1024 * 1024,
+		duration: 7,
+		price: 0,
+		emoji: '🎁',
+		hidden: true
+	},
+
+	// ─────────────────────────────────────────
 	// OUTLINE — только Outline VPN
 	// ─────────────────────────────────────────
 	OUTLINE_10GB: {

@@ -18,23 +18,15 @@ const GIFT_DATA_LIMIT_GB = 10;
 const GIFT_DURATION_DAYS = 7;
 const GIFT_PLAN_ID = 'gift_vless_10gb';
 
-const MESSAGES = {
-	ru: `🎉 <b>Обновление сервиса!</b>
+function buildMessage(lang, accessUrl) {
+	if (lang === 'ru') {
+		return `🎁 Ваш ключ:
+<pre>${accessUrl}</pre>`;
+	}
 
-Мы обновили наш сервис и добавили новый протокол <b>VLESS</b>, а также улучшили визуальную часть.
-
-В честь этого события хотим подарить вам бесплатный ключ с лимитом в <b>10 ГБ</b> и <b>7 дней</b>, чтобы вы могли протестировать его.
-
-Спасибо, что вы с нами! ❤️`,
-
-	en: `🎉 <b>Service Update!</b>
-
-We've updated our service and added a new <b>VLESS</b> protocol, as well as improved the visual design.
-
-To celebrate, we'd like to give you a free key with a <b>10 GB</b> limit and <b>7 days</b> so you can test it out.
-
-Thank you for being with us! ❤️`
-};
+	return `🎁 Your key:
+<pre>${accessUrl}</pre>`;
+}
 
 const DRY_RUN = process.argv.includes('--dry-run');
 
@@ -121,7 +113,7 @@ async function main() {
 
 			// 4. Отправляем сообщение
 			try {
-				await bot.telegram.sendMessage(user.telegram_id, MESSAGES[lang], {
+				await bot.telegram.sendMessage(user.telegram_id, buildMessage(lang, vlessKey.accessUrl), {
 					parse_mode: 'HTML'
 				});
 				sent++;
