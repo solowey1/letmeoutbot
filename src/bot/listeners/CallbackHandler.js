@@ -159,8 +159,10 @@ class CallbackHandler {
 				await ctx.editMessageText(t('generic.unknown_command', { ns: 'error' }), KeyboardUtils.createBackToMenuKeyboard(t));
 			}
 		} catch (error) {
-			console.error('Ошибка обработки callback:', error);
-			await ctx.answerCbQuery(t('generic.default', { ns: 'error' }));
+			console.error(`Ошибка обработки callback [${callbackData}]:`, error.message);
+			try {
+				await ctx.answerCbQuery(t('generic.default', { ns: 'error' }));
+			} catch (_) { /* уже отвечено */ }
 		}
 	}
 
