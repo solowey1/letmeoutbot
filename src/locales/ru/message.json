@@ -333,6 +333,8 @@
     "add_key_to_app": "Добавьте нужный ключ в приложение.",
     "add_key_hiddify": "Добавьте ключ в Hiddify, FoXray или ShadowRocket.",
     "add_key_outline": "Добавьте ключ в приложение Outline.",
+    "vless_qr_caption": "📲 QR-код для подключения VLESS",
+    "outline_qr_caption": "📲 QR-код для подключения Outline",
     "connect_instructions": "Как подключиться:",
     "connect_steps": [
       "Скачайте приложение",

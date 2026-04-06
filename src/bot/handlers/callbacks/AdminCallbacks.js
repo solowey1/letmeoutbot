@@ -285,6 +285,19 @@ class AdminCallbacks {
 						msg += `<b>${label}</b>\n<code>${result.accessUrl}</code>\n\n`;
 						await ctx.telegram.sendMessage(user.telegram_id, msg, { parse_mode: 'HTML' });
 
+						try {
+							const { generateQR } = require('../../../utils/qr');
+							const captionKey = result.protocol === 'vless'
+								? 'payments.vless_qr_caption'
+								: 'payments.outline_qr_caption';
+							const qrBuffer = await generateQR(result.accessUrl);
+							await ctx.telegram.sendPhoto(user.telegram_id, {
+								source: qrBuffer, filename: `${result.protocol}-qr.png`
+							}, { caption: ut(captionKey, { ns: 'message' }) });
+						} catch (qrErr) {
+							console.error('⚠️ Не удалось отправить QR-код:', qrErr.message);
+						}
+
 						ctx.i18n.locale = savedLocale;
 					}
 				} catch (notifyError) {

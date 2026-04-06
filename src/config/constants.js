@@ -17,7 +17,7 @@ const PLANS = {
 	// ─────────────────────────────────────────
 	TEST: {
 		id: 'outline_test',
-		name: 'TEST',
+		name: 'TEST OUTLINE',
 		type: 'outline',
 		dataLimitGB: 1,
 		dataLimit: 100 * 1024 * 1024,

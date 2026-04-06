@@ -1,7 +1,7 @@
 {
   "name": "vpn-outline-telegram-bot",
-  "version": "2.0.0",
-  "description": "Telegram bot for purchasing Outline VPN access with Telegram Stars",
+  "version": "2.1.0",
+  "description": "Telegram bot for purchasing VPN keys with Telegram Stars",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
@@ -17,6 +17,8 @@
     "bot",
     "vpn",
     "outline",
+    "vless",
+    "keys",
     "payment",
     "stars"
   ],
@@ -30,6 +32,7 @@
     "i18n": "^0.15.3",
     "moment": "^2.29.4",
     "pg": "^8.16.3",
+    "qrcode": "^1.5.4",
     "sqlite3": "^5.1.6",
     "telegraf": "^4.16.3",
     "uuid": "^13.0.0"

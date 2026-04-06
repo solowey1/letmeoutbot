@@ -162,6 +162,7 @@ class PaymentHandlers {
 	async sendAccessKeyMessage(ctx, payment, activationResults) {
 		const t = ctx.i18n?.t || ((key) => key);
 		const keyboard = KeyboardUtils.createAppsDownloadKeyboard(t);
+		const { generateQR } = require('../../utils/qr');
 
 		let message = `🎉 <b>${t('payments.success_title', { ns: 'message' })}</b>\n\n`;
 
@@ -188,6 +189,22 @@ class PaymentHandlers {
 			parse_mode: 'HTML',
 			disable_web_page_preview: true
 		});
+
+		// Отправляем QR-коды для всех ключей
+		for (const result of activationResults) {
+			try {
+				const captionKey = result.protocol === 'vless'
+					? 'payments.vless_qr_caption'
+					: 'payments.outline_qr_caption';
+				const qrBuffer = await generateQR(result.accessUrl);
+				await ctx.replyWithPhoto(
+					{ source: qrBuffer, filename: `${result.protocol}-qr.png` },
+					{ caption: t(captionKey, { ns: 'message' }) }
+				);
+			} catch (qrError) {
+				console.error('⚠️ Не удалось отправить QR-код:', qrError.message);
+			}
+		}
 	}
 
 	// Регистрация обработчиков платежей в боте

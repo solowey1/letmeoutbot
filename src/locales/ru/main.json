@@ -120,11 +120,11 @@
     "unlimited": "Безлимит",
     "outline_test": {
       "description": "Если хочется проверить работоспособность",
-      "invoice": "Тестовый ключ Outline VPN на 100 Мб / 1 день"
+      "invoice": "Тестовый ключ Outline VPN — 1 Гб на 1 день"
     },
     "vless_test": {
       "description": "Тест VLESS Reality — проверка работоспособности",
-      "invoice": "Тестовый ключ VLESS Reality на 100 Мб / 1 день"
+      "invoice": "Тестовый ключ VLESS Reality — 1 Гб на 1 день"
     },
     "outline_10gb": {
       "description": "Базовый доступ через Outline",

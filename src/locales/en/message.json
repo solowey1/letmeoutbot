@@ -327,6 +327,8 @@
     "add_key_to_app": "Add the key you need to the app.",
     "add_key_hiddify": "Add the key to Hiddify, FoXray or ShadowRocket.",
     "add_key_outline": "Add the key to the Outline app.",
+    "vless_qr_caption": "📲 QR code for VLESS connection",
+    "outline_qr_caption": "📲 QR code for Outline connection",
     "connect_instructions": "How to connect:",
     "connect_steps": [
       "Download the app",

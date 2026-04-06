@@ -120,11 +120,11 @@
     "unlimited": "Unlimited",
     "outline_test": {
       "description": "Perfect for testing the service",
-      "invoice": "Test Outline VPN key — 100 MB for 1 day"
+      "invoice": "Test Outline VPN key — 1 GB for 1 day"
     },
     "vless_test": {
       "description": "Test VLESS Reality — check if it works",
-      "invoice": "Test VLESS Reality key — 100 MB for 1 day"
+      "invoice": "Test VLESS Reality key — 1 GB for 1 day"
     },
     "outline_10gb": {
       "description": "Basic access via Outline",
