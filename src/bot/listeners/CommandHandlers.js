@@ -22,12 +22,12 @@ class CommandHandlers {
 		let referrerId = null;
 
 		// Создаем или обновляем пользователя
-		let user = await this.db.getUser(telegramId);
+		let user = await this.db.getUserByTelegramId(telegramId);
 
 		if (!user) {
 			isNewUser = true;
 			await this.db.createUser(telegramId, username, firstName, lastName);
-			user = await this.db.getUser(telegramId);
+			user = await this.db.getUserByTelegramId(telegramId);
 
 			// Сохраняем определённый middleware'ом язык для нового пользователя
 			if (ctx.i18n?.locale) {
@@ -40,7 +40,7 @@ class CommandHandlers {
 
 				if (extractedReferrerId && extractedReferrerId !== telegramId) {
 					// Получаем информацию о реферере
-					const referrer = await this.db.getUser(extractedReferrerId);
+					const referrer = await this.db.getUserByTelegramId(extractedReferrerId);
 
 					if (referrer) {
 						// Создаем реферальную связь

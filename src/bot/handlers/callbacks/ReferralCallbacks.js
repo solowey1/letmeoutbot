@@ -16,7 +16,7 @@ class ReferralCallbacks {
 	 */
 	async handleReferralMenu(ctx) {
 		const t = ctx.i18n.t;
-		const user = await this.db.getUser(ctx.from.id);
+		const user = await this.db.getUserByTelegramId(ctx.from.id);
 
 		// Получаем статистику рефералов
 		const stats = await this.referralService.getReferralStats(user.id);
@@ -43,7 +43,7 @@ class ReferralCallbacks {
 	 */
 	async handleInvite(ctx) {
 		const t = ctx.i18n.t;
-		const user = await this.db.getUser(ctx.from.id);
+		const user = await this.db.getUserByTelegramId(ctx.from.id);
 
 		// Генерируем реферальную ссылку
 		const botInfo = await ctx.telegram.getMe();
@@ -68,7 +68,7 @@ class ReferralCallbacks {
 	 */
 	async handleGetLink(ctx) {
 		const t = ctx.i18n.t;
-		const user = await this.db.getUser(ctx.from.id);
+		const user = await this.db.getUserByTelegramId(ctx.from.id);
 
 		// Генерируем реферальную ссылку
 		const botInfo = await ctx.telegram.getMe();
@@ -89,7 +89,7 @@ class ReferralCallbacks {
 	 */
 	async handleMyReferrals(ctx) {
 		const t = ctx.i18n.t;
-		const user = await this.db.getUser(ctx.from.id);
+		const user = await this.db.getUserByTelegramId(ctx.from.id);
 
 		// Получаем список рефералов
 		const referrals = await this.referralService.getReferrals(user.id);
@@ -109,7 +109,7 @@ class ReferralCallbacks {
 	 */
 	async handleWithdraw(ctx) {
 		const t = ctx.i18n.t;
-		const user = await this.db.getUser(ctx.from.id);
+		const user = await this.db.getUserByTelegramId(ctx.from.id);
 
 		// Получаем статистику рефералов
 		const stats = await this.referralService.getReferralStats(user.id);
@@ -152,7 +152,7 @@ class ReferralCallbacks {
 	 */
 	async handleConfirmWithdraw(ctx) {
 		const t = ctx.i18n.t;
-		const user = await this.db.getUser(ctx.from.id);
+		const user = await this.db.getUserByTelegramId(ctx.from.id);
 
 		// Получаем статистику рефералов
 		const stats = await this.referralService.getReferralStats(user.id);
@@ -196,7 +196,7 @@ class ReferralCallbacks {
 	 */
 	async handleWithdrawalHistory(ctx) {
 		const t = ctx.i18n.t;
-		const user = await this.db.getUser(ctx.from.id);
+		const user = await this.db.getUserByTelegramId(ctx.from.id);
 
 		// Получаем историю выводов
 		const withdrawals = await this.db.getUserWithdrawals(user.id);

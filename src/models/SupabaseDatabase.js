@@ -49,28 +49,13 @@ class SupabaseDatabase {
 		if (error) {
 			// Если пользователь уже существует, получаем его ID
 			if (error.code === '23505') { // unique violation
-				const user = await this.getUser(telegramId);
+				const user = await this.getUserByTelegramId(telegramId);
 				return user?.id || 0;
 			}
 			throw error;
 		}
 
 		return data.id;
-	}
-
-	async getUser(telegramId) {
-		const { data, error } = await this.supabase
-			.from('users')
-			.select('*')
-			.eq('telegram_id', telegramId)
-			.single();
-
-		if (error) {
-			if (error.code === 'PGRST116') return null; // not found
-			throw error;
-		}
-
-		return data;
 	}
 
 	async getUserById(userId) {
@@ -82,6 +67,21 @@ class SupabaseDatabase {
 
 		if (error) {
 			if (error.code === 'PGRST116') return null;
+			throw error;
+		}
+
+		return data;
+	}
+
+	async getUserByTelegramId(telegramId) {
+		const { data, error } = await this.supabase
+			.from('users')
+			.select('*')
+			.eq('telegram_id', telegramId)
+			.single();
+
+		if (error) {
+			if (error.code === 'PGRST116') return null; // not found
 			throw error;
 		}
 
@@ -807,82 +807,86 @@ class SupabaseDatabase {
 			.select('id, telegram_id, username, first_name, language');
 
 		switch (filterType) {
-		case 'all':
-			// Все пользователи
-			break;
+			case 'all':
+				// Все пользователи
+				break;
 
-		case 'active_keys':
-			// Пользователи с активными ключами
-			query = this.supabase
-				.from('users')
-				.select('id, telegram_id, username, first_name, language, keys!inner(status, expires_at)')
-				.eq('keys.status', 'active')
-				.gt('keys.expires_at', new Date().toISOString());
-			break;
+			case 'active_keys':
+				// Пользователи с активными ключами
+				query = this.supabase
+					.from('users')
+					.select('id, telegram_id, username, first_name, language, keys!inner(status, expires_at)')
+					.eq('keys.status', 'active')
+					.gt('keys.expires_at', new Date().toISOString());
+				break;
 
-		case 'expired_keys':
-			// Пользователи с истекшими ключами
-			query = this.supabase
-				.from('users')
-				.select('id, telegram_id, username, first_name, language, keys!inner(status, expires_at)')
-				.or('keys.status.eq.expired,keys.expires_at.lt.' + new Date().toISOString());
-			break;
+			case 'expired_keys':
+				// Пользователи с истекшими ключами
+				query = this.supabase
+					.from('users')
+					.select('id, telegram_id, username, first_name, language, keys!inner(status, expires_at)')
+					.or('keys.status.eq.expired,keys.expires_at.lt.' + new Date().toISOString());
+				break;
 
-		case 'no_keys':
-			// Пользователи без ключей
-			const { data: usersWithKeys } = await this.supabase
-				.from('keys')
-				.select('user_id');
+			case 'no_keys': {
+				// Пользователи без ключей
+				const { data: usersWithKeys } = await this.supabase
+					.from('keys')
+					.select('user_id');
 
-			const userIdsWithKeys = usersWithKeys?.map(k => k.user_id) || [];
+				const userIdsWithKeys = usersWithKeys?.map(k => k.user_id) || [];
 
-			if (userIdsWithKeys.length > 0) {
-				query = query.not('id', 'in', `(${userIdsWithKeys.join(',')})`);
+				if (userIdsWithKeys.length > 0) {
+					query = query.not('id', 'in', `(${userIdsWithKeys.join(',')})`);
+				}
+				break;
 			}
-			break;
 
-		case 'paid_users':
-			// Пользователи с успешными платежами
-			query = this.supabase
-				.from('users')
-				.select('id, telegram_id, username, first_name, language, payments!inner(status)')
-				.eq('payments.status', 'completed');
-			break;
+			case 'paid_users':
+				// Пользователи с успешными платежами
+				query = this.supabase
+					.from('users')
+					.select('id, telegram_id, username, first_name, language, payments!inner(status)')
+					.eq('payments.status', 'completed');
+				break;
 
-		case 'free_users':
-			// Пользователи без покупок
-			const { data: usersWithPayments } = await this.supabase
-				.from('payments')
-				.select('user_id')
-				.eq('status', 'completed');
+			case 'free_users': {
+				// Пользователи без покупок
+				const { data: usersWithPayments } = await this.supabase
+					.from('payments')
+					.select('user_id')
+					.eq('status', 'completed');
 
-			const userIdsWithPayments = usersWithPayments?.map(p => p.user_id) || [];
+				const userIdsWithPayments = usersWithPayments?.map(p => p.user_id) || [];
 
-			if (userIdsWithPayments.length > 0) {
-				query = query.not('id', 'in', `(${userIdsWithPayments.join(',')})`);
+				if (userIdsWithPayments.length > 0) {
+					query = query.not('id', 'in', `(${userIdsWithPayments.join(',')})`);
+				}
+				break;
 			}
-			break;
 
-		case 'language':
-			// Фильтр по языку
-			if (filterValue) {
-				query = query.eq('language', filterValue);
+			case 'language':
+				// Фильтр по языку
+				if (filterValue) {
+					query = query.eq('language', filterValue);
+				}
+				break;
+
+			case 'new_users': {
+				// Новые пользователи (последние 7 дней)
+				const weekAgo = new Date();
+				weekAgo.setDate(weekAgo.getDate() - 7);
+				query = query.gte('created_at', weekAgo.toISOString());
+				break;
 			}
-			break;
 
-		case 'new_users':
-			// Новые пользователи (последние 7 дней)
-			const weekAgo = new Date();
-			weekAgo.setDate(weekAgo.getDate() - 7);
-			query = query.gte('created_at', weekAgo.toISOString());
-			break;
-
-		case 'old_users':
-			// Старые пользователи (более 30 дней)
-			const monthAgo = new Date();
-			monthAgo.setDate(monthAgo.getDate() - 30);
-			query = query.lte('created_at', monthAgo.toISOString());
-			break;
+			case 'old_users': {
+				// Старые пользователи (более 30 дней)
+				const monthAgo = new Date();
+				monthAgo.setDate(monthAgo.getDate() - 30);
+				query = query.lte('created_at', monthAgo.toISOString());
+				break;
+			}
 		}
 
 		const { data, error } = await query;

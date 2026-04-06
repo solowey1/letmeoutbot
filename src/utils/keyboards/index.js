@@ -1,7 +1,7 @@
 const common = require('./common');
 const menu = require('./menu');
 const payments = require('./payments');
-const keys = require('./keys');
+const keysKb = require('./keys');
 const help = require('./help');
 const protocols = require('./protocols');
 const settings = require('./settings');
@@ -47,9 +47,9 @@ class KeyboardUtils {
 	static createAppsDownloadKeyboard(t) { return payments.createAppsDownloadKeyboard(t); }
 
 	// keys
-	static createKeysKeyboard(t, keys) { return keys.createKeysKeyboard(t, keys); }
-	static createKeyDetailsKeyboard(t, keyId) { return keys.createKeyDetailsKeyboard(t, keyId); }
-	static createKeyStatsKeyboard(t, keyId) { return keys.createKeyStatsKeyboard(t, keyId); }
+	static createKeysKeyboard(t, keys) { return keysKb.createKeysKeyboard(t, keys); }
+	static createKeyDetailsKeyboard(t, keyId) { return keysKb.createKeyDetailsKeyboard(t, keyId); }
+	static createKeyStatsKeyboard(t, keyId) { return keysKb.createKeyStatsKeyboard(t, keyId); }
 
 	// help
 	static createHelpKeyboard(t) { return help.createHelpKeyboard(t); }

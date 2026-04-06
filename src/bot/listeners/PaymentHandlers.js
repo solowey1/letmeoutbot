@@ -108,7 +108,7 @@ class PaymentHandlers {
 			// Уведомляем администраторов об успешной покупке
 			if (this.adminNotificationService) {
 				try {
-					const user = await this.db.getUser(ctx.from.id);
+					const user = await this.db.getUserByTelegramId(ctx.from.id);
 					const plan = PlanService.getPlanById(completedPayment.plan_id);
 					await this.adminNotificationService.notifyNewPurchase(
 						completedPayment,
@@ -142,7 +142,7 @@ class PaymentHandlers {
 			if (this.adminNotificationService) {
 				try {
 					const completedPayment = await this.paymentService.getPayment(paymentId);
-					const user = await this.db.getUser(ctx.from.id);
+					const user = await this.db.getUserByTelegramId(ctx.from.id);
 					const plan = PlanService.getPlanById(completedPayment.plan_id);
 					await this.adminNotificationService.notifyNewPurchase(
 						completedPayment,

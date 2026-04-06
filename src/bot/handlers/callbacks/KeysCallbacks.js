@@ -13,7 +13,7 @@ class KeysCallbacks {
 		const t = ctx.i18n.t;
 
 		try {
-			let user = await this.db.getUser(ctx.from.id);
+			let user = await this.db.getUserByTelegramId(ctx.from.id);
 			if (!user) {
 				const message = KeyMessages.myKeys(t, []);
 				const isAdmin = ADMIN_IDS.includes(ctx.from.id);

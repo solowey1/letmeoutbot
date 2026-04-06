@@ -158,10 +158,10 @@ class PlanCallbacks {
 
 			const localizedPlan = PlanService.formatPlanForDisplay(t, plan);
 
-			let user = await this.db.getUser(ctx.from.id);
+			let user = await this.db.getUserByTelegramId(ctx.from.id);
 			if (!user) {
 				await this.db.createUser(ctx.from.id, ctx.from.username, ctx.from.first_name, ctx.from.last_name);
-				user = await this.db.getUser(ctx.from.id);
+				user = await this.db.getUserByTelegramId(ctx.from.id);
 			}
 
 			const { paymentId, invoice } = await this.paymentService.createInvoice(user.id, localizedPlan);
