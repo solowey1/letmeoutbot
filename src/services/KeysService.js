@@ -13,112 +13,119 @@ class KeysService {
 	// ============== СОЗДАНИЕ КЛЮЧЕЙ ==============
 
 	/**
-	 * Создать и активировать ключ с retry-логикой
+	 * Создать и активировать ключ(и) с retry-логикой.
+	 * Для плана both создаёт два отдельных ключа (outline + vless).
+	 * Возвращает массив результатов активации.
 	 */
 	async createAndActivateKeyWithRetry(userId, planId, paymentId, userTID, maxRetries = 5) {
-		const RETRY_DELAYS = [0, 100, 1000, 5000, 10000]; // прогрессивные задержки в мс
-		let lastError;
-
-		// Создаём запись в БД один раз, до retry-цикла
+		const RETRY_DELAYS = [0, 100, 1000, 5000, 10000];
 		const plan = PlanService.getPlanById(planId);
 		if (!plan) throw new Error('План не найден');
 
-		const expiresAt = PlanService.calculateExpiryDate(plan);
-		const keyId = await this.db.createKey(userId, planId, plan.dataLimit, expiresAt);
-		await this.db.updatePayment(paymentId, { key_id: keyId });
+		const protocols = plan.type === 'both'
+			? [KEY_TYPE.OUTLINE, KEY_TYPE.VLESS]
+			: [plan.type];
 
-		for (let attempt = 1; attempt <= maxRetries; attempt++) {
-			try {
-				const delay = RETRY_DELAYS[attempt - 1] || 10000;
-				if (delay > 0) {
-					console.log(`⏳ Ожидание ${delay}мс перед попыткой ${attempt}/${maxRetries}...`);
-					await new Promise(resolve => setTimeout(resolve, delay));
+		const results = [];
+
+		for (const protocol of protocols) {
+			let lastError;
+			const expiresAt = PlanService.calculateExpiryDate(plan);
+			const keyId = await this.db.createKey(userId, planId, plan.dataLimit, expiresAt);
+
+			// Привязываем первый ключ к платежу
+			if (results.length === 0) {
+				await this.db.updatePayment(paymentId, { key_id: keyId });
+			}
+
+			for (let attempt = 1; attempt <= maxRetries; attempt++) {
+				try {
+					const delay = RETRY_DELAYS[attempt - 1] || 10000;
+					if (delay > 0) {
+						await new Promise(resolve => setTimeout(resolve, delay));
+					}
+					console.log(`🔄 Попытка ${attempt}/${maxRetries} создания ${protocol} ключа (key=${keyId})...`);
+					const result = await this.activateKeyOnVpnServer(keyId, plan, protocol, userTID, expiresAt);
+					console.log(`✅ ${protocol} ключ ${keyId} создан с попытки ${attempt}`);
+					results.push(result);
+					lastError = null;
+					break;
+				} catch (error) {
+					lastError = error;
+					console.error(`❌ Попытка ${attempt}/${maxRetries} не удалась:`, error.message);
 				}
-				console.log(`🔄 Попытка ${attempt}/${maxRetries} создания ключа (key=${keyId})...`);
-				const result = await this.activateKeyOnVpnServer(keyId, plan, userTID, expiresAt);
-				console.log(`✅ Ключ ${keyId} создан с попытки ${attempt}`);
-				return result;
-			} catch (error) {
-				lastError = error;
-				console.error(`❌ Попытка ${attempt}/${maxRetries} не удалась:`, error.message);
+			}
+
+			if (lastError) {
+				throw new Error(`Не удалось создать ${protocol} ключ после ${maxRetries} попыток: ${lastError.message}`);
 			}
 		}
 
-		throw new Error(`Не удалось создать ключ после ${maxRetries} попыток: ${lastError.message}`);
+		return results;
 	}
 
 	/**
-	 * Активировать ключ на VPN-сервере (без создания записи в БД)
-	 * Используется внутри retry-цикла
+	 * Активировать один ключ на VPN-сервере.
+	 * @param {number} keyId - ID записи в БД
+	 * @param {object} plan - объект плана
+	 * @param {string} protocol - KEY_TYPE.OUTLINE или KEY_TYPE.VLESS
+	 * @param {number} userTID - Telegram ID пользователя
+	 * @param {Date} expiresAt - дата истечения
 	 */
-	async activateKeyOnVpnServer(keyId, plan, userTID, expiresAt) {
+	async activateKeyOnVpnServer(keyId, plan, protocol, userTID, expiresAt) {
 		const expiryTimeMs = expiresAt.getTime();
-		let result = { keyId, accessUrl: null, vlessUrl: null };
+		const clientId = `LetMeOut_#${keyId}_${plan.id}`;
 
-		// Генерируем уникальный email для 3X-UI
-		const xrayEmail = `lmo_${userTID}_${keyId}`;
-
-		if (plan.type === 'outline' || plan.type === 'both') {
-			// Создаём Outline ключ
+		if (protocol === KEY_TYPE.OUTLINE) {
 			const outlineKey = await this.outlineService.createKey(
 				{ plan_id: plan.id, data_limit: plan.dataLimit },
 				userTID
 			);
 
 			await this.db.updateKey(keyId, {
-				outline_key_id: outlineKey.keyId,
+				external_key_id: String(outlineKey.keyId),
+				external_client_id: clientId,
 				access_url: outlineKey.accessUrl,
-				key_type: plan.type === 'both' ? 'both' : 'outline',
-				xray_email: plan.type === 'both' ? xrayEmail : null,
+				key_type: KEY_TYPE.OUTLINE,
 				status: KEY_STATUS.ACTIVE
 			});
 
-			result.accessUrl = outlineKey.accessUrl;
+			return {
+				keyId,
+				protocol: KEY_TYPE.OUTLINE,
+				accessUrl: outlineKey.accessUrl,
+				key: await this.db.getKey(keyId)
+			};
 		}
 
-		if (plan.type === 'vless' || plan.type === 'both') {
-			// Создаём VLESS Reality ключ
+		if (protocol === KEY_TYPE.VLESS) {
 			if (!this.xrayService) throw new Error('XRayService не инициализирован');
 
 			const totalGB = plan.dataLimitGB || 0;
 			const vlessKey = await this.xrayService.createRealityClient(
-				xrayEmail,
+				clientId,
 				totalGB,
 				expiryTimeMs
 			);
 
 			await this.db.updateKey(keyId, {
-				key_type: plan.type === 'both' ? 'both' : 'vless_reality',
-				xray_email: xrayEmail,
-				vless_reality_uuid: vlessKey.uuid,
-				vless_reality_url: vlessKey.accessUrl,
-				vless_reality_sub_id: vlessKey.subId,
+				external_key_id: vlessKey.uuid,
+				external_client_id: clientId,
+				external_sub_id: vlessKey.subId,
+				access_url: vlessKey.accessUrl,
+				key_type: KEY_TYPE.VLESS,
 				status: KEY_STATUS.ACTIVE
 			});
 
-			result.vlessUrl = vlessKey.accessUrl;
-
-			if (plan.type !== 'both') {
-				result.accessUrl = vlessKey.accessUrl;
-			}
+			return {
+				keyId,
+				protocol: KEY_TYPE.VLESS,
+				accessUrl: vlessKey.accessUrl,
+				key: await this.db.getKey(keyId)
+			};
 		}
 
-		result.key = await this.db.getKey(keyId);
-		return result;
-	}
-
-	/**
-	 * Создать и активировать ключ за одну попытку (legacy, для вызовов без retry)
-	 */
-	async createAndActivateKey(userId, planId, paymentId, userTID) {
-		const plan = PlanService.getPlanById(planId);
-		if (!plan) throw new Error('План не найден');
-
-		const expiresAt = PlanService.calculateExpiryDate(plan);
-		const keyId = await this.db.createKey(userId, planId, plan.dataLimit, expiresAt);
-		await this.db.updatePayment(paymentId, { key_id: keyId });
-
-		return this.activateKeyOnVpnServer(keyId, plan, userTID, expiresAt);
+		throw new Error(`Неизвестный протокол: ${protocol}`);
 	}
 
 	/**
@@ -136,7 +143,10 @@ class KeysService {
 		if (!user) throw new Error('Пользователь не найден');
 
 		const expiresAt = new Date(key.expires_at);
-		return this.activateKeyOnVpnServer(keyId, plan, user.telegram_id, expiresAt);
+		// Для retry определяем протокол: если ключ уже имеет key_type — используем его,
+		// иначе берём из плана (для single-protocol планов)
+		const protocol = key.key_type || plan.type;
+		return this.activateKeyOnVpnServer(keyId, plan, protocol, user.telegram_id, expiresAt);
 	}
 
 	// ============== ПОЛУЧЕНИЕ КЛЮЧЕЙ ==============
@@ -183,14 +193,18 @@ class KeysService {
 
 	async refreshAccessUrl(keyId) {
 		const key = await this.db.getKey(keyId);
-		if (!key || !key.outline_key_id) throw new Error('Ключ не найден или не активирован');
+		if (!key || !key.external_key_id) throw new Error('Ключ не найден или не активирован');
 
-		const outlineKey = await this.outlineService.getAccessKey(key.outline_key_id);
-		const displayName = `LetMeOut_#${outlineKey.id}_${key.plan_id}`;
-		const newAccessUrl = `${outlineKey.accessUrl}#${encodeURIComponent(displayName)}`;
+		if (key.key_type === KEY_TYPE.OUTLINE) {
+			const outlineKey = await this.outlineService.getAccessKey(key.external_key_id);
+			const displayName = `LetMeOut_#${outlineKey.id}_${key.plan_id}`;
+			const newAccessUrl = `${outlineKey.accessUrl}#${encodeURIComponent(displayName)}`;
+			await this.db.updateKey(keyId, { access_url: newAccessUrl });
+			return newAccessUrl;
+		}
 
-		await this.db.updateKey(keyId, { access_url: newAccessUrl });
-		return newAccessUrl;
+		// Для VLESS access_url не меняется
+		return key.access_url;
 	}
 
 	// ============== СТАТИСТИКА ==============
@@ -203,12 +217,19 @@ class KeysService {
 			const plan = PlanService.getPlanById(key.plan_id);
 			if (!plan) return null;
 
-			// Обновляем использование
 			await this.updateUsageStats(keyId);
 			const updatedKey = await this.db.getKey(keyId);
 
+			const formatBytes = this.outlineService
+				? this.outlineService.formatBytes.bind(this.outlineService)
+				: (b) => `${(b / 1024 / 1024 / 1024).toFixed(2)} GB`;
+
+			const calcPercentage = this.outlineService
+				? this.outlineService.calculateUsagePercentage.bind(this.outlineService)
+				: (used, limit) => limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+
 			const usagePercentage = updatedKey.data_limit > 0
-				? this.outlineService.calculateUsagePercentage(updatedKey.data_used, updatedKey.data_limit)
+				? calcPercentage(updatedKey.data_used, updatedKey.data_limit)
 				: 0;
 
 			const remainingData = updatedKey.data_limit > 0
@@ -223,12 +244,12 @@ class KeysService {
 				remaining: remainingData,
 				usagePercentage,
 				daysRemaining: Math.max(0, daysRemaining),
-				formattedUsed: this.outlineService.formatBytes(updatedKey.data_used),
+				formattedUsed: formatBytes(updatedKey.data_used),
 				formattedLimit: updatedKey.data_limit > 0
-					? this.outlineService.formatBytes(updatedKey.data_limit)
+					? formatBytes(updatedKey.data_limit)
 					: 'Безлимит',
 				formattedRemaining: remainingData !== null
-					? this.outlineService.formatBytes(remainingData)
+					? formatBytes(remainingData)
 					: '∞',
 				isExpired: moment(updatedKey.expires_at).isBefore(moment()),
 				isOverLimit: updatedKey.data_limit > 0 && updatedKey.data_used >= updatedKey.data_limit
@@ -246,15 +267,13 @@ class KeysService {
 
 			let totalUsed = 0;
 
-			// Трафик Outline
-			if (key.outline_key_id) {
-				const outlineUsage = await this.outlineService.getKeyDataUsage(key.outline_key_id);
+			if (key.key_type === KEY_TYPE.OUTLINE && key.external_key_id) {
+				const outlineUsage = await this.outlineService.getKeyDataUsage(key.external_key_id);
 				totalUsed += outlineUsage || 0;
 			}
 
-			// Трафик VLESS
-			if (key.xray_email && this.xrayService) {
-				const vlessUsage = await this.xrayService.getClientDataUsage(key.xray_email);
+			if (key.key_type === KEY_TYPE.VLESS && key.external_client_id && this.xrayService) {
+				const vlessUsage = await this.xrayService.getClientDataUsage(key.external_client_id);
 				totalUsed += vlessUsage || 0;
 			}
 
@@ -284,19 +303,16 @@ class KeysService {
 
 			console.log(`🚫 Блокировка ключа ${keyId}: истёк=${isExpired}, лимит=${isOverLimit}`);
 
-			// Блокируем Outline
-			if (key.outline_key_id) {
-				await this.outlineService.suspendKey(key.outline_key_id);
+			if (key.key_type === KEY_TYPE.OUTLINE && key.external_key_id) {
+				await this.outlineService.suspendKey(key.external_key_id);
 			}
 
-			// Блокируем VLESS
-			if (key.vless_reality_uuid && this.xrayService) {
-				await this.xrayService.suspendClient(key.vless_reality_uuid, key.xray_email);
+			if (key.key_type === KEY_TYPE.VLESS && key.external_key_id && this.xrayService) {
+				await this.xrayService.suspendClient(key.external_key_id, key.external_client_id);
 			}
 
 			await this.db.updateKey(keyId, { status: KEY_STATUS.SUSPENDED });
 
-			// Уведомляем пользователя
 			if (this.sendNotificationToUser) {
 				const user = await this.db.getUserById(key.user_id);
 				const notificationType = isExpired
@@ -329,11 +345,9 @@ class KeysService {
 
 			for (const key of activeKeys) {
 				try {
-					// Обновляем использование
 					await this.updateUsageStats(key.id);
 					const updatedKey = await this.db.getKey(key.id);
 
-					// Проверяем пороги уведомлений
 					const notifications = await this.checkKeyThresholds(updatedKey);
 					for (const notification of notifications) {
 						const user = await this.db.getUserById(updatedKey.user_id);
@@ -343,7 +357,6 @@ class KeysService {
 						}
 					}
 
-					// Проверяем блокировку
 					const blocked = await this.checkLimits(updatedKey.id);
 					if (blocked) keysBlocked++;
 
@@ -432,29 +445,6 @@ class KeysService {
 		} catch {
 			return false;
 		}
-	}
-
-	// Для обратной совместимости со старым кодом
-	async createKey(userId, planId, paymentId) {
-		const plan = PlanService.getPlanById(planId);
-		if (!plan) throw new Error('План не найден');
-		const expiresAt = PlanService.calculateExpiryDate(plan);
-		const keyId = await this.db.createKey(userId, planId, plan.dataLimit, expiresAt);
-		await this.db.updatePayment(paymentId, { key_id: keyId });
-		return keyId;
-	}
-
-	async activateKey(keyId, userTID) {
-		const key = await this.db.getKey(keyId);
-		if (!key) throw new Error('Ключ не найден');
-		const keyData = await this.outlineService.createKey(key, userTID);
-		await this.db.updateKey(keyId, {
-			outline_key_id: keyData.keyId,
-			access_url: keyData.accessUrl,
-			key_type: 'outline',
-			status: KEY_STATUS.ACTIVE
-		});
-		return { key: await this.db.getKey(keyId), accessUrl: keyData.accessUrl };
 	}
 }
 

@@ -122,7 +122,7 @@ class SupabaseDatabase {
 				.from('keys')
 				.select('*', { count: 'exact', head: true })
 				.eq('user_id', user.id)
-				.not('outline_key_id', 'is', null);
+				.not('external_key_id', 'is', null);
 
 			if (activatedError) console.error('Error counting activated keys:', activatedError);
 
@@ -256,7 +256,7 @@ class SupabaseDatabase {
 			.from('keys')
 			.select('*')
 			.gte('expires_at', since.toISOString())
-			.not('outline_key_id', 'is', null);
+			.not('external_key_id', 'is', null);
 
 		if (error) throw error;
 		return data || [];

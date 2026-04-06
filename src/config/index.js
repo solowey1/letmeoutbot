@@ -43,7 +43,8 @@ const config = {
 		panelUrl: process.env.XRAY_PANEL_URL,
 		username: process.env.XRAY_USERNAME,
 		password: process.env.XRAY_PASSWORD,
-		twoFactorSecret: process.env.XRAY_2FA_SECRET || null
+		twoFactorSecret: process.env.XRAY_2FA_SECRET || null,
+		publicKey: process.env.XRAY_PUBLIC_KEY || ''
 	},
 
 	app: {

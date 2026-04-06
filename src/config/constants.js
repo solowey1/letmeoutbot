@@ -166,8 +166,7 @@ const KEY_STATUS = {
 
 const KEY_TYPE = {
 	OUTLINE: 'outline',
-	VLESS: 'vless',
-	BOTH: 'both'
+	VLESS: 'vless'
 };
 
 const LANG = {
@@ -266,11 +265,6 @@ const NOTIFICATION_TYPES = {
 	TIME_EXPIRED: 'time_expired'
 };
 
-const PROTOCOLS = {
-	OUTLINE: 'outline',
-	VLESS: 'vless',
-};
-
 const OS_VARIANTS = {
 	WEBSITE: 'website',
 	ANDROID: 'android',
@@ -299,7 +293,6 @@ module.exports = {
 	PAYMENT_STATUS,
 	CALLBACK_ACTIONS,
 	NOTIFICATION_TYPES,
-	PROTOCOLS,
 	OS_VARIANTS,
 	REFERRAL_CONFIG,
 	ADMIN_IDS

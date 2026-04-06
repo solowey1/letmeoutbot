@@ -69,7 +69,7 @@ class PostgresDatabase {
                 u.*,
                 COUNT(k.id) as key_count,
                 COUNT(k.id) as keys_purchased,
-                COUNT(CASE WHEN k.outline_key_id IS NOT NULL THEN 1 END) as keys_activated,
+                COUNT(CASE WHEN k.external_key_id IS NOT NULL THEN 1 END) as keys_activated,
                 COUNT(CASE WHEN k.status = 'active' THEN 1 END) as keys_active
             FROM users u
             LEFT JOIN keys k ON u.id = k.user_id
@@ -125,7 +125,7 @@ class PostgresDatabase {
             FROM keys k
             JOIN users u ON k.user_id = u.id
             WHERE k.expires_at >= NOW() - INTERVAL '${days} days'
-              AND k.outline_key_id IS NOT NULL
+              AND k.external_key_id IS NOT NULL
             ORDER BY k.created_at DESC
         `;
 		const result = await this.pool.query(query);

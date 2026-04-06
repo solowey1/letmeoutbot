@@ -49,7 +49,7 @@ class TelegramBot {
 		}
 		this.i18nService = new I18nService();
 		this.outlineService = new OutlineService(config.outline.apiUrl);
-		this.xrayService = new XRayService(config.xray.panelUrl, config.xray.username, config.xray.password, config.xray.twoFactorSecret);
+		this.xrayService = new XRayService(config.xray.panelUrl, config.xray.username, config.xray.password, config.xray.twoFactorSecret, config.xray.publicKey);
 		this.paymentService = new PaymentService(this.db);
 		this.keysService = new KeysService(this.db, this.outlineService, this.xrayService);
 		this.notificationService = new NotificationService(this.bot, this.i18nService, this.db);

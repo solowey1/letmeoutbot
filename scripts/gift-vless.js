@@ -48,7 +48,8 @@ async function main() {
 		config.xray.panelUrl,
 		config.xray.username,
 		config.xray.password,
-		config.xray.twoFactorSecret
+		config.xray.twoFactorSecret,
+		config.xray.publicKey
 	);
 
 	// Получаем всех пользователей
@@ -104,11 +105,11 @@ async function main() {
 			const { error: updateError } = await supabase
 				.from('keys')
 				.update({
-					key_type: 'vless_reality',
-					xray_email: xrayEmail,
-					vless_reality_uuid: vlessKey.uuid,
-					vless_reality_url: vlessKey.accessUrl,
-					vless_reality_sub_id: vlessKey.subId,
+					key_type: 'vless',
+					external_key_id: vlessKey.uuid,
+					external_client_id: xrayEmail,
+					external_sub_id: vlessKey.subId,
+					access_url: vlessKey.accessUrl,
 					status: 'active'
 				})
 				.eq('id', keyId);

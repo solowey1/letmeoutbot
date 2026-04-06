@@ -41,7 +41,10 @@ class Database {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 plan_id TEXT NOT NULL,
-                outline_key_id INTEGER,
+                external_key_id TEXT,
+                external_client_id TEXT,
+                external_sub_id TEXT,
+                key_type TEXT DEFAULT 'outline',
                 access_url TEXT,
                 data_limit INTEGER NOT NULL,
                 data_used INTEGER DEFAULT 0,
@@ -467,7 +470,7 @@ class Database {
                     u.*,
                     COUNT(k.id) as key_count,
                     COUNT(k.id) as keys_purchased,
-                    COUNT(CASE WHEN k.outline_key_id IS NOT NULL THEN 1 END) as keys_activated,
+                    COUNT(CASE WHEN k.external_key_id IS NOT NULL THEN 1 END) as keys_activated,
                     COUNT(CASE WHEN k.status = 'active' THEN 1 END) as keys_active
                 FROM users u
                 LEFT JOIN keys k ON u.id = k.user_id
@@ -548,7 +551,7 @@ class Database {
                 FROM keys k
                 JOIN users u ON k.user_id = u.id
                 WHERE k.expires_at >= ?
-                  AND k.outline_key_id IS NOT NULL
+                  AND k.external_key_id IS NOT NULL
                 ORDER BY k.created_at DESC
             `;
 			this.db.all(query, [since.toISOString()], (err, rows) => {

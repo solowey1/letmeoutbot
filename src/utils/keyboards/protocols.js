@@ -1,11 +1,11 @@
 const { Markup } = require('telegraf');
-const { CALLBACK_ACTIONS, PROTOCOLS, OS_VARIANTS } = require('../../config/constants');
+const { CALLBACK_ACTIONS, KEY_TYPE, OS_VARIANTS } = require('../../config/constants');
 const { btn } = require('./common');
 
 function createHowToAddKeyKeyboard(t) {
 	return Markup.inlineKeyboard([
-		[btn(t, PROTOCOLS.OUTLINE, CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_OUTLINE)],
-		[btn(t, PROTOCOLS.VLESS, CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_VLESS)],
+		[btn(t, KEY_TYPE.OUTLINE, CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_OUTLINE)],
+		[btn(t, KEY_TYPE.VLESS, CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_VLESS)],
 		[
 			btn(t, 'back', CALLBACK_ACTIONS.BASIC.HELP),
 			btn(t, 'home')
@@ -25,8 +25,8 @@ function createHowToAddKeyProtocolKeyboard(t, protocol) {
 
 function createVpnAppsProtocolKeyboard(t) {
 	return Markup.inlineKeyboard([
-		[btn(t, PROTOCOLS.OUTLINE, CALLBACK_ACTIONS.BASIC.VPN_APPS_OUTLINE)],
-		[btn(t, PROTOCOLS.VLESS, CALLBACK_ACTIONS.BASIC.VPN_APPS_VLESS)],
+		[btn(t, KEY_TYPE.OUTLINE, CALLBACK_ACTIONS.BASIC.VPN_APPS_OUTLINE)],
+		[btn(t, KEY_TYPE.VLESS, CALLBACK_ACTIONS.BASIC.VPN_APPS_VLESS)],
 		[
 			btn(t, 'back', CALLBACK_ACTIONS.BASIC.HELP),
 			btn(t, 'home')
@@ -36,7 +36,7 @@ function createVpnAppsProtocolKeyboard(t) {
 
 function createOutlineAppsKeyboard(t) {
 	const buttons = Object.values(OS_VARIANTS)
-		.map(os => btn(t, `${PROTOCOLS.OUTLINE}_app_${os}`));
+		.map(os => btn(t, `${KEY_TYPE.OUTLINE}_app_${os}`));
 
 	return Markup.inlineKeyboard([
 		...buttons,
@@ -50,7 +50,7 @@ function createOutlineAppsKeyboard(t) {
 function createVlessOsKeyboard(t) {
 	const buttons = Object.values(OS_VARIANTS)
 		.filter(os => os !== OS_VARIANTS.WEBSITE)
-		.map(os => btn(t, `${PROTOCOLS.VLESS}_app_${os}`));
+		.map(os => btn(t, `${KEY_TYPE.VLESS}_app_${os}`));
 
 	return Markup.inlineKeyboard([
 		...buttons,

@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require('uuid');
  * Протокол: VLESS + Reality
  */
 class XRayService {
-	constructor(panelUrl, username, password, twoFactorSecret) {
+	constructor(panelUrl, username, password, twoFactorSecret, publicKey) {
 		this.panelUrl = panelUrl;
 		this.username = username;
 		this.password = password;
@@ -20,9 +20,9 @@ class XRayService {
 		this.REALITY_CONFIG = {
 			address: 'let-me-out.com',
 			port: 56867,
-			pbk: 'QSuGCZEUmKgLI3m1iM0QmYIsDULwcKuGJ6p7Y9Q-WH4',
+			pbk: publicKey,
 			sid: 'e3',
-			sni: 'www.apple.com',
+			sni: 'www.google.com',
 			fp: 'chrome',
 			flow: 'xtls-rprx-vision',
 			type: 'tcp',

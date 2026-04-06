@@ -77,7 +77,7 @@ class PaymentHandlers {
 
 			console.log('📝 Создаем и активируем ключ с retry-логикой...');
 
-			const result = await this.keysService.createAndActivateKeyWithRetry(
+			const results = await this.keysService.createAndActivateKeyWithRetry(
 				completedPayment.user_id,
 				completedPayment.plan_id,
 				paymentId,
@@ -85,10 +85,10 @@ class PaymentHandlers {
 				5 // максимум 5 попыток с прогрессивной задержкой
 			);
 
-			console.log('✅ Ключ создан и активирован:', result);
+			console.log(`✅ Создано ключей: ${results.length}`, results);
 			console.log('📤 Отправляем сообщение пользователю...');
 
-			await this.sendAccessKeyMessage(ctx, completedPayment, result);
+			await this.sendAccessKeyMessage(ctx, completedPayment, results);
 
 			// Начисляем реферальный бонус, если есть реферер
 			try {
@@ -112,7 +112,7 @@ class PaymentHandlers {
 					const plan = PlanService.getPlanById(completedPayment.plan_id);
 					await this.adminNotificationService.notifyNewPurchase(
 						completedPayment,
-						result.key,
+						results[0].key,
 						user,
 						plan,
 						'success'
@@ -159,25 +159,27 @@ class PaymentHandlers {
 		}
 	}
 
-	async sendAccessKeyMessage(ctx, payment, activationResult) {
-		const { accessUrl, vlessUrl } = activationResult;
+	async sendAccessKeyMessage(ctx, payment, activationResults) {
 		const t = ctx.i18n?.t || ((key) => key);
 		const keyboard = KeyboardUtils.createAppsDownloadKeyboard(t);
 
 		let message = `🎉 <b>${t('payments.success_title', { ns: 'message' })}</b>\n\n`;
 
-		if (accessUrl && vlessUrl) {
+		const outlineResult = activationResults.find(r => r.protocol === 'outline');
+		const vlessResult = activationResults.find(r => r.protocol === 'vless');
+
+		if (outlineResult && vlessResult) {
 			message += `✅ ${t('payments.keys_activated', { ns: 'message' })}\n\n`;
-			message += `🌿 <b>${t('payments.outline_key_label', { ns: 'message' })}</b>\n<code>${accessUrl}</code>\n\n`;
-			message += `⚡ <b>${t('payments.vless_key_label', { ns: 'message' })}</b>\n<code>${vlessUrl}</code>\n\n`;
+			message += `🌿 <b>${t('payments.outline_key_label', { ns: 'message' })}</b>\n<code>${outlineResult.accessUrl}</code>\n\n`;
+			message += `⚡ <b>${t('payments.vless_key_label', { ns: 'message' })}</b>\n<code>${vlessResult.accessUrl}</code>\n\n`;
 			message += t('payments.add_key_to_app', { ns: 'message' });
-		} else if (vlessUrl) {
+		} else if (vlessResult) {
 			message += `✅ ${t('payments.vless_key_activated', { ns: 'message' })}\n\n`;
-			message += `⚡ <b>${t('payments.connection_key_label', { ns: 'message' })}</b>\n<code>${vlessUrl}</code>\n\n`;
+			message += `⚡ <b>${t('payments.connection_key_label', { ns: 'message' })}</b>\n<code>${vlessResult.accessUrl}</code>\n\n`;
 			message += t('payments.add_key_hiddify', { ns: 'message' });
-		} else {
+		} else if (outlineResult) {
 			message += `✅ ${t('payments.key_activated', { ns: 'message' })}\n\n`;
-			message += `🌿 <b>${t('payments.connection_key_label', { ns: 'message' })}</b>\n<code>${accessUrl}</code>\n\n`;
+			message += `🌿 <b>${t('payments.connection_key_label', { ns: 'message' })}</b>\n<code>${outlineResult.accessUrl}</code>\n\n`;
 			message += t('payments.add_key_outline', { ns: 'message' });
 		}
 

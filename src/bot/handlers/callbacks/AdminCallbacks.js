@@ -277,13 +277,12 @@ class AdminCallbacks {
 						ctx.i18n.locale = user.language || 'ru';
 						const ut = ctx.i18n.t;
 
+						const label = result.protocol === 'vless'
+							? ut('admin.pending_keys.vless_label', { ns: 'message' })
+							: ut('admin.pending_keys.outline_label', { ns: 'message' });
+
 						let msg = `<b>${ut('admin.pending_keys.activated_title', { ns: 'message' })}</b>\n\n`;
-						if (result.vlessUrl) {
-							msg += `<b>${ut('admin.pending_keys.vless_label', { ns: 'message' })}</b>\n<code>${result.vlessUrl}</code>\n\n`;
-						}
-						if (result.accessUrl && result.accessUrl !== result.vlessUrl) {
-							msg += `<b>${ut('admin.pending_keys.outline_label', { ns: 'message' })}</b>\n<code>${result.accessUrl}</code>\n\n`;
-						}
+						msg += `<b>${label}</b>\n<code>${result.accessUrl}</code>\n\n`;
 						await ctx.telegram.sendMessage(user.telegram_id, msg, { parse_mode: 'HTML' });
 
 						ctx.i18n.locale = savedLocale;
