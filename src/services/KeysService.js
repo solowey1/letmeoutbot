@@ -106,7 +106,8 @@ class KeysService {
 			const vlessKey = await this.xrayService.createRealityClient(
 				clientId,
 				totalGB,
-				expiryTimeMs
+				expiryTimeMs,
+				userTID
 			);
 
 			await this.db.updateKey(keyId, {

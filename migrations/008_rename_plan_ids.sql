@@ -23,4 +23,8 @@ UPDATE payments SET plan_id = 'outline_100gb' WHERE plan_id = 'standard_100gb';
 UPDATE keys SET plan_id = 'outline_unlim' WHERE plan_id IN ('standard_300gb', 'pro_600gb', 'pro_1200gb');
 UPDATE payments SET plan_id = 'outline_unlim' WHERE plan_id IN ('standard_300gb', 'pro_600gb', 'pro_1200gb');
 
+-- Синхронизируем data_limit для безлимитных планов (0 = безлимит)
+UPDATE keys SET data_limit = 0
+WHERE plan_id IN ('outline_unlim', 'vless_unlim') AND data_limit > 0;
+
 SELECT 'Plan IDs migrated successfully!' as message;

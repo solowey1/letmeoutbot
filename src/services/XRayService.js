@@ -131,7 +131,7 @@ class XRayService {
 	 * @param {number} totalGB - лимит в GB (0 = безлимит)
 	 * @param {number} expiryTime - unix ms (0 = никогда)
 	 */
-	async createRealityClient(email, totalGB = 0, expiryTime = 0) {
+	async createRealityClient(email, totalGB = 0, expiryTime = 0, tgId = '') {
 		const uuid = uuidv4();
 		const subId = this._generateSubId();
 
@@ -145,7 +145,7 @@ class XRayService {
 			expiryTime,
 			reset: 0,
 			subId,
-			tgId: '',
+			tgId: String(tgId),
 			comment: 'LetMeOut Bot'
 		});
 

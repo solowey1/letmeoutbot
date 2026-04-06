@@ -51,7 +51,11 @@ class KeysCallbacks {
 					message += `   • ${t('common.status')}: ${sub.status === 'active' ? t('keys.status_active', { ns: 'message' }) : t('keys.status_inactive', { ns: 'message' })}\n`;
 
 					if (usage) {
-						message += `   • ${t('common.used')}: ${usage.formattedUsed} ${t('common.of')} ${usage.formattedLimit} (${usage.usagePercentage}%)\n`;
+						if (usage.limit > 0) {
+							message += `   • ${t('common.used')}: ${usage.formattedUsed} ${t('common.of')} ${usage.formattedLimit} (${usage.usagePercentage}%)\n`;
+						} else {
+							message += `   • ${t('common.used')}: ${usage.formattedUsed}\n`;
+						}
 						message += `   • ${t('common.days_left')}: ${usage.daysRemaining}\n`;
 					}
 
@@ -104,9 +108,13 @@ class KeysCallbacks {
 			if (key.usage) {
 				const usage = key.usage;
 				message += `📊 <b>${t('keys.usage_title', { ns: 'message' })}</b>\n`;
-				message += `• ${t('common.used')}: ${usage.formattedUsed} (${usage.usagePercentage}%)\n`;
-				message += `• ${t('common.limit')}: ${usage.formattedLimit}\n`;
-				message += `• ${t('common.remaining')}: ${usage.formattedRemaining}\n`;
+				if (usage.limit > 0) {
+					message += `• ${t('common.used')}: ${usage.formattedUsed} (${usage.usagePercentage}%)\n`;
+					message += `• ${t('common.limit')}: ${usage.formattedLimit}\n`;
+					message += `• ${t('common.remaining')}: ${usage.formattedRemaining}\n`;
+				} else {
+					message += `• ${t('common.used')}: ${usage.formattedUsed}\n`;
+				}
 				message += `• ${t('keys.days_until_expiry', { ns: 'message' })}: ${usage.daysRemaining}\n\n`;
 			}
 
@@ -150,13 +158,15 @@ class KeysCallbacks {
 
 			let message = `📊 <b>${t('stats.title', { ns: 'message' })}</b>\n\n`;
 
-			// Создаем визуальный индикатор прогресса
-			const progressBar = this.createProgressBar(usage.usagePercentage);
-
-			message += `📈 ${progressBar} ${usage.usagePercentage}%\n\n`;
-			message += `📥 ${t('common.used')}: ${usage.formattedUsed}\n`;
-			message += `📦 ${t('common.limit')}: ${usage.formattedLimit}\n`;
-			message += `📤 ${t('common.remaining')}: ${usage.formattedRemaining}\n\n`;
+			if (usage.limit > 0) {
+				const progressBar = this.createProgressBar(usage.usagePercentage);
+				message += `📈 ${progressBar} ${usage.usagePercentage}%\n\n`;
+				message += `📥 ${t('common.used')}: ${usage.formattedUsed}\n`;
+				message += `📦 ${t('common.limit')}: ${usage.formattedLimit}\n`;
+				message += `📤 ${t('common.remaining')}: ${usage.formattedRemaining}\n\n`;
+			} else {
+				message += `📥 ${t('common.used')}: ${usage.formattedUsed}\n\n`;
+			}
 			message += `⏰ ${t('common.days_left')}: ${usage.daysRemaining}\n`;
 
 			if (usage.isOverLimit) {
