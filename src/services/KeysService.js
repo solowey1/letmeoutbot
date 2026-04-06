@@ -75,7 +75,7 @@ class KeysService {
 	 */
 	async activateKeyOnVpnServer(keyId, plan, protocol, userTID, expiresAt) {
 		const expiryTimeMs = expiresAt.getTime();
-		const clientId = `LetMeOut_#${keyId}_${plan.id}`;
+		const clientId = `LetMeOut_${keyId}_${plan.id}`;
 
 		if (protocol === KEY_TYPE.OUTLINE) {
 			const outlineKey = await this.outlineService.createKey(

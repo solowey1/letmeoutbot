@@ -77,6 +77,45 @@ class MenuCallbacks {
 		});
 	}
 
+	// ── Путь: Помощь → Как добавить ключ → Приложения ──
+
+	async handleHowtoOutlineApps(ctx) {
+		const t = ctx.i18n.t;
+		const message = MenuMessages.outlineApps(t);
+		const keyboard = KeyboardUtils.createHowtoOutlineAppsKeyboard(t);
+
+		await ctx.editMessageText(message, {
+			...keyboard,
+			parse_mode: 'HTML',
+			disable_web_page_preview: true
+		});
+	}
+
+	async handleHowtoVlessChooseOs(ctx) {
+		const t = ctx.i18n.t;
+		const message = MenuMessages.vlessChooseOs(t);
+		const keyboard = KeyboardUtils.createHowtoVlessOsKeyboard(t);
+
+		await ctx.editMessageText(message, {
+			...keyboard,
+			parse_mode: 'HTML'
+		});
+	}
+
+	async handleHowtoVlessApps(ctx, os) {
+		const t = ctx.i18n.t;
+		const message = MenuMessages.vlessApps(t, os);
+		const keyboard = KeyboardUtils.createHowtoVlessAppsBackKeyboard(t);
+
+		await ctx.editMessageText(message, {
+			...keyboard,
+			parse_mode: 'HTML',
+			disable_web_page_preview: true
+		});
+	}
+
+	// ── Путь: Помощь → Приложения для VPN ──
+
 	async handleOutlineApps(ctx) {
 		const t = ctx.i18n.t;
 		const message = MenuMessages.outlineApps(t);

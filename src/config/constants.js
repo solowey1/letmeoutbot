@@ -217,6 +217,13 @@ const CALLBACK_ACTIONS = {
 		HOW_TO_ADD_KEY: 'how_to_add_key',
 		HOW_TO_ADD_KEY_OUTLINE: 'how_to_add_key_outline',
 		HOW_TO_ADD_KEY_VLESS: 'how_to_add_key_vless',
+		HOWTO_APPS_OUTLINE: 'howto_apps_outline',
+		HOWTO_APPS_VLESS: 'howto_apps_vless',
+		HOWTO_VLESS_APPS_LINUX: 'howto_vless_apps_linux',
+		HOWTO_VLESS_APPS_WINDOWS: 'howto_vless_apps_windows',
+		HOWTO_VLESS_APPS_MACOS: 'howto_vless_apps_macos',
+		HOWTO_VLESS_APPS_IOS: 'howto_vless_apps_ios',
+		HOWTO_VLESS_APPS_ANDROID: 'howto_vless_apps_android',
 		SUPPORT: 'support',
 		RETRY: 'retry'
 	},

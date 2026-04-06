@@ -122,7 +122,7 @@ class XRayService {
 	}
 
 	async getClientStats(email) {
-		return this.apiRequest('GET', `/inbounds/getClientTraffics/${email}`);
+		return this.apiRequest('GET', `/inbounds/getClientTraffics/${encodeURIComponent(email)}`);
 	}
 
 	/**

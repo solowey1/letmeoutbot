@@ -55,9 +55,13 @@ class KeyboardUtils {
 	static createHelpKeyboard(t) { return help.createHelpKeyboard(t); }
 	static createSupportKeyboard(t) { return help.createSupportKeyboard(t); }
 
-	// protocols
+	// protocols — путь "Как добавить ключ"
 	static createHowToAddKeyKeyboard(t) { return protocols.createHowToAddKeyKeyboard(t); }
 	static createHowToAddKeyProtocolKeyboard(t, protocol) { return protocols.createHowToAddKeyProtocolKeyboard(t, protocol); }
+	static createHowtoOutlineAppsKeyboard(t) { return protocols.createHowtoOutlineAppsKeyboard(t); }
+	static createHowtoVlessOsKeyboard(t) { return protocols.createHowtoVlessOsKeyboard(t); }
+	static createHowtoVlessAppsBackKeyboard(t) { return protocols.createHowtoVlessAppsBackKeyboard(t); }
+	// protocols — путь "Приложения для VPN"
 	static createVpnAppsProtocolKeyboard(t) { return protocols.createVpnAppsProtocolKeyboard(t); }
 	static createOutlineAppsKeyboard(t) { return protocols.createOutlineAppsKeyboard(t); }
 	static createVlessOsKeyboard(t) { return protocols.createVlessOsKeyboard(t); }

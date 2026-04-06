@@ -72,12 +72,28 @@ class CallbackHandler {
 				await this.languageCallbacks.handleSetLanguage(ctx, lang);
 			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HELP) {
 				await this.menuCallbacks.handleHelp(ctx);
+			// ── Как добавить ключ (howto) ──
 			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY) {
 				await this.menuCallbacks.handleHowToAddKey(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_OUTLINE) {
 				await this.menuCallbacks.handleHowToAddKeyProtocol(ctx, 'outline');
 			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_VLESS) {
 				await this.menuCallbacks.handleHowToAddKeyProtocol(ctx, 'vless');
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOWTO_APPS_OUTLINE) {
+				await this.menuCallbacks.handleHowtoOutlineApps(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOWTO_APPS_VLESS) {
+				await this.menuCallbacks.handleHowtoVlessChooseOs(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOWTO_VLESS_APPS_LINUX) {
+				await this.menuCallbacks.handleHowtoVlessApps(ctx, 'linux');
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOWTO_VLESS_APPS_WINDOWS) {
+				await this.menuCallbacks.handleHowtoVlessApps(ctx, 'windows');
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOWTO_VLESS_APPS_MACOS) {
+				await this.menuCallbacks.handleHowtoVlessApps(ctx, 'macos');
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOWTO_VLESS_APPS_IOS) {
+				await this.menuCallbacks.handleHowtoVlessApps(ctx, 'ios');
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOWTO_VLESS_APPS_ANDROID) {
+				await this.menuCallbacks.handleHowtoVlessApps(ctx, 'android');
+			// ── Приложения для VPN ──
 			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VPN_APPS) {
 				await this.menuCallbacks.handleVpnApps(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VPN_APPS_OUTLINE) {
