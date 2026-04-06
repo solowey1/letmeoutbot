@@ -136,7 +136,7 @@
       "action_text": "After installation, add your access key to the app."
     },
     "vless": {
-      "choose_os": "⚡ <b>VLESS Apps</b>\nIf you couldn't find any of the apps, change the store's region.\n\nChoose your operating system:",
+      "choose_os": "⚡ <b>VLESS Apps</b>\n\nChoose your operating system:",
       "linux": {
         "title": "🐧 Linux",
         "apps": [
@@ -240,6 +240,7 @@
       "title": "⚡ How to add a VLESS key",
       "steps": [
         "Download a compatible app (v2rayN, v2rayNG, Streisand, etc.) for your OS",
+        "If you can't find any of the apps, change the store region or create a new account in another region",
         "Copy your access key (starts with <code>vless://</code>)",
         "In the app, tap <b>\"+\"</b> or <b>\"Import from clipboard\"</b>",
         "The key will be automatically recognized and added",

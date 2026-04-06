@@ -36,7 +36,7 @@ function createVpnAppsProtocolKeyboard(t) {
 
 function createOutlineAppsKeyboard(t) {
 	const buttons = Object.values(OS_VARIANTS)
-		.map(os => btn(t, `${KEY_TYPE.OUTLINE}_app_${os}`));
+		.map(os => [btn(t, `${KEY_TYPE.OUTLINE}_app_${os}`)]);
 
 	return Markup.inlineKeyboard([
 		...buttons,
@@ -50,7 +50,7 @@ function createOutlineAppsKeyboard(t) {
 function createVlessOsKeyboard(t) {
 	const buttons = Object.values(OS_VARIANTS)
 		.filter(os => os !== OS_VARIANTS.WEBSITE)
-		.map(os => btn(t, `${KEY_TYPE.VLESS}_app_${os}`));
+		.map(os => [btn(t, `${KEY_TYPE.VLESS}_app_${os}`)]);
 
 	return Markup.inlineKeyboard([
 		...buttons,
