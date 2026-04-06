@@ -150,14 +150,9 @@ class BroadcastCallbacks {
 		}
 
 		try {
-			// Получаем всех получателей по фильтру и применяем языковой фильтр
-			const allRecipients = await this.db.getBroadcastRecipients(session.filterType);
-			let filtered = allRecipients;
-			if (lang === 'ru') {
-				filtered = allRecipients.filter(u => u.language === 'ru');
-			} else if (lang === 'en') {
-				filtered = allRecipients.filter(u => u.language !== 'ru');
-			}
+			// Получаем получателей с языковым фильтром на уровне БД
+			const langFilter = (lang === 'ru' || lang === 'en') ? lang : null;
+			const filtered = await this.db.getBroadcastRecipients(session.filterType, null, langFilter);
 
 			if (filtered.length === 0) {
 				await ctx.answerCbQuery(

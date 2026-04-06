@@ -801,7 +801,7 @@ class SupabaseDatabase {
 	 * @param {string} filterValue - Значение фильтра
 	 * @returns {Promise<Array>} Массив пользователей
 	 */
-	async getBroadcastRecipients(filterType, filterValue = null) {
+	async getBroadcastRecipients(filterType, filterValue = null, languageFilter = null) {
 		let query = this.supabase
 			.from('users')
 			.select('id, telegram_id, username, first_name, language');
@@ -887,6 +887,13 @@ class SupabaseDatabase {
 				query = query.lte('created_at', monthAgo.toISOString());
 				break;
 			}
+		}
+
+		// Языковой фильтр на уровне БД
+		if (languageFilter === 'ru') {
+			query = query.eq('language', 'ru');
+		} else if (languageFilter === 'en') {
+			query = query.neq('language', 'ru');
 		}
 
 		const { data, error } = await query;

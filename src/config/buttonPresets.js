@@ -34,7 +34,7 @@ const BUTTON_PRESETS = {
 	buy_first:       { text: 'buttons.buy.first',                   action: CALLBACK_ACTIONS.KEYS.BUY,               style: 'primary',   icon: '5427168083074628963' },
 	buy_more:        { text: 'buttons.buy.more',                    action: CALLBACK_ACTIONS.KEYS.BUY,               style: 'primary',   icon: '5427168083074628963' },
 	pay:             { text: 'buttons.pay',                         action: null,                                    style: 'primary',   icon: '5895708410447401643' },
-	confirm:         { text: 'buttons.confirm_purchase',            action: null,                                    style: 'success',   icon: '5774022692642492953' },
+	confirm:         { text: 'buttons.confirm',            					action: null,                                    style: 'success',   icon: '5774022692642492953' },
 	cancel:          { text: 'buttons.cancel',                      action: null,                                    style: 'danger',    icon: '5774077015388852135' },
 
 	// ── Ключи ───────────────────────────────────────────────────────
@@ -93,28 +93,28 @@ const BUTTON_PRESETS = {
 	broadcast_non_buyers: { text: 'buttons.admin.broadcast_non_buyers', action: CALLBACK_ACTIONS.ADMIN.BROADCAST_AUDIENCE.NON_BUYERS, style: null, icon: '5893192487324880883' },
 
 	// ── Рассылка: управление ────────────────────────────────────────
-	broadcast_new:           { text: 'buttons.admin.broadcast_new',                          action: 'broadcast_new',            											 style: null,			 	icon: '6035305550625902723' },
-	broadcast_history:       { text: 'buttons.admin.broadcast_history',                      action: 'broadcast_history',											         style: null,			 	icon: '5776182936638329359' },
-	broadcast_schedule:      { text: 'buttons.admin.broadcast_schedule',                     action: 'broadcast_schedule',										         style: null,			 	icon: '5983401171501454028' },
-	broadcast_confirm_send:  { text: 'buttons.confirm_purchase',                             action: 'broadcast_confirm_send',											   style: 'success',	icon: '5774022692642492953' },
-	broadcast_filter_all:         { text: 'admin.broadcast.filters.all',           params: { ns: 'message' }, action: 'broadcast_filter_all',          style: null,			 	icon: '6032594876506312598' },
-	broadcast_filter_active_keys: { text: 'admin.broadcast.filters.active_keys',   params: { ns: 'message' }, action: 'broadcast_filter_active_keys',  style: null,			 	icon: '5886685105065300941' },
-	broadcast_filter_expired_keys: { text: 'admin.broadcast.filters.expired_keys', params: { ns: 'message' }, action: 'broadcast_filter_expired_keys', style: null,			 	icon: '5938071395169734715' },
-	broadcast_filter_no_keys:     { text: 'admin.broadcast.filters.no_keys',       params: { ns: 'message' }, action: 'broadcast_filter_no_keys',      style: null,			 	icon: '5938342819922973434' },
-	broadcast_filter_paid_users:  { text: 'admin.broadcast.filters.paid_users',    params: { ns: 'message' }, action: 'broadcast_filter_paid_users',   style: null,			 	icon: '6035084557378654059' },
-	broadcast_filter_free_users:  { text: 'admin.broadcast.filters.free_users',    params: { ns: 'message' }, action: 'broadcast_filter_free_users',   style: null,			 	icon: '5893192487324880883' },
-	broadcast_filter_new_users:   { text: 'admin.broadcast.filters.new_users',     params: { ns: 'message' }, action: 'broadcast_filter_new_users',    style: null,			 	icon: '6033108709213736873' },
-	broadcast_lang_ru:   { text: 'admin.broadcast.language_ru',  params: { ns: 'message' }, action: 'broadcast_lang_ru',															 style: null,			 	icon: '5398017006165305287' },
-	broadcast_lang_en:   { text: 'admin.broadcast.language_en',  params: { ns: 'message' }, action: 'broadcast_lang_en',															 style: null,			 	icon: '5458416160586342331' },
-	broadcast_lang_all:  { text: 'admin.broadcast.language_all', params: { ns: 'message' }, action: 'broadcast_lang_all',															 style: null,			 	icon: '5769403725898584391' },
+	broadcast_new:           				{ text: 'buttons.admin.broadcast_new',                          						action: 'broadcast_new',            		 style: null,			 	icon: '6035305550625902723' },
+	broadcast_history:       				{ text: 'buttons.admin.broadcast_history',                      						action: 'broadcast_history',						 style: null,			 	icon: '5776182936638329359' },
+	broadcast_schedule:      				{ text: 'buttons.admin.broadcast_schedule',                     						action: 'broadcast_schedule',						 style: null,			 	icon: '5983401171501454028' },
+	broadcast_confirm_send:  				{ text: 'buttons.confirm',                             											action: 'broadcast_confirm_send',				 style: 'success',	icon: '5774022692642492953' },
+	broadcast_filter_all:         	{ text: 'admin.broadcast.filters.all',           params: { ns: 'message' }, action: 'broadcast_filter_all',          style: null,			 	icon: '6032594876506312598' },
+	broadcast_filter_active_keys: 	{ text: 'admin.broadcast.filters.active_keys',   params: { ns: 'message' }, action: 'broadcast_filter_active_keys',  style: null,			 	icon: '5886685105065300941' },
+	broadcast_filter_expired_keys: 	{ text: 'admin.broadcast.filters.expired_keys',	 params: { ns: 'message' }, action: 'broadcast_filter_expired_keys', style: null,			 	icon: '5938071395169734715' },
+	broadcast_filter_no_keys:     	{ text: 'admin.broadcast.filters.no_keys',       params: { ns: 'message' }, action: 'broadcast_filter_no_keys',      style: null,			 	icon: '5938342819922973434' },
+	broadcast_filter_paid_users:  	{ text: 'admin.broadcast.filters.paid_users',    params: { ns: 'message' }, action: 'broadcast_filter_paid_users',   style: null,			 	icon: '6035084557378654059' },
+	broadcast_filter_free_users:  	{ text: 'admin.broadcast.filters.free_users',    params: { ns: 'message' }, action: 'broadcast_filter_free_users',   style: null,			 	icon: '5893192487324880883' },
+	broadcast_filter_new_users:   	{ text: 'admin.broadcast.filters.new_users',     params: { ns: 'message' }, action: 'broadcast_filter_new_users',    style: null,			 	icon: '6033108709213736873' },
+	broadcast_lang_ru:   						{ text: 'buttons.languages.russian',						 params: { ns: 'message' }, action: 'broadcast_lang_ru',						 style: null,			 	icon: '5398017006165305287' },
+	broadcast_lang_en:   						{ text: 'buttons.languages.english',						 params: { ns: 'message' }, action: 'broadcast_lang_en',						 style: null,			 	icon: '5458416160586342331' },
+	broadcast_lang_all:  						{ text: 'buttons.languages.language_all',				 params: { ns: 'message' }, action: 'broadcast_lang_all',						 style: null,			 	icon: '5769403725898584391' },
 
 	// ── Реферальная программа ────────────────────────────────────────
-	ref_get_link:    { text: 'buttons.referral_actions.get_link',   action: CALLBACK_ACTIONS.REFERRAL.GET_LINK,      style: null,        icon: '6028171274939797252' },
-	ref_my_referrals: { text: 'buttons.referral_actions.my_referrals', action: CALLBACK_ACTIONS.REFERRAL.MY_REFERRALS, style: null,      icon: '6032609071373226027' },
-	// ref_invite:   { text: 'buttons.referral_actions.invite',     action: CALLBACK_ACTIONS.REFERRAL.INVITE,        style: null,        icon: '6037622221625626773' },  // не используется — см. ref_invite_share (switchToChat)
-	ref_invite_share: { text: 'buttons.referral_actions.invite', method: 'switchToChat', value: '',                   style: null,        icon: '6037622221625626773' },
-	ref_withdraw:    { text: 'buttons.referral_actions.withdraw',   action: CALLBACK_ACTIONS.REFERRAL.WITHDRAW,      style: null,        icon: '5890848474563352982' },
-	ref_history:     { text: 'buttons.referral_actions.history',    action: CALLBACK_ACTIONS.REFERRAL.HISTORY,       style: null,        icon: '5904359114531675993' },
+	ref_get_link:    	{ text: 'buttons.referral_actions.get_link',			action: CALLBACK_ACTIONS.REFERRAL.GET_LINK,			style: null, icon: '6028171274939797252' },
+	ref_my_referrals: { text: 'buttons.referral_actions.my_referrals',	action: CALLBACK_ACTIONS.REFERRAL.MY_REFERRALS, style: null, icon: '6032609071373226027' },
+	// ref_invite:   		{ text: 'buttons.referral_actions.invite',     		action: CALLBACK_ACTIONS.REFERRAL.INVITE,				style: null, icon: '6037622221625626773' },  // не используется — см. ref_invite_share (switchToChat)
+	ref_invite_share: { text: 'buttons.referral_actions.invite',				method: 'switchToChat', value: '',							style: null, icon: '6037622221625626773' },
+	ref_withdraw:    	{ text: 'buttons.referral_actions.withdraw',			action: CALLBACK_ACTIONS.REFERRAL.WITHDRAW,			style: null, icon: '5890848474563352982' },
+	ref_history:     	{ text: 'buttons.referral_actions.history',				action: CALLBACK_ACTIONS.REFERRAL.HISTORY,			style: null, icon: '5904359114531675993' },
 };
 
 module.exports = { BUTTON_PRESETS };

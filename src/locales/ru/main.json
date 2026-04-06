@@ -15,7 +15,6 @@
     "how_to_add_key": "Как добавить ключ?",
     "support": "Поддержка",
     "contact_support": "Написать в поддержку",
-    "confirm_purchase": "Подтверждаю покупку",
     "pay": "Оплатить",
     "cancel": "Отменить",
     "confirm": "Подтвердить",
@@ -59,6 +58,7 @@
       "windows": "Windows"
     },
     "languages": {
+      "all": "Все языки",
       "russian": "Русский",
       "english": "English"
     },

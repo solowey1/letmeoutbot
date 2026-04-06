@@ -17,15 +17,8 @@ class BroadcastService {
 	 * @param {Date} scheduledAt - Время отложенной отправки
 	 */
 	async createBroadcast(adminId, messageText, filterType, languageFilter = null, scheduledAt = null) {
-		// Получаем список получателей
-		let recipients = await this.db.getBroadcastRecipients(filterType);
-
-		// Применяем языковой фильтр
-		if (languageFilter === 'ru') {
-			recipients = recipients.filter(u => u.language === 'ru');
-		} else if (languageFilter === 'en') {
-			recipients = recipients.filter(u => u.language !== 'ru');
-		}
+		// Получаем список получателей с языковым фильтром на уровне БД
+		const recipients = await this.db.getBroadcastRecipients(filterType, null, languageFilter);
 
 		if (recipients.length === 0) {
 			throw new Error('No recipients found for this filter');
