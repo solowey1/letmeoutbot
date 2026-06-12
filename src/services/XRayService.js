@@ -7,13 +7,9 @@ const { v4: uuidv4 } = require('uuid');
  * Протокол: VLESS + Reality
  */
 class XRayService {
-	constructor(panelUrl, username, password, twoFactorSecret, publicKey) {
+	constructor(panelUrl, apiToken, publicKey) {
 		this.panelUrl = panelUrl;
-		this.username = username;
-		this.password = password;
-		this.twoFactorSecret = twoFactorSecret;
-		this.sessionCookie = null;
-		this.sessionExpiry = null;
+		this.apiToken = apiToken;
 
 		this.REALITY_INBOUND_ID = 1;
 
@@ -30,74 +26,25 @@ class XRayService {
 		};
 	}
 
-	getTotpCode() {
-		if (!this.twoFactorSecret) return null;
-		try {
-			const { authenticator } = require('otplib');
-			return authenticator.generate(this.twoFactorSecret);
-		} catch (e) {
-			console.error('otplib не установлен: npm install otplib');
-			return null;
-		}
-	}
-
-	async login() {
-		const body = { username: this.username, password: this.password };
-		const totpCode = this.getTotpCode();
-		if (totpCode) body.twoFactorCode = totpCode;
-
-		const response = await axios.post(`${this.panelUrl}/login`, body, {
-			headers: { 'Content-Type': 'application/json' }
-		});
-
-		if (!response.data.success) {
-			throw new Error(`3X-UI login failed: ${response.data.msg}`);
-		}
-
-		const setCookie = response.headers['set-cookie'];
-		if (setCookie) {
-			this.sessionCookie = setCookie.map(c => c.split(';')[0]).join('; ');
-			this.sessionExpiry = Date.now() + 23 * 60 * 60 * 1000;
-		}
-
-		console.log('✅ 3X-UI: авторизация успешна');
-		return true;
-	}
-
-	async ensureSession() {
-		if (!this.sessionCookie || Date.now() >= this.sessionExpiry) {
-			await this.login();
-		}
-	}
-
 	async apiRequest(method, path, data = null) {
-		await this.ensureSession();
-
 		const url = `${this.panelUrl}/panel/api${path}`;
 		const config = {
 			method,
 			url,
-			headers: { 'Cookie': this.sessionCookie, 'Content-Type': 'application/json' }
+			headers: {
+				'Authorization': `Bearer ${this.apiToken}`,
+				'Content-Type': 'application/json'
+			}
 		};
 		if (data) config.data = data;
 
 		try {
 			const response = await axios(config);
 			if (!response.data.success) {
-				if (response.data.msg?.includes('login') || response.status === 401) {
-					this.sessionCookie = null;
-					await this.ensureSession();
-					return this.apiRequest(method, path, data);
-				}
 				throw new Error(`API error: ${response.data.msg}`);
 			}
 			return response.data.obj;
 		} catch (error) {
-			if (error.response?.status === 401) {
-				this.sessionCookie = null;
-				await this.ensureSession();
-				return this.apiRequest(method, path, data);
-			}
 			console.error(`❌ 3X-UI API ${method} ${url} → ${error.response?.status || error.message}`);
 			throw error;
 		}
