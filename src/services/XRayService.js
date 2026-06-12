@@ -2,7 +2,7 @@ const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
 
 /**
- * Сервис для работы с 3X-UI API
+ * Сервис для работы с 3X-UI API (v3.x)
  * Сервер: 45.145.163.170 (let-me-out.com)
  * Протокол: VLESS + Reality
  */
@@ -50,40 +50,35 @@ class XRayService {
 		}
 	}
 
-	async addClient(inboundId, clientData) {
-		return this.apiRequest('POST', '/inbounds/addClient', {
-			id: inboundId,
-			settings: JSON.stringify({ clients: [clientData] })
+	// ── Низкоуровневые методы ──────────────────────────────────────────────
+
+	async addClient(clientData) {
+		return this.apiRequest('POST', '/clients/add', {
+			client: clientData,
+			inboundIds: [this.REALITY_INBOUND_ID]
 		});
 	}
 
-	async updateClient(inboundId, uuid, clientData) {
-		return this.apiRequest('POST', `/inbounds/updateClient/${uuid}`, {
-			id: inboundId,
-			settings: JSON.stringify({ clients: [clientData] })
-		});
+	async updateClient(email, clientData) {
+		return this.apiRequest('POST', `/clients/update/${encodeURIComponent(email)}`, clientData);
 	}
 
-	async deleteClient(inboundId, uuid) {
-		return this.apiRequest('POST', `/inbounds/${inboundId}/delClient/${uuid}`);
+	async deleteClient(email) {
+		return this.apiRequest('POST', `/clients/del/${encodeURIComponent(email)}`);
 	}
 
 	async getClientStats(email) {
-		return this.apiRequest('GET', `/inbounds/getClientTraffics/${encodeURIComponent(email)}`);
+		return this.apiRequest('GET', `/clients/traffic/${encodeURIComponent(email)}`);
 	}
 
-	/**
-	 * Создать VLESS Reality клиента
-	 * @param {string} email - уникальный идентификатор (lmo_{telegramId}_{ts})
-	 * @param {number} totalGB - лимит в GB (0 = безлимит)
-	 * @param {number} expiryTime - unix ms (0 = никогда)
-	 */
+	// ── Высокоуровневые методы ─────────────────────────────────────────────
+
 	async createRealityClient(email, totalGB = 0, expiryTime = 0, tgId = '') {
 		const uuid = uuidv4();
 		const subId = this._generateSubId();
 
-		await this.addClient(this.REALITY_INBOUND_ID, {
-			id: uuid,
+		await this.addClient({
+			uuid,
 			email,
 			enable: true,
 			flow: 'xtls-rprx-vision',
@@ -92,15 +87,15 @@ class XRayService {
 			expiryTime,
 			reset: 0,
 			subId,
-			tgId: String(tgId),
+			tgId: parseInt(tgId) || 0,
 			comment: 'LetMeOut Bot'
 		});
 
 		return { uuid, subId, accessUrl: this._buildRealityUrl(uuid, email), email, type: 'reality' };
 	}
 
-	async deleteRealityClient(uuid) {
-		return this.deleteClient(this.REALITY_INBOUND_ID, uuid);
+	async deleteRealityClient(email) {
+		return this.deleteClient(email);
 	}
 
 	async getClientDataUsage(email) {
@@ -113,32 +108,43 @@ class XRayService {
 		}
 	}
 
-	async updateClientLimits(uuid, email, totalGB, expiryTime) {
-		return this.updateClient(this.REALITY_INBOUND_ID, uuid, {
-			id: uuid, email, enable: true,
-			flow: 'xtls-rprx-vision', limitIp: 0,
+	async updateClientLimits(email, totalGB, expiryTime) {
+		return this.updateClient(email, {
+			email,
+			enable: true,
+			flow: 'xtls-rprx-vision',
+			limitIp: 0,
 			totalGB: totalGB > 0 ? Math.round(totalGB * 1024 * 1024 * 1024) : 0,
-			expiryTime, reset: 0
+			expiryTime,
+			reset: 0
 		});
 	}
 
 	async suspendClient(uuid, email, totalGB = 0, expiryTime = 0) {
-		return this.updateClient(this.REALITY_INBOUND_ID, uuid, {
-			id: uuid, email, enable: false,
-			flow: 'xtls-rprx-vision', limitIp: 0,
+		return this.updateClient(email, {
+			email,
+			enable: false,
+			flow: 'xtls-rprx-vision',
+			limitIp: 0,
 			totalGB: totalGB > 0 ? Math.round(totalGB * 1024 * 1024 * 1024) : 0,
-			expiryTime, reset: 0
+			expiryTime,
+			reset: 0
 		});
 	}
 
-	async reactivateClient(uuid, email, totalGB, expiryTime) {
-		return this.updateClient(this.REALITY_INBOUND_ID, uuid, {
-			id: uuid, email, enable: true,
-			flow: 'xtls-rprx-vision', limitIp: 0,
+	async reactivateClient(email, totalGB, expiryTime) {
+		return this.updateClient(email, {
+			email,
+			enable: true,
+			flow: 'xtls-rprx-vision',
+			limitIp: 0,
 			totalGB: totalGB > 0 ? Math.round(totalGB * 1024 * 1024 * 1024) : 0,
-			expiryTime, reset: 0
+			expiryTime,
+			reset: 0
 		});
 	}
+
+	// ── Вспомогательные методы ─────────────────────────────────────────────
 
 	_buildRealityUrl(uuid, name) {
 		const c = this.REALITY_CONFIG;
