@@ -1,3 +1,4 @@
+const { Markup } = require('telegraf');
 const KeyboardUtils = require('../../utils/keyboards');
 const { MenuMessages, AdminMessages, ReferralMessages } = require('../../services/messages');
 const { ADMIN_IDS } = require('../../config/constants');
@@ -66,6 +67,19 @@ class CommandHandlers {
 
 			if (Object.keys(updates).length > 0) {
 				await this.db.updateUser(telegramId, updates);
+			}
+		}
+
+		if (startPayload === 'gift') {
+			const eligible = await this.db.isGiftEligible(telegramId);
+			if (eligible) {
+				const giftText = t('gift.info', { ns: 'message' });
+				const giftKeyboard = Markup.inlineKeyboard([
+					[Markup.button.callback(t('buttons.claim_gift', { ns: 'main' }), 'gift_claim')],
+					[Markup.button.callback(t('buttons.back', { ns: 'main' }), 'home')]
+				]);
+				await ctx.reply(giftText, { ...giftKeyboard, parse_mode: 'HTML' });
+				return;
 			}
 		}
 
