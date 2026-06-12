@@ -1,4 +1,11 @@
 {
+  "gift": {
+    "info": "🎁 <b>Free Trial Access</b>\n\nNew users can test the VPN completely for free.\n\nGet keys for both <b>VLESS</b> and <b>Outline</b> protocols at no cost. Each key is valid for <b>48 hours</b> or <b>500 MB</b> of traffic.",
+    "success": "✅ <b>Your free keys are ready!</b>\n\n⚡ <b>VLESS Reality:</b>\n<code>{{vlessUrl}}</code>\n\n🌿 <b>Outline:</b>\n<code>{{outlineUrl}}</code>\n\n<i>Each key is valid for 48 hours or 500 MB of traffic.\nAdd the keys to your VPN app and enjoy!</i>",
+    "already_received": "You have already received your free gift.",
+    "not_eligible": "Gift is not available.",
+    "error": "Failed to issue keys. Please try again later."
+  },
   "welcome": {
     "title": "Welcome to Let me Out VPN!",
     "description": "Here you can purchase access to secure and fast VPN via Outline and VLESS.",

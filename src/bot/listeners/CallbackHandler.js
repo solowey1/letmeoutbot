@@ -8,6 +8,7 @@ const KeysCallbacks = require('../handlers/callbacks/KeysCallbacks');
 const LanguageCallbacks = require('../handlers/callbacks/LanguageCallbacks');
 const AdminCallbacks = require('../handlers/callbacks/AdminCallbacks');
 const ReferralCallbacks = require('../handlers/callbacks/ReferralCallbacks');
+const GiftCallbacks = require('../handlers/callbacks/GiftCallbacks');
 
 class CallbackHandler {
 	constructor(database, paymentService, keysService, bot, broadcastCallbacks = null) {
@@ -24,6 +25,7 @@ class CallbackHandler {
 		this.broadcastCallbacks = broadcastCallbacks;
 		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService, broadcastCallbacks);
 		this.referralCallbacks = new ReferralCallbacks(database, bot);
+		this.giftCallbacks = new GiftCallbacks(database, keysService);
 	}
 
 	async handleCallback(ctx) {
@@ -161,6 +163,10 @@ class CallbackHandler {
 				await this.referralCallbacks.handleConfirmWithdraw(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.HISTORY) {
 				await this.referralCallbacks.handleWithdrawalHistory(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.GIFT.INFO) {
+				await this.giftCallbacks.handleGiftInfo(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.GIFT.CLAIM) {
+				await this.giftCallbacks.handleGiftClaim(ctx);
 				// ── Выбор типа подключения ──
 			} else if (callbackData === CALLBACK_ACTIONS.KEYS.BUY) {
 				await this.planCallbacks.handleShowPlans(ctx);

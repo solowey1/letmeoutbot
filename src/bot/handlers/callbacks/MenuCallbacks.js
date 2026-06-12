@@ -13,7 +13,8 @@ class MenuCallbacks {
 		const t = ctx.i18n.t;
 		const message = MenuMessages.welcome(t);
 		const isAdmin = ADMIN_IDS.includes(ctx.from.id);
-		const keyboard = KeyboardUtils.createMainMenu(t, isAdmin);
+		const showGift = await this.db.isGiftEligible(ctx.from.id);
+		const keyboard = KeyboardUtils.createMainMenu(t, isAdmin, showGift);
 
 		await ctx.editMessageText(message, {
 			...keyboard,

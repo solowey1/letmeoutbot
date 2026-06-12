@@ -147,6 +147,19 @@ class SupabaseDatabase {
 		return usersWithStats;
 	}
 
+	async isGiftEligible(telegramId) {
+		const user = await this.getUserByTelegramId(telegramId);
+		return !!(user && user.gift_received_at === null);
+	}
+
+	async markGiftReceived(telegramId) {
+		const { error } = await this.supabase
+			.from('users')
+			.update({ gift_received_at: new Date().toISOString() })
+			.eq('telegram_id', telegramId);
+		if (error) throw error;
+	}
+
 	// ============== KEYS ==============
 
 	async createKey(userId, planId, dataLimit, expiresAt) {

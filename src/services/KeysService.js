@@ -468,6 +468,32 @@ class KeysService {
 			return false;
 		}
 	}
+
+	// ============== ПОДАРОЧНЫЕ КЛЮЧИ ==============
+
+	async claimGiftKeys(userId, telegramId) {
+		const eligible = await this.db.isGiftEligible(telegramId);
+		if (!eligible) throw new Error('Подарок уже был получен или пользователь не найден');
+
+		const { PLANS } = require('../config/constants');
+		const vlessPlan = PLANS.GIFT_VLESS_500MB;
+		const outlinePlan = PLANS.GIFT_OUTLINE_500MB;
+
+		const expiresAt = PlanService.calculateExpiryDate(vlessPlan);
+
+		const vlessKeyId = await this.db.createKey(userId, vlessPlan.id, vlessPlan.dataLimit, expiresAt);
+		await this.db.updateKey(vlessKeyId, { key_type: KEY_TYPE.VLESS });
+
+		const outlineKeyId = await this.db.createKey(userId, outlinePlan.id, outlinePlan.dataLimit, expiresAt);
+		await this.db.updateKey(outlineKeyId, { key_type: KEY_TYPE.OUTLINE });
+
+		const vlessResult = await this.activateKeyOnVpnServer(vlessKeyId, vlessPlan, KEY_TYPE.VLESS, telegramId, expiresAt);
+		const outlineResult = await this.activateKeyOnVpnServer(outlineKeyId, outlinePlan, KEY_TYPE.OUTLINE, telegramId, expiresAt);
+
+		await this.db.markGiftReceived(telegramId);
+
+		return { vless: vlessResult, outline: outlineResult };
+	}
 }
 
 module.exports = KeysService;

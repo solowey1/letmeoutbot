@@ -39,7 +39,7 @@ const PLANS = {
 	},
 
 	// ─────────────────────────────────────────
-	// ПОДАРОЧНЫЙ VLESS
+	// ПОДАРОЧНЫЕ (бесплатно, 48ч, 500 МБ)
 	// ─────────────────────────────────────────
 	GIFT_VLESS_10GB: {
 		id: 'gift_vless_10gb',
@@ -48,6 +48,28 @@ const PLANS = {
 		dataLimitGB: 10,
 		dataLimit: 10 * 1024 * 1024 * 1024,
 		duration: 7,
+		price: 0,
+		emoji: '🎁',
+		hidden: true
+	},
+	GIFT_VLESS_500MB: {
+		id: 'gift_vless_500mb',
+		name: 'VLESS 500 MB (Gift)',
+		type: 'vless',
+		dataLimitGB: 0,
+		dataLimit: 500 * 1024 * 1024,
+		duration: 2,
+		price: 0,
+		emoji: '🎁',
+		hidden: true
+	},
+	GIFT_OUTLINE_500MB: {
+		id: 'gift_outline_500mb',
+		name: 'Outline 500 MB (Gift)',
+		type: 'outline',
+		dataLimitGB: 0,
+		dataLimit: 500 * 1024 * 1024,
+		duration: 2,
 		price: 0,
 		emoji: '🎁',
 		hidden: true
@@ -295,6 +317,10 @@ const CALLBACK_ACTIONS = {
 		CONFIRM_WITHDRAW: 'referral_confirm_withdraw',
 		MY_REFERRALS: 'referral_my_referrals',
 		HISTORY: 'referral_history'
+	},
+	GIFT: {
+		INFO: 'gift_info',
+		CLAIM: 'gift_claim'
 	}
 };
 

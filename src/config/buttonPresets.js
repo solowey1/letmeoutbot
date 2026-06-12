@@ -108,6 +108,10 @@ const BUTTON_PRESETS = {
 	broadcast_lang_en:   						{ text: 'buttons.languages.english',						 params: { ns: 'main' },    action: 'broadcast_lang_en',						 style: null,			 	icon: '5458416160586342331' },
 	broadcast_lang_all:  						{ text: 'buttons.languages.all',						 params: { ns: 'main' },    action: 'broadcast_lang_all',						 style: null,			 	icon: '5769403725898584391' },
 
+	// ── Подарок ──────────────────────────────────────────────────────
+	gift_info:   { text: 'buttons.gift',       action: CALLBACK_ACTIONS.GIFT.INFO,  style: 'success', icon: null },
+	claim_gift:  { text: 'buttons.claim_gift', action: CALLBACK_ACTIONS.GIFT.CLAIM, style: 'success', icon: null },
+
 	// ── Реферальная программа ────────────────────────────────────────
 	ref_get_link:    	{ text: 'buttons.referral_actions.get_link',			action: CALLBACK_ACTIONS.REFERRAL.GET_LINK,			style: null, icon: '6028171274939797252' },
 	ref_my_referrals: { text: 'buttons.referral_actions.my_referrals',	action: CALLBACK_ACTIONS.REFERRAL.MY_REFERRALS, style: null, icon: '6032609071373226027' },
