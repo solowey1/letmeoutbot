@@ -54,52 +54,18 @@ const PLANS = {
 	},
 
 	// ─────────────────────────────────────────
-	// OUTLINE — только Outline VPN
+	// VLESS — только VLESS (Reality)
 	// ─────────────────────────────────────────
-	OUTLINE_10GB: {
-		id: 'outline_10gb',
-		name: 'Outline 10 GB',
-		type: 'outline',
-		dataLimitGB: 10,
-		dataLimit: 10 * 1024 * 1024 * 1024,
+	VLESS_2GB: {
+		id: 'vless_2gb',
+		name: 'VLESS 2 GB',
+		type: 'vless',
+		dataLimitGB: 2,
+		dataLimit: 2 * 1024 * 1024 * 1024,
 		duration: 30,
-		price: 175,                // ~$2.3/мес
-		emoji: '🌿'
+		price: 20,                 // ~$0.26/мес
+		emoji: '🌱'
 	},
-	OUTLINE_50GB: {
-		id: 'outline_50gb',
-		name: 'Outline 50 GB',
-		type: 'outline',
-		dataLimitGB: 50,
-		dataLimit: 50 * 1024 * 1024 * 1024,
-		duration: 30,
-		price: 300,                // ~$3.9/мес
-		emoji: '🌲'
-	},
-	OUTLINE_100GB: {
-		id: 'outline_100gb',
-		name: 'Outline 100 GB',
-		type: 'outline',
-		dataLimitGB: 100,
-		dataLimit: 100 * 1024 * 1024 * 1024,
-		duration: 30,
-		price: 450,                // ~$5.9/мес
-		emoji: '🌳'
-	},
-	OUTLINE_UNLIM: {
-		id: 'outline_unlim',
-		name: 'Outline Unlimited',
-		type: 'outline',
-		dataLimitGB: 0,            // 0 = безлимит
-		dataLimit: 0,
-		duration: 30,
-		price: 650,                // ~$8.5/мес
-		emoji: '🌏'
-	},
-
-	// ─────────────────────────────────────────
-	// VLESS — только VLESS (WS + Reality)
-	// ─────────────────────────────────────────
 	VLESS_10GB: {
 		id: 'vless_10gb',
 		name: 'VLESS 10 GB',
@@ -107,7 +73,7 @@ const PLANS = {
 		dataLimitGB: 10,
 		dataLimit: 10 * 1024 * 1024 * 1024,
 		duration: 30,
-		price: 225,                // ~$2.9/мес (дороже Outline)
+		price: 100,                // ~$1.3/мес
 		emoji: '⚡'
 	},
 	VLESS_50GB: {
@@ -117,7 +83,7 @@ const PLANS = {
 		dataLimitGB: 50,
 		dataLimit: 50 * 1024 * 1024 * 1024,
 		duration: 30,
-		price: 375,                // ~$4.9/мес
+		price: 250,                // ~$3.3/мес
 		emoji: '🚀'
 	},
 	VLESS_100GB: {
@@ -127,7 +93,7 @@ const PLANS = {
 		dataLimitGB: 100,
 		dataLimit: 100 * 1024 * 1024 * 1024,
 		duration: 30,
-		price: 550,                // ~$7.2/мес
+		price: 400,                // ~$5.2/мес
 		emoji: '🛸'
 	},
 	VLESS_UNLIM: {
@@ -137,8 +103,62 @@ const PLANS = {
 		dataLimitGB: 0,
 		dataLimit: 0,
 		duration: 30,
-		price: 800,                // ~$10.4/мес
+		price: 600,                // ~$7.8/мес
 		emoji: '🌌'
+	},
+
+	// ─────────────────────────────────────────
+	// OUTLINE — только Outline VPN
+	// ─────────────────────────────────────────
+	OUTLINE_2GB: {
+		id: 'outline_2gb',
+		name: 'Outline 2 GB',
+		type: 'outline',
+		dataLimitGB: 2,
+		dataLimit: 2 * 1024 * 1024 * 1024,
+		duration: 30,
+		price: 10,                 // ~$0.13/мес
+		emoji: '🌱'
+	},
+	OUTLINE_10GB: {
+		id: 'outline_10gb',
+		name: 'Outline 10 GB',
+		type: 'outline',
+		dataLimitGB: 10,
+		dataLimit: 10 * 1024 * 1024 * 1024,
+		duration: 30,
+		price: 50,                 // ~$0.65/мес
+		emoji: '🌿'
+	},
+	OUTLINE_50GB: {
+		id: 'outline_50gb',
+		name: 'Outline 50 GB',
+		type: 'outline',
+		dataLimitGB: 50,
+		dataLimit: 50 * 1024 * 1024 * 1024,
+		duration: 30,
+		price: 200,                // ~$2.6/мес
+		emoji: '🌲'
+	},
+	OUTLINE_100GB: {
+		id: 'outline_100gb',
+		name: 'Outline 100 GB',
+		type: 'outline',
+		dataLimitGB: 100,
+		dataLimit: 100 * 1024 * 1024 * 1024,
+		duration: 30,
+		price: 350,                // ~$4.6/мес
+		emoji: '🌳'
+	},
+	OUTLINE_UNLIM: {
+		id: 'outline_unlim',
+		name: 'Outline Unlimited',
+		type: 'outline',
+		dataLimitGB: 0,
+		dataLimit: 0,
+		duration: 30,
+		price: 500,                // ~$6.5/мес
+		emoji: '🌏'
 	},
 
 };
@@ -146,7 +166,7 @@ const PLANS = {
 // ─────────────────────────────────────────
 // BOTH — Outline + VLESS со скидкой (авто)
 // ─────────────────────────────────────────
-const BOTH_EMOJIS = { 10: '💎', 50: '💠', 100: '👑', 0: '🔱' };
+const BOTH_EMOJIS = { 2: '🌱', 10: '💎', 50: '💠', 100: '👑', 0: '🔱' };
 
 const outlinePlans = Object.values(PLANS).filter(p => p.type === 'outline' && !p.hidden);
 const vlessPlans   = Object.values(PLANS).filter(p => p.type === 'vless'   && !p.hidden);

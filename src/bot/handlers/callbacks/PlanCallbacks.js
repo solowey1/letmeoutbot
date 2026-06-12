@@ -21,8 +21,8 @@ class PlanCallbacks {
 		const message = [
 			`🔐 <b>${t('plans.select_type_title', { ns: 'message' })}</b>`,
 			'',
-			`🌿 <b>Outline</b> — ${t('plans.type_outline_desc', { ns: 'message' })}`,
 			`⚡ <b>VLESS</b> — ${t('plans.type_vless_desc', { ns: 'message' })}`,
+			`🌿 <b>Outline</b> — ${t('plans.type_outline_desc', { ns: 'message' })}`,
 			`👑 <b>${t('plans.type_names.both', { ns: 'message' })}</b> — ${t('plans.type_both_desc', { ns: 'message', ...d })}`
 		].join('\n');
 

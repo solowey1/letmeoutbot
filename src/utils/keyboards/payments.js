@@ -6,8 +6,8 @@ const { btn } = require('./common');
 function createTypeSelectionKeyboard(t) {
 	return Markup.inlineKeyboard([
 		[
-			btn(t, 'type_outline'),
-			btn(t, 'type_vless')
+			btn(t, 'type_vless'),
+			btn(t, 'type_outline')
 		],
 		[btn(t, 'type_both')],
 		[btn(t, 'home')]
