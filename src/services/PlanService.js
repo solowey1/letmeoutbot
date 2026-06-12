@@ -135,6 +135,21 @@ class PlanService {
 		return 0;
 	}
 
+	static async loadPrices(db) {
+		try {
+			const rows = await db.getPlanPrices();
+			for (const { id, price, enabled } of rows) {
+				const plan = Object.values(PLANS).find(p => p.id === id);
+				if (!plan) continue;
+				plan.price = price;
+				if (enabled === false) plan.hidden = true;
+			}
+			console.log('✅ Цены тарифов загружены из БД');
+		} catch (error) {
+			console.error('⚠️ Не удалось загрузить цены из БД, используются значения по умолчанию:', error.message);
+		}
+	}
+
 	static validatePlanData(planData) {
 		const requiredFields = ['id', 'name', 'type', 'duration', 'price'];
 		for (const field of requiredFields) {

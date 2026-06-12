@@ -27,6 +27,7 @@ const I18nMiddleware = require('../middleware/i18nMiddleware');
 
 // Импорты конфигурации
 const config = require('../config');
+const PlanService = require('../services/PlanService');
 
 class TelegramBot {
 	constructor() {
@@ -119,7 +120,8 @@ class TelegramBot {
 	async start() {
 		try {
 			console.log('🤖 VPN Bot запускается...');
-            
+			await PlanService.loadPrices(this.db);
+
 			await this.bot.launch();
 			console.log('✅ VPN Bot успешно запущен!');
             

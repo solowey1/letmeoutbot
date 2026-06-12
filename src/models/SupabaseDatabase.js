@@ -1224,6 +1224,24 @@ class SupabaseDatabase {
 		await this.updateBroadcastStatus(broadcastId, 'cancelled');
 	}
 
+	// ============== PLANS ==============
+
+	async getPlanPrices() {
+		const { data, error } = await this.supabase
+			.from('plans')
+			.select('id, price, enabled');
+		if (error) throw error;
+		return data;
+	}
+
+	async updatePlanPrice(planId, price) {
+		const { error } = await this.supabase
+			.from('plans')
+			.update({ price })
+			.eq('id', planId);
+		if (error) throw error;
+	}
+
 	// ============== CLEANUP ==============
 
 	close() {
