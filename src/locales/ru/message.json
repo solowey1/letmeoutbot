@@ -297,8 +297,8 @@
     "price": "Стоимость",
     "per_month": "/мес",
     "select_type_title": "Выберите тип подключения",
-    "type_outline_desc": "простой и надёжный VPN на базе Shadowsocks",
     "type_vless_desc": "современный протокол, сложнее обнаружить",
+    "type_outline_desc": "простой и надёжный VPN на базе Shadowsocks",
     "type_both_desc": "максимальная надёжность со скидкой {{discount}}%",
     "type_names": {
       "outline": "Outline VPN",
@@ -306,8 +306,8 @@
       "both": "Outline + VLESS"
     },
     "type_descriptions": {
-      "outline": "Shadowsocks протокол, работает везде, легко настроить",
-      "vless": "Reality протокол, максимальная маскировка трафика",
+      "vless": "Отлично подходит для обхода блокировок",
+      "outline": "К сожалению, работает не всегда, зато его легче всего настроить",
       "both": "Оба протокола + скидка {{discount}}% — переключайтесь в любой момент"
     },
     "features": {

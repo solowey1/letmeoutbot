@@ -291,8 +291,8 @@
     "price": "Price",
     "per_month": "/mo",
     "select_type_title": "Choose connection type",
-    "type_outline_desc": "simple and reliable VPN based on Shadowsocks",
     "type_vless_desc": "modern protocol, harder to detect",
+    "type_outline_desc": "simple and reliable VPN based on Shadowsocks",
     "type_both_desc": "maximum reliability with {{discount}}% discount",
     "type_names": {
       "outline": "Outline VPN",
@@ -300,8 +300,8 @@
       "both": "Outline + VLESS"
     },
     "type_descriptions": {
-      "outline": "Shadowsocks protocol, works everywhere, easy to set up",
-      "vless": "Reality protocol, maximum traffic masking",
+      "vless": "Ideal for bypassing restrictions.",
+      "outline": "Unfortunately, it does not always work; however, it is the easiest to configure.",
       "both": "Both protocols + {{discount}}% off — switch anytime"
     },
     "features": {
