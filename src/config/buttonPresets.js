@@ -104,9 +104,9 @@ const BUTTON_PRESETS = {
 	broadcast_filter_paid_users:  	{ text: 'admin.broadcast.filters.paid_users',    params: { ns: 'message' }, action: 'broadcast_filter_paid_users',   style: null,			 	icon: '6035084557378654059' },
 	broadcast_filter_free_users:  	{ text: 'admin.broadcast.filters.free_users',    params: { ns: 'message' }, action: 'broadcast_filter_free_users',   style: null,			 	icon: '5893192487324880883' },
 	broadcast_filter_new_users:   	{ text: 'admin.broadcast.filters.new_users',     params: { ns: 'message' }, action: 'broadcast_filter_new_users',    style: null,			 	icon: '6033108709213736873' },
-	broadcast_lang_ru:   						{ text: 'buttons.languages.russian',						 params: { ns: 'message' }, action: 'broadcast_lang_ru',						 style: null,			 	icon: '5398017006165305287' },
-	broadcast_lang_en:   						{ text: 'buttons.languages.english',						 params: { ns: 'message' }, action: 'broadcast_lang_en',						 style: null,			 	icon: '5458416160586342331' },
-	broadcast_lang_all:  						{ text: 'buttons.languages.language_all',				 params: { ns: 'message' }, action: 'broadcast_lang_all',						 style: null,			 	icon: '5769403725898584391' },
+	broadcast_lang_ru:   						{ text: 'buttons.languages.russian',						 params: { ns: 'main' },    action: 'broadcast_lang_ru',						 style: null,			 	icon: '5398017006165305287' },
+	broadcast_lang_en:   						{ text: 'buttons.languages.english',						 params: { ns: 'main' },    action: 'broadcast_lang_en',						 style: null,			 	icon: '5458416160586342331' },
+	broadcast_lang_all:  						{ text: 'buttons.languages.all',						 params: { ns: 'main' },    action: 'broadcast_lang_all',						 style: null,			 	icon: '5769403725898584391' },
 
 	// ── Реферальная программа ────────────────────────────────────────
 	ref_get_link:    	{ text: 'buttons.referral_actions.get_link',			action: CALLBACK_ACTIONS.REFERRAL.GET_LINK,			style: null, icon: '6028171274939797252' },

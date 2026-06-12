@@ -890,10 +890,11 @@ class SupabaseDatabase {
 		}
 
 		// Языковой фильтр на уровне БД
+		// ru = только явный русский; en = все остальные (null = дефолт = английский)
 		if (languageFilter === 'ru') {
 			query = query.eq('language', 'ru');
 		} else if (languageFilter === 'en') {
-			query = query.neq('language', 'ru');
+			query = query.or('language.eq.en,language.is.null');
 		}
 
 		const { data, error } = await query;
