@@ -126,6 +126,10 @@
       "description": "Тест VLESS Reality — проверка работоспособности",
       "invoice": "Тестовый ключ VLESS Reality — 1 Гб на 1 день"
     },
+    "outline_2gb": {
+      "description": "Попробовать Outline за минимальную цену",
+      "invoice": "Ключ Outline VPN — 2 Гб на 1 месяц"
+    },
     "outline_10gb": {
       "description": "Базовый доступ через Outline",
       "invoice": "Ключ Outline VPN — 10 Гб на 1 месяц"
@@ -142,6 +146,10 @@
       "description": "Outline без ограничений по трафику",
       "invoice": "Ключ Outline VPN — Безлимит на 1 месяц"
     },
+    "vless_2gb": {
+      "description": "Попробовать VLESS Reality за минимальную цену",
+      "invoice": "Ключ VLESS Reality — 2 Гб на 1 месяц"
+    },
     "vless_10gb": {
       "description": "Современный протокол, сложно обнаружить",
       "invoice": "Ключ VLESS Reality — 10 Гб на 1 месяц"
@@ -157,6 +165,10 @@
     "vless_unlim": {
       "description": "VLESS без ограничений по трафику",
       "invoice": "Ключ VLESS Reality — Безлимит на 1 месяц"
+    },
+    "both_2gb": {
+      "description": "Два протокола со скидкой {{discount}}%",
+      "invoice": "Outline + VLESS — 2 Гб на 1 месяц"
     },
     "both_10gb": {
       "description": "Два протокола со скидкой {{discount}}%",

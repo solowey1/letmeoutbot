@@ -126,6 +126,10 @@
       "description": "Test VLESS Reality — check if it works",
       "invoice": "Test VLESS Reality key — 1 GB for 1 day"
     },
+    "outline_2gb": {
+      "description": "Try Outline at the lowest price",
+      "invoice": "Outline VPN key — 2 GB for 1 month"
+    },
     "outline_10gb": {
       "description": "Basic access via Outline",
       "invoice": "Outline VPN key — 10 GB for 1 month"
@@ -142,6 +146,10 @@
       "description": "Outline with unlimited traffic",
       "invoice": "Outline VPN key — Unlimited for 1 month"
     },
+    "vless_2gb": {
+      "description": "Try VLESS Reality at the lowest price",
+      "invoice": "VLESS Reality key — 2 GB for 1 month"
+    },
     "vless_10gb": {
       "description": "Modern protocol, hard to detect",
       "invoice": "VLESS Reality key — 10 GB for 1 month"
@@ -157,6 +165,10 @@
     "vless_unlim": {
       "description": "VLESS with unlimited traffic",
       "invoice": "VLESS Reality key — Unlimited for 1 month"
+    },
+    "both_2gb": {
+      "description": "Two protocols with {{discount}}% discount",
+      "invoice": "Outline + VLESS — 2 GB for 1 month"
     },
     "both_10gb": {
       "description": "Two protocols with {{discount}}% discount",
