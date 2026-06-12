@@ -149,7 +149,7 @@ class SupabaseDatabase {
 
 	async isGiftEligible(telegramId) {
 		const user = await this.getUserByTelegramId(telegramId);
-		return !!(user && user.gift_received_at === null);
+		return !!(user && user.gift_received_at == null);
 	}
 
 	async markGiftReceived(telegramId) {
