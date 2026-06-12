@@ -11,6 +11,7 @@ class PlanService {
 	static getPlansByType(type, includeHidden = false) {
 		return Object.values(PLANS).filter(p =>
 			p.type === type &&
+			p.price > 0 &&
 			(includeHidden || !p.hidden)
 		);
 	}
