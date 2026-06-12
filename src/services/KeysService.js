@@ -150,6 +150,25 @@ class KeysService {
 		return this.activateKeyOnVpnServer(keyId, plan, protocol, user.telegram_id, expiresAt);
 	}
 
+	async retryAllPendingActivations() {
+		const pending = await this.db.getPendingKeys(50);
+		if (!pending.length) return { total: 0, success: 0, failed: 0 };
+
+		let success = 0, failed = 0;
+		for (const key of pending) {
+			try {
+				await this.retryActivateKey(key.id);
+				success++;
+				console.log(`✅ [PendingRetry] Ключ ${key.id} активирован`);
+			} catch (error) {
+				failed++;
+				console.error(`❌ [PendingRetry] Ключ ${key.id}: ${error.message}`);
+			}
+		}
+
+		return { total: pending.length, success, failed };
+	}
+
 	// ============== ПОЛУЧЕНИЕ КЛЮЧЕЙ ==============
 
 	async getUserPendingKeys(t, userId) {

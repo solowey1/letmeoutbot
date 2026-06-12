@@ -27,6 +27,20 @@ class KeysScheduler {
 
 		this.jobs.push({ name: 'keys_limits_check', job: limitsCheckJob });
 
+		// Повторная активация pending ключей (каждые 30 минут)
+		const pendingRetryJob = new CronJob('*/30 * * * *', async () => {
+			try {
+				const result = await this.keysService.retryAllPendingActivations();
+				if (result.total > 0) {
+					console.log(`⏰ [PendingRetry] Итог: ${result.success}/${result.total} активировано, ${result.failed} ошибок`);
+				}
+			} catch (error) {
+				console.error('❌ [PendingRetry] Ошибка:', error);
+			}
+		}, null, true);
+
+		this.jobs.push({ name: 'keys_pending_retry', job: pendingRetryJob });
+
 		// Глубокий аудит ключей — каждое воскресенье в 03:00.
 		// Проверяет все ключи (включая suspended/expired) за последние 30 дней.
 		// Когда подписчиков станет больше — измените DEEP_AUDIT_PERIOD_DAYS с 30 на 7,
@@ -85,6 +99,9 @@ class KeysScheduler {
 				break;
 			case 'keys_deep_audit':
 				await this.keysService.auditKeysByPeriod(30);
+				break;
+			case 'keys_pending_retry':
+				await this.keysService.retryAllPendingActivations();
 				break;
 			default:
 				throw new Error(`Неизвестная задача: ${taskName}`);
