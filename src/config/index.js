@@ -42,7 +42,8 @@ const config = {
 	xray: {
 		panelUrl: process.env.XRAY_PANEL_URL,
 		apiKey: process.env.XRAY_API_TOKEN || '',
-		publicKey: process.env.XRAY_PUBLIC_KEY || ''
+		publicKey: process.env.XRAY_PUBLIC_KEY || '',
+		subBaseUrl: process.env.XRAY_SUB_BASE_URL || ''
 	},
 
 	app: {

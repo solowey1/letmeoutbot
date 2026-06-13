@@ -7,9 +7,10 @@ const { v4: uuidv4 } = require('uuid');
  * Протокол: VLESS + Reality
  */
 class XRayService {
-	constructor(panelUrl, apiToken, publicKey) {
+	constructor(panelUrl, apiToken, publicKey, subBaseUrl = '') {
 		this.panelUrl = panelUrl;
 		this.apiToken = apiToken;
+		this.subBaseUrl = subBaseUrl;
 
 		this.REALITY_INBOUND_ID = 1;
 
@@ -91,7 +92,11 @@ class XRayService {
 			comment: 'LetMeOut Bot'
 		});
 
-		return { uuid, subId, accessUrl: this._buildRealityUrl(uuid, email), email, type: 'reality' };
+		const accessUrl = this.subBaseUrl
+			? this._buildSubUrl(subId)
+			: this._buildRealityUrl(uuid, email);
+
+		return { uuid, subId, accessUrl, email, type: 'reality' };
 	}
 
 	async deleteRealityClient(email) {
@@ -145,6 +150,10 @@ class XRayService {
 	}
 
 	// ── Вспомогательные методы ─────────────────────────────────────────────
+
+	_buildSubUrl(subId) {
+		return `${this.subBaseUrl}/${subId}`;
+	}
 
 	_buildRealityUrl(uuid, name) {
 		const c = this.REALITY_CONFIG;
