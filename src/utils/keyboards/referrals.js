@@ -6,6 +6,8 @@ function createReferralMenuKeyboard(t, shareText, tonWallet = null) {
 	const walletLabel = tonWallet
 		? `💎 ${tonWallet.slice(0, 6)}…${tonWallet.slice(-4)}`
 		: '💎 Указать TON-кошелёк';
+	const walletBtn = Markup.button.callback(walletLabel, CALLBACK_ACTIONS.REFERRAL.SET_WALLET);
+	walletBtn.icon_custom_emoji_id = '5769406891289481208';
 	return Markup.inlineKeyboard([
 		[btn(t, 'ref_get_link')],
 		[
@@ -16,7 +18,7 @@ function createReferralMenuKeyboard(t, shareText, tonWallet = null) {
 			btn(t, 'ref_withdraw'),
 			btn(t, 'ref_history'),
 		],
-		[Markup.button.callback(walletLabel, CALLBACK_ACTIONS.REFERRAL.SET_WALLET)],
+		[walletBtn],
 		[btn(t, 'home')]
 	]);
 }

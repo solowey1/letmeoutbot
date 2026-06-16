@@ -12,9 +12,9 @@ const TONAPI_BASE = 'https://tonapi.io/v2';
 let rateCache = { usd: null, fetchedAt: 0 };
 const RATE_TTL_MS = 5 * 60 * 1000;
 
-// CoinGecko slugs to try in order.
-// "gram" is the new slug after the June 2026 rename; "the-open-network" is the legacy fallback.
-const COINGECKO_IDS = ['gram', 'the-open-network'];
+// CoinGecko slug for Toncoin (now GRAM). "the-open-network" is the established slug;
+// "gram" may refer to a different token so it is only a fallback.
+const COINGECKO_IDS = ['the-open-network', 'gram'];
 
 function tonapiHeaders() {
 	const key = process.env.TON_API_KEY;

@@ -55,9 +55,10 @@ class ReferralCallbacks {
 		const t = ctx.i18n.t;
 		awaitingWallet.set(ctx.from.id, 'referral');
 
+		const keyboard = KeyboardUtils.createReferralBackKeyboard(t);
 		await ctx.editMessageText(
 			ReferralMessages.setWalletPrompt(t),
-			{ parse_mode: 'HTML' }
+			{ ...keyboard, parse_mode: 'HTML' }
 		);
 	}
 
@@ -137,9 +138,10 @@ class ReferralCallbacks {
 		// Проверяем наличие TON-кошелька
 		if (!user.ton_wallet) {
 			awaitingWallet.set(ctx.from.id, 'referral');
+			const keyboard = KeyboardUtils.createReferralBackKeyboard(t);
 			await ctx.editMessageText(
 				ReferralMessages.setWalletPrompt(t),
-				{ parse_mode: 'HTML' }
+				{ ...keyboard, parse_mode: 'HTML' }
 			);
 			return;
 		}

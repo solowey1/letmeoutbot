@@ -391,7 +391,7 @@
       "insufficient": "Insufficient funds for withdrawal.\n\nMinimum amount: 1 ⭐\nAvailable: {{amount}} ⭐",
       "no_funds": "You don't have any funds to withdraw yet.\n\nInvite friends and earn 30% from their purchases!",
       "admin_notification": "🔔 New withdrawal request!\n\n👤 User: {{username}} (ID: {{userId}})\n💰 Amount: {{amount}} ⭐\n📊 Total referrals: {{referrals}}\n🆔 Request ID: {{withdrawalId}}\n\nPlease process the request as soon as possible.",
-      "set_wallet_prompt": "💎 <b>Set your GRAM wallet</b>\n\nSend your TON network address in the next message.\n\nExample: <code>UQD...</code>\n\n<i>The address will be saved and used for automatic payouts in GRAM.</i>",
+      "set_wallet_prompt": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> <b>Set your GRAM wallet</b>\n\nSend your TON network address in the next message.\n\nExample: <code>UQD...</code>\n\n<i>The address will be saved and used for automatic payouts in GRAM.</i>",
       "history_title": "📜 Withdrawal History",
       "no_history": "You don't have any withdrawal history yet.\n\nWithdraw funds to see them here.",
       "status": {
