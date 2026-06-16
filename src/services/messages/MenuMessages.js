@@ -148,6 +148,29 @@ class MenuMessages {
 	static languageChanged(t) {
 		return t('settings.language_changed', { ns: 'message' });
 	}
+
+	static maskAddress(address) {
+		if (!address || address.length < 12) return address;
+		return `${address.slice(0, 6)}···${address.slice(-4)}`;
+	}
+
+	/**
+	 * Экран настроек TON-кошелька
+	 */
+	static tonWallet(t, walletAddress) {
+		if (!walletAddress) {
+			return t('settings.ton_wallet.not_connected', { ns: 'message' });
+		}
+		const masked = MenuMessages.maskAddress(walletAddress);
+		return t('settings.ton_wallet.connected', { ns: 'message', address: masked });
+	}
+
+	/**
+	 * Подсказка ввода адреса (в режиме ожидания)
+	 */
+	static tonWalletInputPrompt(t) {
+		return t('settings.ton_wallet.input_prompt', { ns: 'message' });
+	}
 }
 
 module.exports = MenuMessages;

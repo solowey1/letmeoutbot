@@ -72,6 +72,7 @@ const BUTTON_PRESETS = {
 
 	// ── Настройки ───────────────────────────────────────────────────
 	language:        { text: 'buttons.language',                    action: CALLBACK_ACTIONS.SETTINGS.LANGUAGE.SET,   style: null,        icon: '5769403725898584391' },
+	settings_ton:    { text: 'buttons.settings_ton',                action: CALLBACK_ACTIONS.SETTINGS.TON_WALLET,     style: null,        icon: '5769406891289481208' },
 	lang_ru:         { text: 'buttons.languages.russian',           action: CALLBACK_ACTIONS.SETTINGS.LANGUAGE.RU,    style: null,        icon: '5398017006165305287' },
 	lang_en:         { text: 'buttons.languages.english',           action: CALLBACK_ACTIONS.SETTINGS.LANGUAGE.EN,    style: null,        icon: '5458416160586342331' },
 
