@@ -49,7 +49,7 @@ class CommandHandlers {
 						referrerId = extractedReferrerId;
 
 						// Отправляем приветственное сообщение реферал у
-						const referrerName = referrer.first_name || referrer.username || 'пользователя';
+						const referrerName = referrer.first_name || referrer.username || t('common.user', { ns: 'main' });
 						const welcomeMessage = ReferralMessages.welcomeReferral(t, referrerName);
 
 						await ctx.reply(welcomeMessage, {

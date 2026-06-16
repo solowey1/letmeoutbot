@@ -198,7 +198,7 @@ for (const outline of outlinePlans) {
 	if (!vless) continue;
 
 	const gb = outline.dataLimitGB;
-	const label = gb === 0 ? 'Безлимит' : `${gb} GB`;
+	const label = gb === 0 ? 'Unlimited' : `${gb} GB`;
 	const key = `BOTH_${gb === 0 ? 'UNLIM' : gb + 'GB'}`;
 	const fullPrice = outline.price + vless.price;
 

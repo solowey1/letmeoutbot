@@ -280,7 +280,7 @@ class KeysService {
 				formattedUsed: formatBytes(updatedKey.data_used),
 				formattedLimit: updatedKey.data_limit > 0
 					? formatBytes(updatedKey.data_limit)
-					: 'Безлимит',
+					: '∞',
 				formattedRemaining: remainingData !== null
 					? formatBytes(remainingData)
 					: '∞',

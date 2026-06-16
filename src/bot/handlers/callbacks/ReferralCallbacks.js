@@ -184,7 +184,7 @@ class ReferralCallbacks {
 		const user = await this.db.getUserByTelegramId(ctx.from.id);
 
 		if (!user.ton_wallet) {
-			await ctx.answerCbQuery('Сначала укажите GRAM-кошелёк');
+			await ctx.answerCbQuery(t('referral.withdrawal.wallet_required', { ns: 'message' }));
 			return;
 		}
 
@@ -212,7 +212,7 @@ class ReferralCallbacks {
 			withdrawalId: withdrawalId,
 		});
 
-		const withdrawalKeyboard = KeyboardUtils.createWithdrawalAdminKeyboard(withdrawalId);
+		const withdrawalKeyboard = KeyboardUtils.createWithdrawalAdminKeyboard(t, withdrawalId);
 		for (const adminId of ADMIN_IDS) {
 			try {
 				await this.bot.telegram.sendMessage(adminId, adminMessage, {

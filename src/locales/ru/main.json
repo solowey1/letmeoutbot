@@ -23,9 +23,11 @@
     "back": "Назад",
     "settings": "Настройки",
     "language": "Язык",
-    "settings_ton": "GRAM-кошелёк",
+    "settings_ton": "TON-кошелёк",
     "ton_wallet_connect": "Подключить кошелёк",
     "ton_wallet_change": "Изменить кошелёк",
+    "ton_wallet_withdraw_now": "💸 Вывести сейчас",
+    "ton_wallet_referrals": "Рефералы",
     "retry": "Попробовать снова",
     "refresh_key": "Обновить ключ",
     "referral_actions": {
@@ -44,6 +46,8 @@
       "pending_keys": "Неактивированные",
       "activate_key": "Активировать ключ #{{id}}",
       "pending_withdrawals": "Выплаты",
+      "withdrawal_approve": "✅ Выплатить",
+      "withdrawal_reject": "❌ Отклонить",
       "broadcast": "Рассылка",
       "broadcast_all": "Всем пользователям",
       "broadcast_active": "Активным подписчикам",
@@ -81,6 +85,7 @@
     }
   },
   "common": {
+    "not_specified": "Не указано",
     "yes": "Да",
     "no": "Нет",
     "user": "Пользователь",

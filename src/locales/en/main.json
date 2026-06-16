@@ -23,9 +23,11 @@
     "back": "Back",
     "settings": "Settings",
     "language": "Language",
-    "settings_ton": "GRAM Wallet",
+    "settings_ton": "TON Wallet",
     "ton_wallet_connect": "Connect Wallet",
     "ton_wallet_change": "Change Wallet",
+    "ton_wallet_withdraw_now": "💸 Withdraw Now",
+    "ton_wallet_referrals": "Referrals",
     "retry": "Try Again",
     "refresh_key": "Refresh Key",
     "referral_actions": {
@@ -44,6 +46,8 @@
       "pending_keys": "Pending Keys",
       "activate_key": "Activate key #{{id}}",
       "pending_withdrawals": "Withdrawals",
+      "withdrawal_approve": "✅ Pay Out",
+      "withdrawal_reject": "❌ Reject",
       "broadcast": "Broadcast",
       "broadcast_all": "All users",
       "broadcast_active": "Active subscribers",
@@ -81,6 +85,7 @@
     }
   },
   "common": {
+    "not_specified": "Not specified",
     "yes": "Yes",
     "no": "No",
     "user": "User",

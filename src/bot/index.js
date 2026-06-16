@@ -54,7 +54,7 @@ class TelegramBot {
 		this.paymentService = new PaymentService(this.db);
 		this.keysService = new KeysService(this.db, this.outlineService, this.xrayService);
 		this.notificationService = new NotificationService(this.bot, this.i18nService, this.db);
-		this.adminNotificationService = new AdminNotificationService(this.bot, this.db);
+		this.adminNotificationService = new AdminNotificationService(this.bot, this.db, this.i18nService);
 		this.broadcastService = new BroadcastService(this.bot, this.db);
 
 		// Инициализируем менеджер планировщиков

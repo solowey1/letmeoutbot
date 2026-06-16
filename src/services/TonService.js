@@ -8,7 +8,7 @@ const STARS_USD_RATE = parseFloat(process.env.STARS_USD_RATE || '0.02');
 
 const TONAPI_BASE = 'https://tonapi.io/v2';
 
-// Cache GRAM/USD rate for 5 minutes
+// Cache TON/USD rate for 5 minutes
 let rateCache = { usd: null, fetchedAt: 0 };
 const RATE_TTL_MS = 5 * 60 * 1000;
 
@@ -40,13 +40,13 @@ async function getGramUsdRate() {
 		} catch (_) { /* try next slug */ }
 	}
 
-	throw new Error('Could not fetch GRAM/USD rate from CoinGecko');
+	throw new Error('Could not fetch TON/USD rate from CoinGecko');
 }
 
 /**
- * Convert Stars to GRAM amount
+ * Convert Stars to TON amount
  * @param {number} stars
- * @returns {Promise<number>} GRAM amount (9 decimal places)
+ * @returns {Promise<number>} TON amount (9 decimal places)
  */
 async function starsToGram(stars) {
 	const gramUsd = await getGramUsdRate();
@@ -68,11 +68,11 @@ function isValidTonAddress(address) {
 }
 
 /**
- * Send GRAM from the bot's hot wallet via tonapi.io.
+ * Send TON from the bot's hot wallet via tonapi.io.
  * Get your API key at tonconsole.com (free 1 RPS tier).
  *
  * @param {string} toAddress - recipient address (any TON format)
- * @param {number} gramAmount - amount in GRAM (e.g. 0.5)
+ * @param {number} gramAmount - amount in TON (e.g. 0.5)
  * @returns {Promise<string>} seqno reference (tx hash not available synchronously in TON)
  */
 async function sendGram(toAddress, gramAmount) {

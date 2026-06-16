@@ -413,19 +413,20 @@ class AdminCallbacks {
 	}
 
 	async handleApproveWithdrawal(ctx, withdrawalId) {
+		const t = ctx.i18n.t;
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery('Нет доступа');
+			await ctx.answerCbQuery(t('admin.withdrawals.no_access', { ns: 'message' }));
 			return;
 		}
 
 		try {
 			const withdrawal = await this.db.getWithdrawal(withdrawalId);
 			if (!withdrawal) {
-				await ctx.answerCbQuery('Запрос не найден');
+				await ctx.answerCbQuery(t('admin.withdrawals.not_found', { ns: 'message' }));
 				return;
 			}
 			if (withdrawal.status !== 'pending') {
-				await ctx.answerCbQuery('Запрос уже обработан');
+				await ctx.answerCbQuery(t('admin.withdrawals.already_processed', { ns: 'message' }));
 				return;
 			}
 
@@ -442,55 +443,52 @@ class AdminCallbacks {
 					txHash = await sendTon(tonWallet, tonAmount);
 				} catch (err) {
 					txError = err.message;
-					console.error('Ошибка отправки GRAM:', err);
+					console.error('Ошибка отправки TON:', err);
 				}
 			}
 
 			await this.db.updateWithdrawalStatus(withdrawalId, 'completed', ctx.from.id, txError, txHash);
 
 			const statusLine = txHash
-				? `✅ GRAM отправлен\n🔗 Транзакция: <code>${txHash}</code>`
+				? t('admin.withdrawals.ton_sent', { ns: 'message', txHash })
 				: txError
-					? `⚠️ Ошибка отправки GRAM: ${txError}\nВыплатите вручную на: <code>${tonWallet}</code>`
-					: '⚠️ Кошелёк не указан — выплатите вручную';
+					? t('admin.withdrawals.ton_error', { ns: 'message', error: txError, wallet: tonWallet })
+					: t('admin.withdrawals.no_wallet', { ns: 'message' });
 
-			const adminNote = [
-				`✅ Выплата #${withdrawalId} подтверждена.`,
-				'',
-				`👤 Пользователь: ${telegramId}`,
-				`💰 Stars: ${withdrawal.amount} ⭐`,
-				tonAmount ? `💎 GRAM: ${tonAmount}` : '',
+			const adminNoteParts = [
+				t('admin.withdrawals.approve_note', { ns: 'message', id: withdrawalId, userId: telegramId, stars: withdrawal.amount }),
+				tonAmount ? t('admin.withdrawals.approve_note_ton', { ns: 'message', amount: tonAmount }) : '',
 				statusLine,
-			].filter(Boolean).join('\n');
-
-			await ctx.editMessageText(adminNote, { parse_mode: 'HTML' });
+			].filter(Boolean);
+			await ctx.editMessageText(adminNoteParts.join('\n'), { parse_mode: 'HTML' });
 
 			try {
 				const userMsg = txHash
-					? `✅ Выплата ${tonAmount} GRAM отправлена на ваш кошелёк!\n\n🔗 Транзакция: <code>${txHash}</code>`
-					: `✅ Ваш запрос на вывод ${withdrawal.amount} ⭐ одобрен! Выплата будет произведена вручную.`;
+					? t('admin.withdrawals.user_approved_ton', { ns: 'message', amount: tonAmount, txHash })
+					: t('admin.withdrawals.user_approved_manual', { ns: 'message', stars: withdrawal.amount });
 				await ctx.telegram.sendMessage(telegramId, userMsg, { parse_mode: 'HTML' });
 			} catch (_) {}
 		} catch (error) {
 			console.error('Ошибка подтверждения выплаты:', error);
-			await ctx.answerCbQuery('Ошибка обработки запроса');
+			await ctx.answerCbQuery(t('admin.withdrawals.processing_error', { ns: 'message' }));
 		}
 	}
 
 	async handleRejectWithdrawal(ctx, withdrawalId) {
+		const t = ctx.i18n.t;
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery('Нет доступа');
+			await ctx.answerCbQuery(t('admin.withdrawals.no_access', { ns: 'message' }));
 			return;
 		}
 
 		try {
 			const withdrawal = await this.db.getWithdrawal(withdrawalId);
 			if (!withdrawal) {
-				await ctx.answerCbQuery('Запрос не найден');
+				await ctx.answerCbQuery(t('admin.withdrawals.not_found', { ns: 'message' }));
 				return;
 			}
 			if (withdrawal.status !== 'pending') {
-				await ctx.answerCbQuery('Запрос уже обработан');
+				await ctx.answerCbQuery(t('admin.withdrawals.already_processed', { ns: 'message' }));
 				return;
 			}
 
@@ -500,18 +498,18 @@ class AdminCallbacks {
 			const telegramId = user?.telegram_id;
 			const amount = withdrawal.amount;
 
-			const adminNote = `❌ Выплата #${withdrawalId} отклонена.\n\n👤 Пользователь: ${telegramId}\n💰 Сумма: ${amount} ⭐`;
+			const adminNote = t('admin.withdrawals.reject_note', { ns: 'message', id: withdrawalId, userId: telegramId, stars: amount });
 			await ctx.editMessageText(adminNote, { parse_mode: 'HTML' });
 
 			try {
 				await ctx.telegram.sendMessage(
 					telegramId,
-					`❌ Ваш запрос на вывод ${amount} ⭐ был отклонён. Обратитесь в поддержку за подробностями.`
+					t('admin.withdrawals.user_rejected', { ns: 'message', stars: amount })
 				);
 			} catch (_) {}
 		} catch (error) {
 			console.error('Ошибка отклонения выплаты:', error);
-			await ctx.answerCbQuery('Ошибка обработки запроса');
+			await ctx.answerCbQuery(t('admin.withdrawals.processing_error', { ns: 'message' }));
 		}
 	}
 
