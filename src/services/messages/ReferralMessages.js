@@ -165,7 +165,7 @@ class ReferralMessages {
 			withdrawalId: data.withdrawalId,
 		});
 		const tonInfo = data.tonAmount
-			? `\n💎 GRAM к выплате: <b>${data.tonAmount} GRAM</b>\n📬 Кошелёк: <code>${data.tonWallet}</code>`
+			? `\nTON к выплате: <b>${data.tonAmount} GRAM</b>\n📬 Кошелёк: <code>${data.tonWallet}</code>`
 			: '';
 		return base + tonInfo;
 	}

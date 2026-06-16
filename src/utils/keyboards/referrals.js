@@ -4,8 +4,8 @@ const { btn } = require('./common');
 
 function createReferralMenuKeyboard(t, shareText, tonWallet = null) {
 	const walletLabel = tonWallet
-		? `💎 ${tonWallet.slice(0, 6)}…${tonWallet.slice(-4)}`
-		: '💎 Указать TON-кошелёк';
+		? `${tonWallet.slice(0, 6)}…${tonWallet.slice(-4)}`
+		: t('buttons.ton_wallet_connect');
 	const walletBtn = Markup.button.callback(walletLabel, CALLBACK_ACTIONS.REFERRAL.SET_WALLET);
 	walletBtn.icon_custom_emoji_id = '5769406891289481208';
 	return Markup.inlineKeyboard([

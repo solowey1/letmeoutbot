@@ -2,11 +2,11 @@ const { Markup } = require('telegraf');
 const { CALLBACK_ACTIONS } = require('../../config/constants');
 const { btn } = require('./common');
 
-function createWithdrawalAdminKeyboard(withdrawalId) {
+function createWithdrawalAdminKeyboard(t, withdrawalId) {
 	return Markup.inlineKeyboard([
 		[
-			Markup.button.callback('✅ Выплатить', `${CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.APPROVE}_${withdrawalId}`),
-			Markup.button.callback('❌ Отклонить', `${CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.REJECT}_${withdrawalId}`),
+			Markup.button.callback(t('buttons.admin.withdrawal_approve'), `${CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.APPROVE}_${withdrawalId}`),
+			Markup.button.callback(t('buttons.admin.withdrawal_reject'), `${CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.REJECT}_${withdrawalId}`),
 		]
 	]);
 }

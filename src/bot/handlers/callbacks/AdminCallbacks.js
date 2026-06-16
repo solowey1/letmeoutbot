@@ -442,16 +442,16 @@ class AdminCallbacks {
 					txHash = await sendTon(tonWallet, tonAmount);
 				} catch (err) {
 					txError = err.message;
-					console.error('Ошибка отправки GRAM:', err);
+					console.error('Ошибка отправки TON:', err);
 				}
 			}
 
 			await this.db.updateWithdrawalStatus(withdrawalId, 'completed', ctx.from.id, txError, txHash);
 
 			const statusLine = txHash
-				? `✅ GRAM отправлен\n🔗 Транзакция: <code>${txHash}</code>`
+				? `✅ TON отправлен\n🔗 Транзакция: <code>${txHash}</code>`
 				: txError
-					? `⚠️ Ошибка отправки GRAM: ${txError}\nВыплатите вручную на: <code>${tonWallet}</code>`
+					? `⚠️ Ошибка отправки TON: ${txError}\nВыплатите вручную на: <code>${tonWallet}</code>`
 					: '⚠️ Кошелёк не указан — выплатите вручную';
 
 			const adminNote = [
@@ -459,7 +459,7 @@ class AdminCallbacks {
 				'',
 				`👤 Пользователь: ${telegramId}`,
 				`💰 Stars: ${withdrawal.amount} ⭐`,
-				tonAmount ? `💎 GRAM: ${tonAmount}` : '',
+				tonAmount ? `💎 TON: ${tonAmount}` : '',
 				statusLine,
 			].filter(Boolean).join('\n');
 
@@ -467,7 +467,7 @@ class AdminCallbacks {
 
 			try {
 				const userMsg = txHash
-					? `✅ Выплата ${tonAmount} GRAM отправлена на ваш кошелёк!\n\n🔗 Транзакция: <code>${txHash}</code>`
+					? `✅ Выплата ${tonAmount} TON отправлена на ваш кошелёк!\n\n🔗 Транзакция: <code>${txHash}</code>`
 					: `✅ Ваш запрос на вывод ${withdrawal.amount} ⭐ одобрен! Выплата будет произведена вручную.`;
 				await ctx.telegram.sendMessage(telegramId, userMsg, { parse_mode: 'HTML' });
 			} catch (_) {}

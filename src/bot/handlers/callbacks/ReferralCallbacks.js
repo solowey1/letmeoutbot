@@ -212,7 +212,7 @@ class ReferralCallbacks {
 			withdrawalId: withdrawalId,
 		});
 
-		const withdrawalKeyboard = KeyboardUtils.createWithdrawalAdminKeyboard(withdrawalId);
+		const withdrawalKeyboard = KeyboardUtils.createWithdrawalAdminKeyboard(t, withdrawalId);
 		for (const adminId of ADMIN_IDS) {
 			try {
 				await this.bot.telegram.sendMessage(adminId, adminMessage, {

@@ -44,9 +44,9 @@ async function getGramUsdRate() {
 }
 
 /**
- * Convert Stars to GRAM amount
+ * Convert Stars to TON amount
  * @param {number} stars
- * @returns {Promise<number>} GRAM amount (9 decimal places)
+ * @returns {Promise<number>} TON amount (9 decimal places)
  */
 async function starsToGram(stars) {
 	const gramUsd = await getGramUsdRate();
@@ -68,11 +68,11 @@ function isValidTonAddress(address) {
 }
 
 /**
- * Send GRAM from the bot's hot wallet via tonapi.io.
+ * Send TON from the bot's hot wallet via tonapi.io.
  * Get your API key at tonconsole.com (free 1 RPS tier).
  *
  * @param {string} toAddress - recipient address (any TON format)
- * @param {number} gramAmount - amount in GRAM (e.g. 0.5)
+ * @param {number} gramAmount - amount in TON (e.g. 0.5)
  * @returns {Promise<string>} seqno reference (tx hash not available synchronously in TON)
  */
 async function sendGram(toAddress, gramAmount) {
