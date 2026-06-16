@@ -765,18 +765,28 @@ class SupabaseDatabase {
 
 	// ============== WITHDRAWALS ==============
 
-	async createWithdrawal(userId, amount) {
+	async createWithdrawal(userId, amount, tonAmount = null, tonWallet = null) {
 		const { data, error } = await this.supabase
 			.from('withdrawals')
 			.insert([{
 				user_id: userId,
-				amount: amount
+				amount: amount,
+				ton_amount: tonAmount,
+				ton_wallet: tonWallet,
 			}])
 			.select('id')
 			.single();
 
 		if (error) throw error;
 		return data.id;
+	}
+
+	async updateUserTonWallet(telegramId, tonWallet) {
+		const { error } = await this.supabase
+			.from('users')
+			.update({ ton_wallet: tonWallet })
+			.eq('telegram_id', telegramId);
+		if (error) throw error;
 	}
 
 	// ============== BROADCAST ==============
@@ -1113,15 +1123,18 @@ class SupabaseDatabase {
 		}));
 	}
 
-	async updateWithdrawalStatus(withdrawalId, status, processedBy = null, notes = null) {
+	async updateWithdrawalStatus(withdrawalId, status, processedBy = null, notes = null, tonTxHash = null) {
+		const update = {
+			status: status,
+			processed_at: new Date().toISOString(),
+			processed_by: processedBy,
+			notes: notes,
+		};
+		if (tonTxHash) update.ton_tx_hash = tonTxHash;
+
 		const { error } = await this.supabase
 			.from('withdrawals')
-			.update({
-				status: status,
-				processed_at: new Date().toISOString(),
-				processed_by: processedBy,
-				notes: notes
-			})
+			.update(update)
 			.eq('id', withdrawalId);
 
 		if (error) throw error;
