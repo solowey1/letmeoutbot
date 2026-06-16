@@ -58,11 +58,21 @@ class KeyMessages {
 		// Добавляем ключ доступа
 		if (key.access_url) {
 			message.push('');
-			message.push(`<b>${t('keys.access_key_title', { ns: 'message' })}</b>`);
-			message.push(`<code>${key.access_url}</code>`);
-			message.push('');
-			message.push(`<b>${t('keys.how_to_connect', { ns: 'message' })}</b>`);
-			message.push(...t('keys.connect_steps', { ns: 'message' }).map((step, i) => `${i + 1}. ${step}`));
+			if (key.key_type === 'vless') {
+				message.push(`<b>${t('keys.subscription_title', { ns: 'message' })}</b>`);
+				message.push(`<code>${key.access_url}</code>`);
+				message.push('');
+				message.push(`💡 ${t('keys.subscription_hint', { ns: 'message' })}`);
+				message.push('');
+				message.push(`<b>${t('keys.subscription_how_to', { ns: 'message' })}</b>`);
+				message.push(...t('keys.subscription_steps', { ns: 'message' }).map((step, i) => `${i + 1}. ${step}`));
+			} else {
+				message.push(`<b>${t('keys.access_key_title', { ns: 'message' })}</b>`);
+				message.push(`<code>${key.access_url}</code>`);
+				message.push('');
+				message.push(`<b>${t('keys.how_to_connect', { ns: 'message' })}</b>`);
+				message.push(...t('keys.connect_steps', { ns: 'message' }).map((step, i) => `${i + 1}. ${step}`));
+			}
 		}
 
 		return message.join('\n');
