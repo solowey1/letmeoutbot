@@ -184,7 +184,7 @@ class ReferralCallbacks {
 		const user = await this.db.getUserByTelegramId(ctx.from.id);
 
 		if (!user.ton_wallet) {
-			await ctx.answerCbQuery('Сначала укажите GRAM-кошелёк');
+			await ctx.answerCbQuery(t('referral.withdrawal.wallet_required', { ns: 'message' }));
 			return;
 		}
 

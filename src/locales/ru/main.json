@@ -23,9 +23,11 @@
     "back": "Назад",
     "settings": "Настройки",
     "language": "Язык",
-    "settings_ton": "GRAM-кошелёк",
+    "settings_ton": "TON-кошелёк",
     "ton_wallet_connect": "Подключить кошелёк",
     "ton_wallet_change": "Изменить кошелёк",
+    "ton_wallet_withdraw_now": "💸 Вывести сейчас",
+    "ton_wallet_referrals": "Рефералы",
     "retry": "Попробовать снова",
     "refresh_key": "Обновить ключ",
     "referral_actions": {

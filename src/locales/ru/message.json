@@ -60,7 +60,20 @@
     "withdrawals": {
       "title": "📜 Ожидающие выплаты",
       "no_pending": "📜 Нет ожидающих выплат",
-      "instructions": "Используйте /approve_withdrawal <id> или /reject_withdrawal <id>"
+      "instructions": "Используйте /approve_withdrawal <id> или /reject_withdrawal <id>",
+      "no_access": "Нет доступа",
+      "not_found": "Запрос не найден",
+      "already_processed": "Запрос уже обработан",
+      "processing_error": "Ошибка обработки запроса",
+      "ton_sent": "✅ TON отправлен\n🔗 Транзакция: <code>{{txHash}}</code>",
+      "ton_error": "⚠️ Ошибка отправки TON: {{error}}\nВыплатите вручную на: <code>{{wallet}}</code>",
+      "no_wallet": "⚠️ Кошелёк не указан — выплатите вручную",
+      "approve_note": "✅ Выплата #{{id}} подтверждена.\n\n👤 Пользователь: {{userId}}\n💰 Stars: {{stars}} ⭐",
+      "approve_note_ton": "💎 TON: {{amount}}",
+      "reject_note": "❌ Выплата #{{id}} отклонена.\n\n👤 Пользователь: {{userId}}\n💰 Сумма: {{stars}} ⭐",
+      "user_approved_ton": "✅ Выплата {{amount}} TON отправлена на ваш кошелёк!\n\n🔗 Транзакция: <code>{{txHash}}</code>",
+      "user_approved_manual": "✅ Ваш запрос на вывод {{stars}} ⭐ одобрен! Выплата будет произведена вручную.",
+      "user_rejected": "❌ Ваш запрос на вывод {{stars}} ⭐ был отклонён. Обратитесь в поддержку за подробностями."
     },
     "loading_error": "Ошибка загрузки",
     "settings": {
@@ -384,8 +397,9 @@
       "total_withdrawn": "Всего выведено",
       "available_for_withdrawal": "Доступно для вывода",
       "pending_amount": "Ожидает (14 дней)",
-      "ton_wallet": "GRAM-кошелёк",
-      "ton_wallet_not_set": "GRAM-кошелёк не указан"
+      "ton_wallet": "TON-кошелёк",
+      "ton_wallet_not_set": "TON-кошелёк не указан",
+      "ton_equivalent": "≈ {{amount}} TON"
     },
     "how_it_works_title": "Как это работает:",
     "how_it_works": [
@@ -407,7 +421,11 @@
       "insufficient": "Недостаточно средств для вывода.\n\nМинимальная сумма: 1 ⭐\nДоступно: {{amount}} ⭐",
       "no_funds": "У вас пока нет средств для вывода.\n\nПриглашайте друзей и зарабатывайте 30% с их покупок!",
       "admin_notification": "🔔 Новый запрос на вывод средств!\n\n👤 Пользователь: {{username}} (ID: {{userId}})\n💰 Сумма: {{amount}} ⭐\n📊 Всего рефералов: {{referrals}}\n🆔 ID запроса: {{withdrawalId}}\n\nОбработайте запрос в ближайшее время.",
-      "set_wallet_prompt": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> <b>Укажите GRAM-кошелёк</b>\n\nОтправьте ваш адрес в сети TON в следующем сообщении.\n\nПример: <code>UQD...</code>\n\n<i>Адрес будет сохранён и использован для автоматических выплат в GRAM.</i>",
+      "set_wallet_prompt": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> <b>Укажите TON-кошелёк</b>\n\nОтправьте ваш адрес в сети TON в следующем сообщении.\n\nПример: <code>UQD...</code>\n\n<i>Адрес будет сохранён и использован для автоматических выплат в TON.</i>",
+      "wallet_required": "Сначала укажите TON-кошелёк",
+      "ton_confirm_line": "\n💎 К получению: <b>{{amount}} TON</b>\n📬 Кошелёк: <code>{{wallet}}</code>",
+      "ton_success_line": "\n\n💎 К выплате: <b>{{amount}} TON</b>",
+      "ton_admin_line": "\n💎 TON к выплате: <b>{{amount}} TON</b>\n📬 Кошелёк: <code>{{wallet}}</code>",
       "history_title": "📜 История выводов",
       "no_history": "У вас пока нет истории выводов.\n\nВыведите средства, чтобы увидеть их здесь.",
       "status": {
@@ -458,9 +476,11 @@
     "language_changed": "Язык изменён на русский 🇷🇺",
     "current_language": "Текущий язык: Русский 🇷🇺",
     "ton_wallet": {
-      "not_connected": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> <b>GRAM-кошелёк не подключён</b>\n\nЧтобы подключить кошелёк и получать выплаты автоматически — нажмите кнопку ниже, затем отправьте ваш адрес в сети TON.\n\n<i>Пример адреса: <code>UQD...</code></i>",
+      "not_connected": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> <b>TON-кошелёк не подключён</b>\n\nЧтобы подключить кошелёк и получать выплаты автоматически — нажмите кнопку ниже, затем отправьте ваш адрес в сети TON.\n\n<i>Пример адреса: <code>UQD...</code></i>",
       "connected": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> <b>{{address}}</b>\n\nХотите изменить кошелёк? Нажмите кнопку ниже и отправьте новый адрес в сети TON.\n\n<i>Пример адреса: <code>UQD...</code></i>",
-      "input_prompt": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> <b>Введите адрес GRAM-кошелька</b>\n\nОтправьте ваш адрес в сети TON следующим сообщением.\n\n<i>Пример: <code>UQD...</code></i>"
+      "input_prompt": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> <b>Введите адрес TON-кошелька</b>\n\nОтправьте ваш адрес в сети TON следующим сообщением.\n\n<i>Пример: <code>UQD...</code></i>",
+      "invalid_address": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> Некорректный адрес кошелька. Проверьте формат и попробуйте снова.",
+      "saved": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> TON-кошелёк сохранён:\n<code>{{address}}</code>"
     }
   },
   "support": {

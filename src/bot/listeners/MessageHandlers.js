@@ -41,17 +41,23 @@ class MessageHandlers {
 			return;
 		}
 
-		// Обработка ввода GRAM-кошелька
+		// Обработка ввода TON-кошелька
 		if (awaitingWallet.has(userId)) {
+			const t = ctx.i18n.t;
 			const source = awaitingWallet.get(userId); // 'settings' | 'referral'
 			awaitingWallet.delete(userId);
 			const address = ctx.message.text?.trim();
 
 			if (!address || !isValidTonAddress(address)) {
-				const retryKeyboard = source === 'settings'
-					? Markup.inlineKeyboard([[Markup.button.callback('💎 Попробовать снова', CALLBACK_ACTIONS.SETTINGS.TON_WALLET_INPUT)]])
-					: Markup.inlineKeyboard([[Markup.button.callback('💎 Попробовать снова', CALLBACK_ACTIONS.REFERRAL.SET_WALLET)]]);
-				await ctx.reply('❌ Некорректный GRAM-адрес. Проверьте формат и попробуйте снова.', retryKeyboard);
+				const retryAction = source === 'settings'
+					? CALLBACK_ACTIONS.SETTINGS.TON_WALLET_INPUT
+					: CALLBACK_ACTIONS.REFERRAL.SET_WALLET;
+				const retryBtn = Markup.button.callback(t('buttons.retry'), retryAction);
+				retryBtn.icon_custom_emoji_id = '5769406891289481208';
+				await ctx.reply(
+					t('settings.ton_wallet.invalid_address', { ns: 'message' }),
+					{ parse_mode: 'HTML', ...Markup.inlineKeyboard([[retryBtn]]) }
+				);
 				return;
 			}
 
@@ -59,18 +65,18 @@ class MessageHandlers {
 
 			const successKeyboard = source === 'settings'
 				? Markup.inlineKeyboard([
-					[Markup.button.callback('💎 Настройки GRAM', CALLBACK_ACTIONS.SETTINGS.TON_WALLET)],
-					[Markup.button.callback('⚙️ Настройки', CALLBACK_ACTIONS.SETTINGS.MENU)],
+					[(() => { const b = Markup.button.callback(t('buttons.settings_ton'), CALLBACK_ACTIONS.SETTINGS.TON_WALLET); b.icon_custom_emoji_id = '5769406891289481208'; return b; })()],
+					[Markup.button.callback(t('buttons.settings'), CALLBACK_ACTIONS.SETTINGS.MENU)],
 				])
 				: Markup.inlineKeyboard([
-					[Markup.button.callback('💸 Вывести сейчас', CALLBACK_ACTIONS.REFERRAL.WITHDRAW)],
-					[Markup.button.callback('← Рефералы', CALLBACK_ACTIONS.REFERRAL.MENU)],
+					[Markup.button.callback(t('buttons.ton_wallet_withdraw_now'), CALLBACK_ACTIONS.REFERRAL.WITHDRAW)],
+					[Markup.button.callback(t('buttons.ton_wallet_referrals'), CALLBACK_ACTIONS.REFERRAL.MENU)],
 				]);
 
-			await ctx.reply(`✅ GRAM-кошелёк сохранён:\n<code>${address}</code>`, {
-				parse_mode: 'HTML',
-				...successKeyboard,
-			});
+			await ctx.reply(
+				t('settings.ton_wallet.saved', { ns: 'message', address }),
+				{ parse_mode: 'HTML', ...successKeyboard }
+			);
 			return;
 		}
 

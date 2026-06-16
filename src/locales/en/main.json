@@ -26,6 +26,8 @@
     "settings_ton": "TON Wallet",
     "ton_wallet_connect": "Connect Wallet",
     "ton_wallet_change": "Change Wallet",
+    "ton_wallet_withdraw_now": "💸 Withdraw Now",
+    "ton_wallet_referrals": "Referrals",
     "retry": "Try Again",
     "refresh_key": "Refresh Key",
     "referral_actions": {

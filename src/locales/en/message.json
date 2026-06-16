@@ -59,7 +59,20 @@
     "withdrawals": {
       "title": "📜 Pending Withdrawals",
       "no_pending": "📜 No pending withdrawals",
-      "instructions": "Use /approve_withdrawal <id> or /reject_withdrawal <id>"
+      "instructions": "Use /approve_withdrawal <id> or /reject_withdrawal <id>",
+      "no_access": "Access denied",
+      "not_found": "Request not found",
+      "already_processed": "Request already processed",
+      "processing_error": "Error processing request",
+      "ton_sent": "✅ TON sent\n🔗 Transaction: <code>{{txHash}}</code>",
+      "ton_error": "⚠️ TON send error: {{error}}\nPay manually to: <code>{{wallet}}</code>",
+      "no_wallet": "⚠️ No wallet set — pay manually",
+      "approve_note": "✅ Payout #{{id}} confirmed.\n\n👤 User: {{userId}}\n💰 Stars: {{stars}} ⭐",
+      "approve_note_ton": "💎 TON: {{amount}}",
+      "reject_note": "❌ Payout #{{id}} rejected.\n\n👤 User: {{userId}}\n💰 Amount: {{stars}} ⭐",
+      "user_approved_ton": "✅ Payout of {{amount}} TON sent to your wallet!\n\n🔗 Transaction: <code>{{txHash}}</code>",
+      "user_approved_manual": "✅ Your withdrawal request for {{stars}} ⭐ has been approved! Payout will be processed manually.",
+      "user_rejected": "❌ Your withdrawal request for {{stars}} ⭐ was rejected. Please contact support for details."
     },
     "loading_error": "Loading error",
     "broadcast": {
@@ -380,7 +393,8 @@
       "available_for_withdrawal": "Available for withdrawal",
       "pending_amount": "Pending (14 days)",
       "ton_wallet": "TON wallet",
-      "ton_wallet_not_set": "TON wallet not set"
+      "ton_wallet_not_set": "TON wallet not set",
+      "ton_equivalent": "≈ {{amount}} TON"
     },
     "how_it_works_title": "How it works:",
     "how_it_works": [
@@ -402,7 +416,11 @@
       "insufficient": "Insufficient funds for withdrawal.\n\nMinimum amount: 1 ⭐\nAvailable: {{amount}} ⭐",
       "no_funds": "You don't have any funds to withdraw yet.\n\nInvite friends and earn 30% from their purchases!",
       "admin_notification": "🔔 New withdrawal request!\n\n👤 User: {{username}} (ID: {{userId}})\n💰 Amount: {{amount}} ⭐\n📊 Total referrals: {{referrals}}\n🆔 Request ID: {{withdrawalId}}\n\nPlease process the request as soon as possible.",
-      "set_wallet_prompt": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> <b>Set your TON wallet</b>\n\nSend your TON network address in the next message.\n\nExample: <code>UQD...</code>\n\n<i>The address will be saved and used for automatic payouts in GRAM.</i>",
+      "set_wallet_prompt": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> <b>Set your TON wallet</b>\n\nSend your TON network address in the next message.\n\nExample: <code>UQD...</code>\n\n<i>The address will be saved and used for automatic payouts in TON.</i>",
+      "wallet_required": "Please set your TON wallet first",
+      "ton_confirm_line": "\n💎 To receive: <b>{{amount}} TON</b>\n📬 Wallet: <code>{{wallet}}</code>",
+      "ton_success_line": "\n\n💎 To pay out: <b>{{amount}} TON</b>",
+      "ton_admin_line": "\n💎 TON to pay: <b>{{amount}} TON</b>\n📬 Wallet: <code>{{wallet}}</code>",
       "history_title": "📜 Withdrawal History",
       "no_history": "You don't have any withdrawal history yet.\n\nWithdraw funds to see them here.",
       "status": {
@@ -455,7 +473,9 @@
     "ton_wallet": {
       "not_connected": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> <b>TON wallet not connected</b>\n\nTo connect your wallet and receive automatic payouts — tap the button below, then send your TON network address.\n\n<i>Example: <code>UQD...</code></i>",
       "connected": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> <b>{{address}}</b>\n\nWant to change your wallet? Tap the button below and send a new TON address.\n\n<i>Example: <code>UQD...</code></i>",
-      "input_prompt": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> <b>Enter your TON wallet address</b>\n\nSend your TON network address in the next message.\n\n<i>Example: <code>UQD...</code></i>"
+      "input_prompt": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> <b>Enter your TON wallet address</b>\n\nSend your TON network address in the next message.\n\n<i>Example: <code>UQD...</code></i>",
+      "invalid_address": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> Invalid wallet address. Check the format and try again.",
+      "saved": "<tg-emoji emoji-id=\"5769406891289481208\">💎</tg-emoji> TON wallet saved:\n<code>{{address}}</code>"
     }
   },
   "support": {

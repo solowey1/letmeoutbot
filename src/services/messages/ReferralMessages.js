@@ -14,9 +14,10 @@ class ReferralMessages {
 			? howItWorks.map((item, i) => `${i + 1}. ${item}`)
 			: [`1. ${howItWorks}`];
 
-		const availableLine = tonEquivalent !== null
-			? `✅ ${t('referral.stats.available_for_withdrawal', { ns: 'message' })}: <b>${stats.availableForWithdrawal} ⭐ ≈ ${tonEquivalent} GRAM</b>`
-			: `✅ ${t('referral.stats.available_for_withdrawal', { ns: 'message' })}: <b>${stats.availableForWithdrawal} ⭐</b>`;
+		const tonSuffix = tonEquivalent !== null
+			? ` ${t('referral.stats.ton_equivalent', { ns: 'message', amount: tonEquivalent })}`
+			: '';
+		const availableLine = `✅ ${t('referral.stats.available_for_withdrawal', { ns: 'message' })}: <b>${stats.availableForWithdrawal} ⭐${tonSuffix}</b>`;
 
 		const walletLine = tonWallet
 			? `💎 ${t('referral.stats.ton_wallet', { ns: 'message' })}: <code>${tonWallet}</code>`
@@ -105,7 +106,7 @@ class ReferralMessages {
 	 */
 	static withdrawalConfirm(t, amount, tonAmount = null, tonWallet = null) {
 		const tonLine = tonAmount
-			? `\n💎 К получению: <b>${tonAmount} GRAM</b>\n📬 Кошелёк: <code>${tonWallet}</code>`
+			? t('referral.withdrawal.ton_confirm_line', { ns: 'message', amount: tonAmount, wallet: tonWallet })
 			: '';
 		return t('referral.withdrawal.confirm', { ns: 'message', amount }) + tonLine;
 	}
@@ -123,7 +124,7 @@ class ReferralMessages {
 	static withdrawalSuccess(t, amount, tonAmount = null) {
 		const base = t('referral.withdrawal.success', { ns: 'message', amount });
 		return tonAmount
-			? base + `\n\n💎 К выплате: <b>${tonAmount} GRAM</b>`
+			? base + t('referral.withdrawal.ton_success_line', { ns: 'message', amount: tonAmount })
 			: base;
 	}
 
@@ -165,7 +166,7 @@ class ReferralMessages {
 			withdrawalId: data.withdrawalId,
 		});
 		const tonInfo = data.tonAmount
-			? `\nTON к выплате: <b>${data.tonAmount} GRAM</b>\n📬 Кошелёк: <code>${data.tonWallet}</code>`
+			? t('referral.withdrawal.ton_admin_line', { ns: 'message', amount: data.tonAmount, wallet: data.tonWallet })
 			: '';
 		return base + tonInfo;
 	}

@@ -8,7 +8,7 @@ const STARS_USD_RATE = parseFloat(process.env.STARS_USD_RATE || '0.02');
 
 const TONAPI_BASE = 'https://tonapi.io/v2';
 
-// Cache GRAM/USD rate for 5 minutes
+// Cache TON/USD rate for 5 minutes
 let rateCache = { usd: null, fetchedAt: 0 };
 const RATE_TTL_MS = 5 * 60 * 1000;
 
@@ -40,7 +40,7 @@ async function getGramUsdRate() {
 		} catch (_) { /* try next slug */ }
 	}
 
-	throw new Error('Could not fetch GRAM/USD rate from CoinGecko');
+	throw new Error('Could not fetch TON/USD rate from CoinGecko');
 }
 
 /**
