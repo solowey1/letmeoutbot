@@ -1,7 +1,10 @@
+const { Markup } = require('telegraf');
 const KeyboardUtils = require('../../utils/keyboards');
 const { MenuMessages } = require('../../services/messages');
-const { ADMIN_IDS } = require('../../config/constants');
+const { ADMIN_IDS, CALLBACK_ACTIONS } = require('../../config/constants');
 const pendingBroadcast = require('../../utils/broadcastState');
+const awaitingWallet = require('../../utils/tonWalletState');
+const { isValidTonAddress } = require('../../services/TonService');
 
 class MessageHandlers {
 	constructor(database, bot, broadcastCallbacks = null) {
@@ -35,6 +38,39 @@ class MessageHandlers {
 			}
 
 			await this.executeBroadcast(ctx, state.audience);
+			return;
+		}
+
+		// Обработка ввода GRAM-кошелька
+		if (awaitingWallet.has(userId)) {
+			const source = awaitingWallet.get(userId); // 'settings' | 'referral'
+			awaitingWallet.delete(userId);
+			const address = ctx.message.text?.trim();
+
+			if (!address || !isValidTonAddress(address)) {
+				const retryKeyboard = source === 'settings'
+					? Markup.inlineKeyboard([[Markup.button.callback('💎 Попробовать снова', CALLBACK_ACTIONS.SETTINGS.TON_WALLET_INPUT)]])
+					: Markup.inlineKeyboard([[Markup.button.callback('💎 Попробовать снова', CALLBACK_ACTIONS.REFERRAL.SET_WALLET)]]);
+				await ctx.reply('❌ Некорректный GRAM-адрес. Проверьте формат и попробуйте снова.', retryKeyboard);
+				return;
+			}
+
+			await this.db.updateUserTonWallet(userId, address);
+
+			const successKeyboard = source === 'settings'
+				? Markup.inlineKeyboard([
+					[Markup.button.callback('💎 Настройки GRAM', CALLBACK_ACTIONS.SETTINGS.TON_WALLET)],
+					[Markup.button.callback('⚙️ Настройки', CALLBACK_ACTIONS.SETTINGS.MENU)],
+				])
+				: Markup.inlineKeyboard([
+					[Markup.button.callback('💸 Вывести сейчас', CALLBACK_ACTIONS.REFERRAL.WITHDRAW)],
+					[Markup.button.callback('← Рефералы', CALLBACK_ACTIONS.REFERRAL.MENU)],
+				]);
+
+			await ctx.reply(`✅ GRAM-кошелёк сохранён:\n<code>${address}</code>`, {
+				parse_mode: 'HTML',
+				...successKeyboard,
+			});
 			return;
 		}
 

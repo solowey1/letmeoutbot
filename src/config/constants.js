@@ -250,7 +250,11 @@ const CALLBACK_ACTIONS = {
 		PAYMENTS: { MENU: 'admin_payments' },
 		STATS: { MENU: 'admin_stats_menu' },
 		USERS: { MENU: 'admin_users_menu' },
-		WITHDRAWALS: { PENDING: 'admin_withdrawals_pending' },
+		WITHDRAWALS: {
+			PENDING: 'admin_withdrawals_pending',
+			APPROVE: 'withdrawal_approve',
+			REJECT: 'withdrawal_reject',
+		},
 		BROADCAST: 'admin_broadcast',
 		BROADCAST_AUDIENCE: {
 			ALL: 'admin_broadcast_all',
@@ -307,7 +311,9 @@ const CALLBACK_ACTIONS = {
 			SET: 'lang_set',
 			RU: 'set_lang_ru',
 			EN: 'set_lang_en'
-		}
+		},
+		TON_WALLET: 'settings_ton_wallet',
+		TON_WALLET_INPUT: 'settings_ton_wallet_input',
 	},
 	REFERRAL: {
 		MENU: 'referral_menu',
@@ -316,7 +322,8 @@ const CALLBACK_ACTIONS = {
 		WITHDRAW: 'referral_withdraw',
 		CONFIRM_WITHDRAW: 'referral_confirm_withdraw',
 		MY_REFERRALS: 'referral_my_referrals',
-		HISTORY: 'referral_history'
+		HISTORY: 'referral_history',
+		SET_WALLET: 'referral_set_wallet',
 	},
 	GIFT: {
 		INFO: 'gift_info',

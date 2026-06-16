@@ -2,7 +2,10 @@ const { Markup } = require('telegraf');
 const { CALLBACK_ACTIONS } = require('../../config/constants');
 const { btn } = require('./common');
 
-function createReferralMenuKeyboard(t, shareText) {
+function createReferralMenuKeyboard(t, shareText, tonWallet = null) {
+	const walletLabel = tonWallet
+		? `💎 ${tonWallet.slice(0, 6)}…${tonWallet.slice(-4)}`
+		: '💎 Указать TON-кошелёк';
 	return Markup.inlineKeyboard([
 		[btn(t, 'ref_get_link')],
 		[
@@ -13,6 +16,7 @@ function createReferralMenuKeyboard(t, shareText) {
 			btn(t, 'ref_withdraw'),
 			btn(t, 'ref_history'),
 		],
+		[Markup.button.callback(walletLabel, CALLBACK_ACTIONS.REFERRAL.SET_WALLET)],
 		[btn(t, 'home')]
 	]);
 }

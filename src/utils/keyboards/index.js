@@ -70,9 +70,11 @@ class KeyboardUtils {
 	// settings
 	static createSettingsKeyboard(t) { return settings.createSettingsKeyboard(t); }
 	static createLanguageKeyboard(t) { return settings.createLanguageKeyboard(t); }
+	static createTonWalletKeyboard(t, walletConnected) { return settings.createTonWalletKeyboard(t, walletConnected); }
 
 	// admin
 	static createAdminKeyboard(t) { return admin.createAdminKeyboard(t); }
+	static createWithdrawalAdminKeyboard(withdrawalId) { return admin.createWithdrawalAdminKeyboard(withdrawalId); }
 
 	// broadcast
 	static createBroadcastAudienceKeyboard(t) { return broadcast.createBroadcastAudienceKeyboard(t); }
