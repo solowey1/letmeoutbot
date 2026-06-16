@@ -1,14 +1,14 @@
 {
   "gift": {
     "info": "🎁 <b>Free Trial Access</b>\n\nNew users can test the VPN completely for free.\n\nGet keys for both <b>VLESS</b> and <b>Outline</b> protocols at no cost. Each key is valid for <b>48 hours</b> or <b>500 MB</b> of traffic.",
-    "success": "✅ <b>Your free keys are ready!</b>\n\n⚡ <b>VLESS Reality:</b>\n<code>{{vlessUrl}}</code>\n\n🌿 <b>Outline:</b>\n<code>{{outlineUrl}}</code>\n\n<i>Each key is valid for 48 hours or 500 MB of traffic.\nAdd the keys to your VPN app and enjoy!</i>",
+    "success": "✅ <b>Your free keys are ready!</b>\n\n⚡ <b>VPN Subscription (VLESS + Hysteria2):</b>\n<code>{{vlessUrl}}</code>\n\n🌿 <b>Outline:</b>\n<code>{{outlineUrl}}</code>\n\n<i>Each key is valid for 48 hours or 500 MB of traffic.\nAdd the keys to your VPN app and enjoy!</i>",
     "already_received": "You have already received your free gift.",
     "not_eligible": "Gift is not available.",
     "error": "Failed to issue keys. Please try again later."
   },
   "welcome": {
     "title": "Welcome to Let me Out VPN!",
-    "description": "Here you can purchase access to secure and fast VPN via Outline and VLESS.",
+    "description": "Here you can purchase access to secure and fast VPN via Outline or VPN Subscription (VLESS + Hysteria2).",
     "steps": [
       "⭐️ Payment via Telegram Stars",
       "🚀 Instant activation after purchase",
@@ -52,7 +52,7 @@
       "activating": "🔄 Activating key...",
       "activate_error": "❌ Error: {{error}}",
       "activated_title": "🎉 Your key has been activated!",
-      "vless_label": "⚡ VLESS key:",
+      "vless_label": "⚡ VPN Subscription:",
       "outline_label": "🌿 Outline key:"
     },
     "withdrawals": {
@@ -282,7 +282,15 @@
       "auto_retry": "We will automatically retry shortly.",
       "will_notify": "You will receive the key once the system is restored.",
       "support_hint": "If you don't receive the key within 30 minutes, please contact support."
-    }
+    },
+    "subscription_title": "Subscription link:",
+    "subscription_hint": "Add this link to Hiddify, Nekobox or FoXray — the app will load VLESS + Hysteria2 automatically.",
+    "subscription_how_to": "How to connect:",
+    "subscription_steps": [
+      "Download Hiddify, Nekobox or FoXray",
+      "Click \"Add subscription\" and paste the link above",
+      "The app will automatically load VLESS + Hysteria2"
+    ]
   },
   "plans": {
     "choose": "Choose a plan:",
@@ -298,23 +306,23 @@
     "price": "Price",
     "per_month": "/mo",
     "select_type_title": "Choose connection type",
-    "type_vless_desc": "modern protocol, harder to detect",
+    "type_vless_desc": "subscription includes VLESS Reality + Hysteria2 — harder to detect and block",
     "type_outline_desc": "simple and reliable VPN based on Shadowsocks",
-    "type_both_desc": "maximum reliability with {{discount}}% discount",
+    "type_both_desc": "Outline + VPN Subscription with {{discount}}% discount — maximum reliability",
     "type_names": {
       "outline": "Outline VPN",
-      "vless": "VLESS",
-      "both": "Outline + VLESS"
+      "vless": "VPN Subscription",
+      "both": "Outline + VPN Subscription"
     },
     "type_descriptions": {
-      "vless": "Ideal for bypassing restrictions.",
+      "vless": "Subscription includes VLESS Reality + Hysteria2. One URL — multiple protocols.",
       "outline": "Unfortunately, it does not always work; however, it is the easiest to configure.",
-      "both": "Both protocols + {{discount}}% off — switch anytime"
+      "both": "Outline + VPN Subscription (VLESS + Hysteria2) + {{discount}}% discount"
     },
     "features": {
-      "vless_reality": "VLESS Reality (hard to block)",
+      "vless_reality": "VPN Subscription: VLESS Reality + Hysteria2",
       "outline_ss": "Outline Shadowsocks",
-      "two_protocols": "Two protocols in one key"
+      "two_protocols": "Outline + VPN Subscription in one plan"
     },
     "via_stars": "Payment via Telegram Stars"
   },
@@ -328,12 +336,12 @@
     "success_title": "Payment successful!",
     "keys_activated": "Keys activated!",
     "key_activated": "Your VPN key is activated!",
-    "vless_key_activated": "VLESS key activated!",
+    "vless_key_activated": "VPN Subscription activated!",
     "outline_key_label": "Outline key:",
-    "vless_key_label": "VLESS key:",
+    "vless_key_label": "VPN Subscription (VLESS + Hysteria2):",
     "connection_key_label": "Connection key:",
     "add_key_to_app": "Add the key you need to the app.",
-    "add_key_hiddify": "Add the key to Hiddify, FoXray or ShadowRocket.",
+    "add_key_hiddify": "Add the subscription link to Hiddify, Nekobox or FoXray — the app will load all protocols automatically.",
     "add_key_outline": "Add the key to the Outline app.",
     "vless_qr_caption": "📲 QR code for VLESS connection",
     "outline_qr_caption": "📲 QR code for Outline connection",

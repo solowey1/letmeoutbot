@@ -65,8 +65,8 @@
       "english": "English"
     },
     "type_outline": "Outline VPN",
-    "type_vless": "VLESS Reality",
-    "type_both": "Outline + VLESS (скидка {{discount}}%)",
+    "type_vless": "VPN Подписка (VLESS + Hysteria2)",
+    "type_both": "Outline + VPN Подписка (скидка {{discount}}%)",
     "protocols": {
       "outline": "Outline",
       "vless": "VLESS"
