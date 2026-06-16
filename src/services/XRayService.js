@@ -7,13 +7,13 @@ const { v4: uuidv4 } = require('uuid');
  * Протокол: VLESS + Reality
  */
 class XRayService {
-	constructor(panelUrl, apiToken, publicKey, subBaseUrl = '', hysteria2InboundId = 0, hysteria2Port = 0, hysteria2Sni = 'www.google.com') {
+	constructor(panelUrl, apiToken, publicKey, subBaseUrl = '', inboundIds = [1]) {
 		this.panelUrl = panelUrl;
 		this.apiToken = apiToken;
 		this.subBaseUrl = subBaseUrl;
+		this.inboundIds = inboundIds.length > 0 ? inboundIds : [1];
 
-		this.REALITY_INBOUND_ID = 1;
-		this.HYSTERIA2_INBOUND_ID = hysteria2InboundId || 0;
+		this.REALITY_INBOUND_ID = this.inboundIds[0];
 
 		this.REALITY_CONFIG = {
 			address: 'let-me-out.com',
@@ -25,12 +25,6 @@ class XRayService {
 			flow: 'xtls-rprx-vision',
 			type: 'tcp',
 			security: 'reality'
-		};
-
-		this.HYSTERIA2_CONFIG = {
-			address: 'let-me-out.com',
-			port: hysteria2Port || 0,
-			sni: hysteria2Sni || 'www.google.com'
 		};
 	}
 
@@ -61,9 +55,7 @@ class XRayService {
 	// ── Низкоуровневые методы ──────────────────────────────────────────────
 
 	async addClient(clientData) {
-		const inboundIds = [this.REALITY_INBOUND_ID];
-		if (this.HYSTERIA2_INBOUND_ID) inboundIds.push(this.HYSTERIA2_INBOUND_ID);
-		return this.apiRequest('POST', '/clients/add', { client: clientData, inboundIds });
+		return this.apiRequest('POST', '/clients/add', { client: clientData, inboundIds: this.inboundIds });
 	}
 
 	async updateClient(email, clientData) {
@@ -102,11 +94,7 @@ class XRayService {
 			? this._buildSubUrl(subId)
 			: this._buildRealityUrl(uuid, email);
 
-		const hysteria2Url = (!this.subBaseUrl && this.HYSTERIA2_INBOUND_ID && this.HYSTERIA2_CONFIG.port)
-			? this._buildHysteria2Url(uuid, email)
-			: null;
-
-		return { uuid, subId, accessUrl, hysteria2Url, email, type: 'reality' };
+		return { uuid, subId, accessUrl, email, type: 'reality' };
 	}
 
 	async deleteRealityClient(email) {
@@ -169,11 +157,6 @@ class XRayService {
 
 	_buildSubUrl(subId) {
 		return `${this.subBaseUrl}/${subId}`;
-	}
-
-	_buildHysteria2Url(uuid, name) {
-		const c = this.HYSTERIA2_CONFIG;
-		return `hy2://${uuid}@${c.address}:${c.port}?sni=${c.sni}&insecure=0#${encodeURIComponent(name)}`;
 	}
 
 	_buildRealityUrl(uuid, name) {

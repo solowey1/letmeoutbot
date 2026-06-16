@@ -44,9 +44,7 @@ const config = {
 		apiKey: process.env.XRAY_API_TOKEN || '',
 		publicKey: process.env.XRAY_PUBLIC_KEY || '',
 		subBaseUrl: process.env.XRAY_SUB_BASE_URL || '',
-		hysteria2InboundId: parseInt(process.env.XRAY_HYSTERIA2_INBOUND_ID || '0') || 0,
-		hysteria2Port: parseInt(process.env.XRAY_HYSTERIA2_PORT || '0') || 0,
-		hysteria2Sni: process.env.XRAY_HYSTERIA2_SNI || 'www.google.com'
+		inboundIds: (process.env.XRAY_INBOUNDS || '1').split(',').map(s => parseInt(s.trim())).filter(Boolean)
 	},
 
 	app: {

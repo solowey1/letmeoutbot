@@ -129,8 +129,6 @@ class KeysCallbacks {
 						steps.forEach((step, i) => { message += `${i + 1}. ${step}\n`; });
 					} else {
 						message += `⚡ <b>VLESS Reality:</b>\n<code>${key.access_url}</code>\n\n`;
-						const hy2Url = this.keyService.buildHysteria2Url(key);
-						if (hy2Url) message += `🚀 <b>Hysteria2:</b>\n<code>${hy2Url}</code>\n\n`;
 						message += `📱 <b>${t('keys.how_to_connect', { ns: 'message' })}</b>\n`;
 						const steps = t('keys.connect_steps', { ns: 'message' });
 						steps.forEach((step, i) => { message += `${i + 1}. ${step}\n`; });

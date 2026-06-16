@@ -177,9 +177,6 @@ class PaymentHandlers {
 		} else if (vlessResult) {
 			message += `✅ ${t('payments.vless_key_activated', { ns: 'message' })}\n\n`;
 			message += `⚡ <b>${t('payments.vless_key_label', { ns: 'message' })}</b>\n<code>${vlessResult.accessUrl}</code>\n\n`;
-			if (vlessResult.hysteria2Url) {
-				message += `🚀 <b>Hysteria2:</b>\n<code>${vlessResult.hysteria2Url}</code>\n\n`;
-			}
 			message += t('payments.add_key_hiddify', { ns: 'message' });
 		} else if (outlineResult) {
 			message += `✅ ${t('payments.key_activated', { ns: 'message' })}\n\n`;
