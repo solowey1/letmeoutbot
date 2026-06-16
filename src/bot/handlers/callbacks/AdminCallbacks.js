@@ -1,4 +1,5 @@
 const { ADMIN_IDS, CALLBACK_ACTIONS } = require('../../../config/constants');
+const { sendTon } = require('../../../services/TonService');
 const { Markup } = require('telegraf');
 const KeyboardUtils = require('../../../utils/keyboards');
 const { btn } = require('../../../utils/keyboards/common');
@@ -408,6 +409,109 @@ class AdminCallbacks {
 				t('admin.loading_error', { ns: 'message' }),
 				KeyboardUtils.createAdminKeyboard(t)
 			);
+		}
+	}
+
+	async handleApproveWithdrawal(ctx, withdrawalId) {
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery('Нет доступа');
+			return;
+		}
+
+		try {
+			const withdrawal = await this.db.getWithdrawal(withdrawalId);
+			if (!withdrawal) {
+				await ctx.answerCbQuery('Запрос не найден');
+				return;
+			}
+			if (withdrawal.status !== 'pending') {
+				await ctx.answerCbQuery('Запрос уже обработан');
+				return;
+			}
+
+			const user = await this.db.getUserById(withdrawal.user_id);
+			const telegramId = user?.telegram_id;
+			const tonAmount = withdrawal.ton_amount;
+			const tonWallet = withdrawal.ton_wallet;
+
+			// Отправляем TON автоматически если есть кошелёк и сумма
+			let txHash = null;
+			let txError = null;
+			if (tonWallet && tonAmount) {
+				try {
+					txHash = await sendTon(tonWallet, tonAmount);
+				} catch (err) {
+					txError = err.message;
+					console.error('Ошибка отправки GRAM:', err);
+				}
+			}
+
+			await this.db.updateWithdrawalStatus(withdrawalId, 'completed', ctx.from.id, txError, txHash);
+
+			const statusLine = txHash
+				? `✅ GRAM отправлен\n🔗 Транзакция: <code>${txHash}</code>`
+				: txError
+					? `⚠️ Ошибка отправки GRAM: ${txError}\nВыплатите вручную на: <code>${tonWallet}</code>`
+					: '⚠️ Кошелёк не указан — выплатите вручную';
+
+			const adminNote = [
+				`✅ Выплата #${withdrawalId} подтверждена.`,
+				'',
+				`👤 Пользователь: ${telegramId}`,
+				`💰 Stars: ${withdrawal.amount} ⭐`,
+				tonAmount ? `💎 GRAM: ${tonAmount}` : '',
+				statusLine,
+			].filter(Boolean).join('\n');
+
+			await ctx.editMessageText(adminNote, { parse_mode: 'HTML' });
+
+			try {
+				const userMsg = txHash
+					? `✅ Выплата ${tonAmount} GRAM отправлена на ваш кошелёк!\n\n🔗 Транзакция: <code>${txHash}</code>`
+					: `✅ Ваш запрос на вывод ${withdrawal.amount} ⭐ одобрен! Выплата будет произведена вручную.`;
+				await ctx.telegram.sendMessage(telegramId, userMsg, { parse_mode: 'HTML' });
+			} catch (_) {}
+		} catch (error) {
+			console.error('Ошибка подтверждения выплаты:', error);
+			await ctx.answerCbQuery('Ошибка обработки запроса');
+		}
+	}
+
+	async handleRejectWithdrawal(ctx, withdrawalId) {
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery('Нет доступа');
+			return;
+		}
+
+		try {
+			const withdrawal = await this.db.getWithdrawal(withdrawalId);
+			if (!withdrawal) {
+				await ctx.answerCbQuery('Запрос не найден');
+				return;
+			}
+			if (withdrawal.status !== 'pending') {
+				await ctx.answerCbQuery('Запрос уже обработан');
+				return;
+			}
+
+			await this.db.updateWithdrawalStatus(withdrawalId, 'rejected', ctx.from.id);
+
+			const user = await this.db.getUserById(withdrawal.user_id);
+			const telegramId = user?.telegram_id;
+			const amount = withdrawal.amount;
+
+			const adminNote = `❌ Выплата #${withdrawalId} отклонена.\n\n👤 Пользователь: ${telegramId}\n💰 Сумма: ${amount} ⭐`;
+			await ctx.editMessageText(adminNote, { parse_mode: 'HTML' });
+
+			try {
+				await ctx.telegram.sendMessage(
+					telegramId,
+					`❌ Ваш запрос на вывод ${amount} ⭐ был отклонён. Обратитесь в поддержку за подробностями.`
+				);
+			} catch (_) {}
+		} catch (error) {
+			console.error('Ошибка отклонения выплаты:', error);
+			await ctx.answerCbQuery('Ошибка обработки запроса');
 		}
 	}
 

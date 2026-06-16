@@ -1,6 +1,7 @@
 const KeyboardUtils = require('../../../utils/keyboards');
 const { MenuMessages } = require('../../../services/messages');
 const { ADMIN_IDS } = require('../../../config/constants');
+const awaitingWallet = require('../../../utils/tonWalletState');
 
 class MenuCallbacks {
 	constructor(database, paymentService, keysService) {
@@ -24,8 +25,35 @@ class MenuCallbacks {
 
 	async handleSettings(ctx) {
 		const t = ctx.i18n.t;
+		// Сброс состояния ввода кошелька если пользователь вернулся в настройки
+		awaitingWallet.delete(ctx.from.id);
+
 		const message = MenuMessages.settings(t);
 		const keyboard = KeyboardUtils.createSettingsKeyboard(t);
+
+		await ctx.editMessageText(message, {
+			...keyboard,
+			parse_mode: 'HTML'
+		});
+	}
+
+	async handleTonWalletSettings(ctx) {
+		const t = ctx.i18n.t;
+		const user = await this.db.getUserByTelegramId(ctx.from.id);
+		const message = MenuMessages.tonWallet(t, user.ton_wallet);
+		const keyboard = KeyboardUtils.createTonWalletKeyboard(t, !!user.ton_wallet);
+
+		await ctx.editMessageText(message, {
+			...keyboard,
+			parse_mode: 'HTML'
+		});
+	}
+
+	async handleTonWalletInput(ctx) {
+		const t = ctx.i18n.t;
+		awaitingWallet.set(ctx.from.id, 'settings');
+		const message = MenuMessages.tonWalletInputPrompt(t);
+		const keyboard = KeyboardUtils.createTonWalletKeyboard(t, false);
 
 		await ctx.editMessageText(message, {
 			...keyboard,

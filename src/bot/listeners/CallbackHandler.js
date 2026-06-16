@@ -67,6 +67,10 @@ class CallbackHandler {
 				await this.KeysCallbacks.handleRefreshKey(ctx, keyId);
 			} else if (callbackData === CALLBACK_ACTIONS.SETTINGS.MENU) {
 				await this.menuCallbacks.handleSettings(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.SETTINGS.TON_WALLET) {
+				await this.menuCallbacks.handleTonWalletSettings(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.SETTINGS.TON_WALLET_INPUT) {
+				await this.menuCallbacks.handleTonWalletInput(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.SETTINGS.LANGUAGE.SET) {
 				await this.languageCallbacks.handleChangeLanguage(ctx);
 			} else if (callbackData.startsWith('set_lang_')) {
@@ -131,6 +135,12 @@ class CallbackHandler {
 				await this.adminCallbacks.handleRetryActivateKey(ctx, keyId);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING) {
 				await this.adminCallbacks.handlePendingWithdrawals(ctx);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.APPROVE}_`)) {
+				const withdrawalId = parseInt(callbackData.split('_').pop());
+				await this.adminCallbacks.handleApproveWithdrawal(ctx, withdrawalId);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.REJECT}_`)) {
+				const withdrawalId = parseInt(callbackData.split('_').pop());
+				await this.adminCallbacks.handleRejectWithdrawal(ctx, withdrawalId);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.BROADCAST || callbackData === 'admin_broadcast') {
 				await this.broadcastCallbacks.handleBroadcastMenu(ctx);
 			} else if (callbackData === 'broadcast_new') {
@@ -163,6 +173,8 @@ class CallbackHandler {
 				await this.referralCallbacks.handleConfirmWithdraw(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.HISTORY) {
 				await this.referralCallbacks.handleWithdrawalHistory(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.SET_WALLET) {
+				await this.referralCallbacks.handleSetWallet(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.GIFT.INFO) {
 				await this.giftCallbacks.handleGiftInfo(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.GIFT.CLAIM) {

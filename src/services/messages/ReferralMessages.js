@@ -8,11 +8,19 @@ class ReferralMessages {
 	 * @param {Object} stats - Статистика рефералов
 	 * @returns {string}
 	 */
-	static menu(t, stats) {
+	static menu(t, stats, tonEquivalent = null, tonWallet = null) {
 		const howItWorks = t('referral.how_it_works', { ns: 'message' });
 		const howItWorksList = Array.isArray(howItWorks)
 			? howItWorks.map((item, i) => `${i + 1}. ${item}`)
 			: [`1. ${howItWorks}`];
+
+		const availableLine = tonEquivalent !== null
+			? `✅ ${t('referral.stats.available_for_withdrawal', { ns: 'message' })}: <b>${stats.availableForWithdrawal} ⭐ ≈ ${tonEquivalent} GRAM</b>`
+			: `✅ ${t('referral.stats.available_for_withdrawal', { ns: 'message' })}: <b>${stats.availableForWithdrawal} ⭐</b>`;
+
+		const walletLine = tonWallet
+			? `💎 ${t('referral.stats.ton_wallet', { ns: 'message' })}: <code>${tonWallet}</code>`
+			: `💎 ${t('referral.stats.ton_wallet_not_set', { ns: 'message' })}`;
 
 		return [
 			`<b>${t('referral.title', { ns: 'message' })}</b>`,
@@ -22,8 +30,9 @@ class ReferralMessages {
 			`👥 ${t('referral.stats.total_referrals', { ns: 'message' })}: <b>${stats.totalReferrals}</b>`,
 			`💰 ${t('referral.stats.total_earned', { ns: 'message' })}: <b>${stats.totalEarned} ⭐</b>`,
 			`💸 ${t('referral.stats.total_withdrawn', { ns: 'message' })}: <b>${stats.totalWithdrawn} ⭐</b>`,
-			`✅ ${t('referral.stats.available_for_withdrawal', { ns: 'message' })}: <b>${stats.availableForWithdrawal} ⭐</b>`,
+			availableLine,
 			`⏳ ${t('referral.stats.pending_amount', { ns: 'message' })}: <b>${stats.pendingAmount} ⭐</b>`,
+			walletLine,
 			'',
 			`<b>${t('referral.how_it_works_title', { ns: 'message' })}</b>`,
 			...howItWorksList,
@@ -94,11 +103,15 @@ class ReferralMessages {
 	 * @param {number} amount - Сумма вывода
 	 * @returns {string}
 	 */
-	static withdrawalConfirm(t, amount) {
-		return t('referral.withdrawal.confirm', {
-			ns: 'message',
-			amount,
-		});
+	static withdrawalConfirm(t, amount, tonAmount = null, tonWallet = null) {
+		const tonLine = tonAmount
+			? `\n💎 К получению: <b>${tonAmount} GRAM</b>\n📬 Кошелёк: <code>${tonWallet}</code>`
+			: '';
+		return t('referral.withdrawal.confirm', { ns: 'message', amount }) + tonLine;
+	}
+
+	static setWalletPrompt(t) {
+		return t('referral.withdrawal.set_wallet_prompt', { ns: 'message' });
 	}
 
 	/**
@@ -107,11 +120,11 @@ class ReferralMessages {
 	 * @param {number} amount - Сумма вывода
 	 * @returns {string}
 	 */
-	static withdrawalSuccess(t, amount) {
-		return t('referral.withdrawal.success', {
-			ns: 'message',
-			amount,
-		});
+	static withdrawalSuccess(t, amount, tonAmount = null) {
+		const base = t('referral.withdrawal.success', { ns: 'message', amount });
+		return tonAmount
+			? base + `\n\n💎 К выплате: <b>${tonAmount} GRAM</b>`
+			: base;
 	}
 
 	/**
@@ -143,7 +156,7 @@ class ReferralMessages {
 	 * @returns {string}
 	 */
 	static withdrawalAdminNotification(t, data) {
-		return t('referral.withdrawal.admin_notification', {
+		const base = t('referral.withdrawal.admin_notification', {
 			ns: 'message',
 			username: data.username,
 			userId: data.userId,
@@ -151,6 +164,10 @@ class ReferralMessages {
 			referrals: data.referrals,
 			withdrawalId: data.withdrawalId,
 		});
+		const tonInfo = data.tonAmount
+			? `\n💎 GRAM к выплате: <b>${data.tonAmount} GRAM</b>\n📬 Кошелёк: <code>${data.tonWallet}</code>`
+			: '';
+		return base + tonInfo;
 	}
 
 	/**

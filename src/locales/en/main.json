@@ -23,6 +23,9 @@
     "back": "Back",
     "settings": "Settings",
     "language": "Language",
+    "settings_ton": "GRAM Wallet",
+    "ton_wallet_connect": "Connect Wallet",
+    "ton_wallet_change": "Change Wallet",
     "retry": "Try Again",
     "refresh_key": "Refresh Key",
     "referral_actions": {
