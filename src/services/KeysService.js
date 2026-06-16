@@ -211,6 +211,19 @@ class KeysService {
 		};
 	}
 
+	async getVlessRawKeys(keyId) {
+		const key = await this.db.getKey(keyId);
+		if (!key || !key.access_url) throw new Error('Ключ не найден');
+
+		const lines = await this.xrayService.getRawClientKeys(key.access_url);
+		const result = { vless: [], hysteria2: [] };
+		for (const line of lines) {
+			if (line.startsWith('vless://')) result.vless.push(line);
+			else if (line.startsWith('hy2://') || line.startsWith('hysteria2://')) result.hysteria2.push(line);
+		}
+		return result;
+	}
+
 	async refreshAccessUrl(keyId) {
 		const key = await this.db.getKey(keyId);
 		if (!key || !key.external_key_id) throw new Error('Ключ не найден или не активирован');

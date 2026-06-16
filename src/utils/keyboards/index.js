@@ -35,7 +35,7 @@ class KeyboardUtils {
 	}
 
 	// menu
-	static createMainMenu(t, isAdmin) { return menu.createMainMenu(t, isAdmin); }
+	static createMainMenu(t, isAdmin, showGift) { return menu.createMainMenu(t, isAdmin, showGift); }
 
 	// payments
 	static createTypeSelectionKeyboard(t) { return payments.createTypeSelectionKeyboard(t); }
@@ -48,7 +48,7 @@ class KeyboardUtils {
 
 	// keys
 	static createKeysKeyboard(t, keys) { return keysKb.createKeysKeyboard(t, keys); }
-	static createKeyDetailsKeyboard(t, keyId) { return keysKb.createKeyDetailsKeyboard(t, keyId); }
+	static createKeyDetailsKeyboard(t, keyId, keyType) { return keysKb.createKeyDetailsKeyboard(t, keyId, keyType); }
 	static createKeyStatsKeyboard(t, keyId) { return keysKb.createKeyStatsKeyboard(t, keyId); }
 
 	// help

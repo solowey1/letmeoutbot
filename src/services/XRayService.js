@@ -7,12 +7,13 @@ const { v4: uuidv4 } = require('uuid');
  * Протокол: VLESS + Reality
  */
 class XRayService {
-	constructor(panelUrl, apiToken, publicKey, subBaseUrl = '') {
+	constructor(panelUrl, apiToken, publicKey, subBaseUrl = '', inboundIds = [1]) {
 		this.panelUrl = panelUrl;
 		this.apiToken = apiToken;
 		this.subBaseUrl = subBaseUrl;
+		this.inboundIds = inboundIds.length > 0 ? inboundIds : [1];
 
-		this.REALITY_INBOUND_ID = 1;
+		this.REALITY_INBOUND_ID = this.inboundIds[0];
 
 		this.REALITY_CONFIG = {
 			address: 'let-me-out.com',
@@ -54,10 +55,7 @@ class XRayService {
 	// ── Низкоуровневые методы ──────────────────────────────────────────────
 
 	async addClient(clientData) {
-		return this.apiRequest('POST', '/clients/add', {
-			client: clientData,
-			inboundIds: [this.REALITY_INBOUND_ID]
-		});
+		return this.apiRequest('POST', '/clients/add', { client: clientData, inboundIds: this.inboundIds });
 	}
 
 	async updateClient(email, clientData) {
@@ -147,6 +145,12 @@ class XRayService {
 			expiryTime,
 			reset: 0
 		});
+	}
+
+	async getRawClientKeys(subUrl) {
+		const response = await axios.get(subUrl, { timeout: 10000 });
+		const raw = Buffer.from(response.data.trim(), 'base64').toString('utf8');
+		return raw.split('\n').map(l => l.trim()).filter(Boolean);
 	}
 
 	// ── Вспомогательные методы ─────────────────────────────────────────────

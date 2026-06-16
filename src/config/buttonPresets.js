@@ -40,6 +40,7 @@ const BUTTON_PRESETS = {
 	// ── Ключи ───────────────────────────────────────────────────────
 	stats:           { text: 'buttons.stats',                       action: null,                                    style: null,        icon: '5936143551854285132' },
 	refresh_key:     { text: 'buttons.refresh_key',                 action: null,                                    style: null,        icon: '6030657343744644592' },
+	raw_vless_key:   { text: 'buttons.raw_vless_key',               action: null,                                    style: null,        icon: '5884491244360438851' },
 
 	// ── Помощь / Приложения ─────────────────────────────────────────
 	vpn_apps:        { text: 'buttons.vpn_apps',                    action: CALLBACK_ACTIONS.BASIC.VPN_APPS,         style: null,        icon: '5963087934696459905' },

@@ -43,7 +43,8 @@ const config = {
 		panelUrl: process.env.XRAY_PANEL_URL,
 		apiKey: process.env.XRAY_API_TOKEN || '',
 		publicKey: process.env.XRAY_PUBLIC_KEY || '',
-		subBaseUrl: process.env.XRAY_SUB_BASE_URL || ''
+		subBaseUrl: process.env.XRAY_SUB_BASE_URL || '',
+		inboundIds: (process.env.XRAY_INBOUNDS || '1').split(',').map(s => parseInt(s.trim())).filter(Boolean)
 	},
 
 	app: {

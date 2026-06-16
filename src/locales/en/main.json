@@ -67,9 +67,10 @@
       "russian": "Русский",
       "english": "English"
     },
+    "raw_vless_key": "Get Individual Keys",
+    "type_vless": "VLESS + Hysteria2",
     "type_outline": "Outline VPN",
-    "type_vless": "VPN Subscription (VLESS + Hysteria2)",
-    "type_both": "Outline + VPN Subscription ({{discount}}% off)",
+    "type_both": "Both ({{discount}}% off)",
     "protocols": {
       "outline": "Outline",
       "vless": "VLESS"

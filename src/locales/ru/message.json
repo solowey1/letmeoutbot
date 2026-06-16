@@ -1,19 +1,19 @@
 {
   "gift": {
-    "info": "🎁 <b>Бесплатный пробный доступ</b>\n\nНовые пользователи могут протестировать VPN абсолютно бесплатно.\n\nПолучите ключи для протоколов <b>VLESS</b> и <b>Outline</b> абсолютно бесплатно. Каждый из ключей выдаётся на <b>48 часов</b> или <b>500 МБ</b> трафика.",
-    "success": "✅ <b>Ваши бесплатные ключи готовы!</b>\n\n⚡ <b>VPN Подписка (VLESS + Hysteria2):</b>\n<code>{{vlessUrl}}</code>\n\n🌿 <b>Outline:</b>\n<code>{{outlineUrl}}</code>\n\n<i>Каждый ключ действует 48 часов или 500 МБ трафика.\nДобавьте ключи в VPN-приложение и пользуйтесь!</i>",
+    "info": "🎁 <b>Бесплатный пробный доступ</b>\n\nНовые пользователи могут протестировать VPN абсолютно бесплатно.\n\nПолучите ключи для протоколов <b>VLESS + Hysteria2</b> и <b>Outline</b> абсолютно бесплатно. Каждый из ключей выдаётся на <b>48 часов</b> или <b>500 МБ</b> трафика.",
+    "success": "✅ <b>Ваши бесплатные ключи готовы!</b>\n\n⚡ <b>VLESS + Hysteria2:</b>\n<code>{{vlessUrl}}</code>\n\n🌿 <b>Outline:</b>\n<code>{{outlineUrl}}</code>\n\n<i>Каждый ключ действует 48 часов или 500 МБ трафика.\nДобавьте ключи в VPN-приложение и пользуйтесь!</i>",
     "already_received": "Вы уже получили подарок ранее.",
     "not_eligible": "Подарок недоступен.",
     "error": "Не удалось выдать ключи. Попробуйте позже."
   },
   "welcome": {
     "title": "Let me Out VPN приветствует вас!",
-    "description": "Здесь вы можете приобрести доступ к безопасному и быстрому VPN через Outline или VPN Подписку (VLESS + Hysteria2).",
+    "description": "Здесь вы можете приобрести доступ к безопасному и быстрому VPN через VLESS + Hysteria2 или Outline.",
     "steps": [
       "⭐️ Оплата происходит через Telegram Stars",
       "🚀 Мгновенная активация после покупки",
       "🔐 Полная анонимность и безопасность",
-      "🇷🇺 Для пользователей из России рекомендуем VLESS — он сложнее в обнаружении и блокировке"
+      "🇷🇺 Для пользователей из России рекомендуем VLESS + Hysteria2 — эти протоколы сложнее в обнаружении и блокировке"
     ],
     "action_text": "Чтобы начать, нажмите «Купить ключ»"
   },
@@ -54,7 +54,7 @@
       "activating": "🔄 Активируем ключ...",
       "activate_error": "❌ Ошибка: {{error}}",
       "activated_title": "🎉 Ваш ключ активирован!",
-      "vless_label": "⚡ VPN Подписка:",
+      "vless_label": "⚡ VLESS + Hysteria2:",
       "outline_label": "🌿 Outline ключ:"
     },
     "withdrawals": {
@@ -149,7 +149,7 @@
       "action_text": "После установки добавьте ваш ключ доступа в приложение."
     },
     "vless": {
-      "choose_os": "⚡ <b>Приложения для VLESS</b>\n\nВыберите вашу операционную систему:",
+      "choose_os": "⚡ <b>Приложения для VLESS / Hysteria2</b>\n\nВыберите вашу операционную систему:",
       "linux": {
         "title": "🐧 Linux",
         "apps": [
@@ -200,9 +200,9 @@
         "apps": [
           "<a href=\"https://apps.apple.com/app/v2raytun/id6476628951\">v2RayTun</a> — поддержка Vision flow",
           "<a href=\"https://apps.apple.com/app/shadowrocket/id932747118\">Shadowrocket</a> — rule-based роутинг (платный)",
-          "<a href=\"https://apps.apple.com/app/streisand/id6450534064\">Streisand</a> — бесплатный, поддержка Reality",
+          "<a href=\"https://apps.apple.com/app/streisand/id6450534064\">Streisand</a> — бесплатный, поддержка Reality / Hysteria2",
           "<a href=\"https://apps.apple.com/app/hiddify-proxy-vpn/id6596777532\">Hiddify</a> — бесплатный",
-          "<a href=\"https://foxray.org\">FoXray</a> — нативное приложение, поддержка VLESS Reality",
+          "<a href=\"https://foxray.org\">FoXray</a> — нативное приложение, поддержка VLESS Reality / Hysteria2",
           "<a href=\"https://apps.apple.com/app/sing-box-vt/id6673731168\">Sing-Box (официальный)</a> — настройка через JSON-конфиг",
           "<a href=\"https://apps.apple.com/app/v2box-v2ray-client/id6446814690\">V2BOX</a> — импорт по ссылке",
           "<a href=\"https://apps.apple.com/app/quantumult-x/id1443988620\">Quantumult X</a> — rule-based роутинг (платный)",
@@ -250,11 +250,11 @@
       ]
     },
     "vless": {
-      "title": "⚡ Как добавить ключ VLESS",
+      "title": "⚡ Как добавить ключ VLESS / Hysteria2",
       "steps": [
         "Скачайте подходящее приложение (v2rayN, v2rayNG, Streisand и т.д.) под вашу операционную систему",
         "Если не удалось найти ни одно из приложений, смените регион магазина или создайте новый аккаунт в другом регионе",
-        "Скопируйте ваш ключ доступа (начинается с <code>vless://</code>)",
+        "Скопируйте ваш ключ доступа (начинается с <code>vless://</code> или <code>hysteria2://</code>)",
         "В приложении нажмите <b>«+»</b> или <b>«Импорт из буфера»</b>",
         "Ключ автоматически распознается и добавится",
         "Выберите добавленный сервер и подключитесь",
@@ -296,7 +296,9 @@
       "Скачайте Hiddify, Nekobox или FoXray",
       "Нажмите «Добавить подписку» и вставьте ссылку выше",
       "Приложение автоматически загрузит VLESS + Hysteria2"
-    ]
+    ],
+    "raw_vless_title": "Отдельные ключи",
+    "raw_vless_hint": "Используйте для клиентов без поддержки подписок. Hiddify, Nekobox и FoXray также работают с обоими форматами."
   },
   "plans": {
     "choose": "Выберите тарифный план:",
@@ -314,21 +316,21 @@
     "select_type_title": "Выберите тип подключения",
     "type_vless_desc": "подписка включает VLESS Reality + Hysteria2 — сложнее обнаружить и заблокировать",
     "type_outline_desc": "простой и надёжный VPN на базе Shadowsocks",
-    "type_both_desc": "Outline + VPN Подписка со скидкой {{discount}}% — максимальная надёжность",
+    "type_both_desc": "VLESS Reality + Hysteria2 + Outline со скидкой {{discount}}% — максимальная надёжность",
     "type_names": {
+      "vless": "VLESS Reality + Hysteria2",
       "outline": "Outline VPN",
-      "vless": "VPN Подписка",
-      "both": "Outline + VPN Подписка"
+      "both": "VLESS Reality + Hysteria2 + Outline"
     },
     "type_descriptions": {
       "vless": "Подписка включает VLESS Reality + Hysteria2. Один URL — несколько протоколов на выбор.",
       "outline": "К сожалению, работает не всегда, зато его легче всего настроить",
-      "both": "Outline + VPN Подписка (VLESS + Hysteria2) + скидка {{discount}}% — переключайтесь в любой момент"
+      "both": "VLESS Reality + Hysteria2 + Outline + скидка {{discount}}% — переключайтесь в любой момент"
     },
     "features": {
-      "vless_reality": "VPN Подписка: VLESS Reality + Hysteria2",
+      "vless_reality": "VLESS Reality + Hysteria2",
       "outline_ss": "Outline Shadowsocks",
-      "two_protocols": "Outline + VPN Подписка в одном тарифе"
+      "two_protocols": "VLESS Reality + Hysteria2 + Outline в одном тарифе"
     },
     "via_stars": "Оплата через Telegram Stars"
   },
@@ -342,9 +344,9 @@
     "success_title": "Оплата прошла успешно!",
     "keys_activated": "Ключи активированы!",
     "key_activated": "Ваш VPN ключ активирован!",
-    "vless_key_activated": "VPN Подписка активирована!",
+    "vless_key_activated": "Ключи активированы!",
     "outline_key_label": "Outline ключ:",
-    "vless_key_label": "VPN Подписка (VLESS + Hysteria2):",
+    "vless_key_label": "VLESS + Hysteria2:",
     "connection_key_label": "Ключ подключения:",
     "add_key_to_app": "Добавьте нужный ключ в приложение.",
     "add_key_hiddify": "Добавьте ссылку на подписку в Hiddify, Nekobox или FoXray — приложение само загрузит все протоколы.",
