@@ -123,6 +123,7 @@ class KeysService {
 				keyId,
 				protocol: KEY_TYPE.VLESS,
 				accessUrl: vlessKey.accessUrl,
+				hysteria2Url: vlessKey.hysteria2Url || null,
 				key: await this.db.getKey(keyId)
 			};
 		}
@@ -209,6 +210,32 @@ class KeysService {
 			plan: plan ? PlanService.formatPlanForDisplay(t, plan) : null,
 			usage: usageStats
 		};
+	}
+
+	async getVlessRawKeys(keyId) {
+		const key = await this.db.getKey(keyId);
+		if (!key || !key.access_url) throw new Error('Ключ не найден');
+
+		if (key.access_url.startsWith('http')) {
+			const lines = await this.xrayService.getRawClientKeys(key.access_url);
+			const result = { vless: [], hysteria2: [] };
+			for (const line of lines) {
+				if (line.startsWith('vless://')) result.vless.push(line);
+				else if (line.startsWith('hy2://') || line.startsWith('hysteria2://')) result.hysteria2.push(line);
+			}
+			return result;
+		}
+
+		const result = { vless: [key.access_url], hysteria2: [] };
+		const hy2Url = this.buildHysteria2Url(key);
+		if (hy2Url) result.hysteria2.push(hy2Url);
+		return result;
+	}
+
+	buildHysteria2Url(key) {
+		if (!this.xrayService?.HYSTERIA2_INBOUND_ID || !this.xrayService.HYSTERIA2_CONFIG?.port) return null;
+		if (!key?.external_key_id) return null;
+		return this.xrayService._buildHysteria2Url(key.external_key_id, key.external_client_id || '');
 	}
 
 	async refreshAccessUrl(keyId) {

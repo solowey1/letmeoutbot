@@ -119,13 +119,29 @@ class KeysCallbacks {
 			}
 
 			if (key.access_url) {
-				message += `🔐 <b>${t('keys.access_key_title', { ns: 'message' })}</b>\n`;
-				message += `<code>${key.access_url}</code>\n\n`;
-				message += `📱 <b>${t('keys.how_to_connect', { ns: 'message' })}</b>\n`;
-				const steps = t('keys.connect_steps', { ns: 'message' });
-				steps.forEach((step, i) => {
-					message += `${i + 1}. ${step}\n`;
-				});
+				if (key.key_type === 'vless') {
+					if (key.access_url.startsWith('http')) {
+						message += `🔗 <b>${t('keys.subscription_title', { ns: 'message' })}</b>\n`;
+						message += `<code>${key.access_url}</code>\n\n`;
+						message += `💡 ${t('keys.subscription_hint', { ns: 'message' })}\n\n`;
+						message += `📱 <b>${t('keys.subscription_how_to', { ns: 'message' })}</b>\n`;
+						const steps = t('keys.subscription_steps', { ns: 'message' });
+						steps.forEach((step, i) => { message += `${i + 1}. ${step}\n`; });
+					} else {
+						message += `⚡ <b>VLESS Reality:</b>\n<code>${key.access_url}</code>\n\n`;
+						const hy2Url = this.keyService.buildHysteria2Url(key);
+						if (hy2Url) message += `🚀 <b>Hysteria2:</b>\n<code>${hy2Url}</code>\n\n`;
+						message += `📱 <b>${t('keys.how_to_connect', { ns: 'message' })}</b>\n`;
+						const steps = t('keys.connect_steps', { ns: 'message' });
+						steps.forEach((step, i) => { message += `${i + 1}. ${step}\n`; });
+					}
+				} else {
+					message += `🔐 <b>${t('keys.access_key_title', { ns: 'message' })}</b>\n`;
+					message += `<code>${key.access_url}</code>\n\n`;
+					message += `📱 <b>${t('keys.how_to_connect', { ns: 'message' })}</b>\n`;
+					const steps = t('keys.connect_steps', { ns: 'message' });
+					steps.forEach((step, i) => { message += `${i + 1}. ${step}\n`; });
+				}
 			}
 
 			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId, key.key_type);
@@ -189,6 +205,34 @@ class KeysCallbacks {
 			});
 		} catch (error) {
 			console.error('Ошибка получения статистики:', error);
+			await ctx.editMessageText(
+				t('generic.loading_error', { ns: 'error' }),
+				KeyboardUtils.createBackToMenuKeyboard(t)
+			);
+		}
+	}
+
+	async handleRawVlessKey(ctx, keyId) {
+		const t = ctx.i18n.t;
+
+		try {
+			const rawKeys = await this.keyService.getVlessRawKeys(keyId);
+
+			let message = `🔑 <b>${t('keys.raw_vless_title', { ns: 'message' })}</b>\n\n`;
+
+			if (rawKeys.vless.length > 0) {
+				message += `⚡ <b>VLESS Reality:</b>\n<code>${rawKeys.vless[0]}</code>\n\n`;
+			}
+			if (rawKeys.hysteria2.length > 0) {
+				message += `🚀 <b>Hysteria2:</b>\n<code>${rawKeys.hysteria2[0]}</code>\n\n`;
+			}
+
+			message += `💡 ${t('keys.raw_vless_hint', { ns: 'message' })}`;
+
+			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId, 'vless');
+			await ctx.editMessageText(message, { ...keyboard, parse_mode: 'HTML' });
+		} catch (error) {
+			console.error('Ошибка получения отдельных ключей:', error);
 			await ctx.editMessageText(
 				t('generic.loading_error', { ns: 'error' }),
 				KeyboardUtils.createBackToMenuKeyboard(t)

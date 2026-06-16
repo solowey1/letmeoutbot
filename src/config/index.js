@@ -43,7 +43,10 @@ const config = {
 		panelUrl: process.env.XRAY_PANEL_URL,
 		apiKey: process.env.XRAY_API_TOKEN || '',
 		publicKey: process.env.XRAY_PUBLIC_KEY || '',
-		subBaseUrl: process.env.XRAY_SUB_BASE_URL || ''
+		subBaseUrl: process.env.XRAY_SUB_BASE_URL || '',
+		hysteria2InboundId: parseInt(process.env.XRAY_HYSTERIA2_INBOUND_ID || '0') || 0,
+		hysteria2Port: parseInt(process.env.XRAY_HYSTERIA2_PORT || '0') || 0,
+		hysteria2Sni: process.env.XRAY_HYSTERIA2_SNI || 'www.google.com'
 	},
 
 	app: {

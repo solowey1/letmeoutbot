@@ -291,6 +291,7 @@ const CALLBACK_ACTIONS = {
 		STATS: 'key_stats',
 		REFRESH: 'key_refresh',
 		CHECKOUT: 'checkout',
+		RAW_VLESS: 'key_raw_vless',
 		// Выбор типа подключения
 		SELECT_TYPE: 'keys_select_type',
 		TYPE_OUTLINE: 'plans_type_outline',
