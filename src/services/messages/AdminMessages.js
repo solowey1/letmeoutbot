@@ -44,13 +44,13 @@ class AdminMessages {
 		users.forEach((user, index) => {
 			const regDate = new Date(user.created_at).toLocaleDateString();
 			const firstName = user.first_name || 'Unknown';
-			const username = user.username ? `@${user.username}` : 'без username';
+			const username = user.username ? `@${user.username}` : t('admin.users.no_username', { ns: 'message' });
 
 			message.push(`${index + 1}. <b>${firstName}</b> (${username})`);
 			message.push(`   ID: ${user.telegram_id}`);
-			message.push(`   📦 Куплено: ${user.keys_purchased || 0}`);
-			message.push(`   ✅ Активировано: ${user.keys_activated || 0}`);
-			message.push(`   🟢 Активно сейчас: ${user.keys_active || 0}`);
+			message.push(`   📦 ${t('admin.users.purchased', { ns: 'message' })}: ${user.keys_purchased || 0}`);
+			message.push(`   ✅ ${t('admin.users.activated', { ns: 'message' })}: ${user.keys_activated || 0}`);
+			message.push(`   🟢 ${t('admin.users.active_now', { ns: 'message' })}: ${user.keys_active || 0}`);
 			message.push(`   ${t('common.registration')}: ${regDate}`);
 			message.push('');
 		});

@@ -41,7 +41,11 @@
       "title": "Users",
       "last_10": "Users (last 10):",
       "no_users": "No users",
-      "user_keys": "Keys"
+      "user_keys": "Keys",
+      "no_username": "no username",
+      "purchased": "Purchased",
+      "activated": "Activated",
+      "active_now": "Active now"
     },
     "pending_keys": {
       "title": "Pending Keys",
@@ -141,6 +145,46 @@
     "settings": {
       "title": "Bot Settings",
       "description": "Configuration is managed via environment variables (.env)."
+    },
+    "notifications": {
+      "new_purchase": {
+        "title": "New purchase!",
+        "key_created": "Key successfully created",
+        "key_pending": "Key awaiting activation",
+        "key_failed": "Key creation error",
+        "field_user": "User",
+        "field_id": "Telegram ID",
+        "field_plan": "Plan",
+        "field_amount": "Amount",
+        "field_status": "Status",
+        "field_key_id": "Key ID",
+        "field_expires": "Expires",
+        "field_error": "Error"
+      },
+      "expiring_tomorrow": {
+        "title": "Keys expiring tomorrow",
+        "field_total": "Total",
+        "keys_count": "keys"
+      },
+      "weekly_summary": {
+        "title": "Weekly summary",
+        "sales_title": "Sales",
+        "field_total_payments": "Total payments",
+        "field_successful": "Successful",
+        "field_pending": "Pending activation",
+        "field_failed": "Failed",
+        "field_revenue": "Revenue",
+        "keys_title": "Keys",
+        "field_created": "Newly created",
+        "field_active": "Currently active",
+        "field_expired": "Expired",
+        "popular_plans_title": "Popular plans",
+        "purchases_label": "purchases",
+        "users_title": "Users",
+        "field_total_users": "Total",
+        "field_new_this_week": "New this week",
+        "field_with_active": "With active keys"
+      }
     }
   },
   "vpn_apps": {

@@ -82,7 +82,7 @@ class ReferralMessages {
 		}
 
 		const referralsList = referrals.map(ref => {
-			const name = ref.first_name || ref.username || 'Пользователь';
+			const name = ref.first_name || ref.username || t('common.user', { ns: 'main' });
 			const earned = ref.bonus_earned || 0;
 			return t('referral.referral_item', {
 				ns: 'message',

@@ -106,11 +106,12 @@ class PlanService {
 			invoice = `${plan.name} — ${dataLimitFormatted} / ${durationFormatted}`;
 		}
 
+		const typePrefix = { both: 'Outline + VLESS', outline: 'Outline', vless: 'VLESS' }[plan.type] || plan.type;
 		return {
 			...plan,
 			description,
 			invoice,
-			displayName: `${plan.emoji} ${plan.name}`,
+			displayName: `${plan.emoji} ${typePrefix} ${dataLimitFormatted}`,
 			displayDescription: `${dataLimitFormatted} / ${durationFormatted}`,
 			displayDataLimit: dataLimitFormatted,
 			displayDuration: durationFormatted,

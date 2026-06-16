@@ -26,7 +26,7 @@ class MenuMessages {
 		const steps = t('help.steps', { ns: 'message' });
 		const stepsList = Array.isArray(steps)
 			? steps.map(item => `🔹 ${item}`)
-			: [`🔹 ${steps || 'Не указано'}`];
+			: [`🔹 ${steps || t('common.not_specified', { ns: 'main' })}`];
 
 		return [
 			`ℹ️ <b>${t('help.title', { ns: 'message' })}</b>`,

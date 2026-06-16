@@ -4,9 +4,12 @@ const { ADMIN_IDS } = require('../config/constants');
  * Сервис для отправки уведомлений администраторам
  */
 class AdminNotificationService {
-	constructor(bot, database) {
+	constructor(bot, database, i18nService = null) {
 		this.bot = bot;
 		this.db = database;
+		this.t = i18nService
+			? (key, params = {}) => i18nService.t('ru', key, { ns: 'message', ...params })
+			: (key) => key;
 	}
 
 	/**
@@ -53,10 +56,11 @@ class AdminNotificationService {
 			failed: '❌'
 		};
 
+		const t = this.t;
 		const statusText = {
-			success: 'Ключ успешно создан',
-			pending: 'Ключ ожидает активации',
-			failed: 'Ошибка создания ключа'
+			success: t('admin.notifications.new_purchase.key_created'),
+			pending: t('admin.notifications.new_purchase.key_pending'),
+			failed: t('admin.notifications.new_purchase.key_failed'),
 		};
 
 		const userName = user.username
@@ -64,24 +68,24 @@ class AdminNotificationService {
 			: `${user.first_name || 'Unknown'} ${user.last_name || ''}`.trim();
 
 		let message = [
-			`${statusEmoji[status]} <b>Новая покупка!</b>`,
+			`${statusEmoji[status]} <b>${t('admin.notifications.new_purchase.title')}</b>`,
 			'',
-			`👤 <b>Пользователь:</b> ${userName}`,
-			`🆔 <b>Telegram ID:</b> <code>${user.telegram_id}</code>`,
+			`👤 <b>${t('admin.notifications.new_purchase.field_user')}:</b> ${userName}`,
+			`🆔 <b>${t('admin.notifications.new_purchase.field_id')}:</b> <code>${user.telegram_id}</code>`,
 			'',
-			`📦 <b>План:</b> ${plan.name}`,
-			`💰 <b>Сумма:</b> ${payment.amount} ⭐`,
-			`🔑 <b>Статус:</b> ${statusText[status]}`
+			`📦 <b>${t('admin.notifications.new_purchase.field_plan')}:</b> ${plan.name}`,
+			`💰 <b>${t('admin.notifications.new_purchase.field_amount')}:</b> ${payment.amount} ⭐`,
+			`🔑 <b>${t('admin.notifications.new_purchase.field_status')}:</b> ${statusText[status]}`
 		];
 
 		if (key && key.id) {
-			message.push(`📋 <b>Key ID:</b> ${key.id}`);
-			message.push(`⏰ <b>Истекает:</b> ${new Date(key.expires_at).toLocaleString('ru-RU')}`);
+			message.push(`📋 <b>${t('admin.notifications.new_purchase.field_key_id')}:</b> ${key.id}`);
+			message.push(`⏰ <b>${t('admin.notifications.new_purchase.field_expires')}:</b> ${new Date(key.expires_at).toLocaleString('ru-RU')}`);
 		}
 
 		if (error) {
 			message.push('');
-			message.push(`⚠️ <b>Ошибка:</b> ${error}`);
+			message.push(`⚠️ <b>${t('admin.notifications.new_purchase.field_error')}:</b> ${error}`);
 		}
 
 		message.push('');
@@ -119,10 +123,11 @@ class AdminNotificationService {
 				return acc;
 			}, {});
 
+			const t = this.t;
 			let message = [
-				'⏰ <b>Ключи, истекающие завтра</b>',
+				`⏰ <b>${t('admin.notifications.expiring_tomorrow.title')}</b>`,
 				'',
-				`📊 <b>Всего:</b> ${expiringKeys.length} ключей`,
+				`📊 <b>${t('admin.notifications.expiring_tomorrow.field_total')}:</b> ${expiringKeys.length} ${t('admin.notifications.expiring_tomorrow.keys_count')}`,
 				''
 			];
 
@@ -153,38 +158,39 @@ class AdminNotificationService {
 			// Получаем статистику
 			const stats = await this.getWeeklyStats(weekAgo, now);
 
+			const t = this.t;
 			let message = [
-				'📊 <b>Недельная сводка</b>',
+				`📊 <b>${t('admin.notifications.weekly_summary.title')}</b>`,
 				`📅 ${weekAgo.toLocaleDateString('ru-RU')} - ${now.toLocaleDateString('ru-RU')}`,
 				'',
-				'<b>💰 Продажи:</b>',
-				`  • Всего платежей: ${stats.payments.total}`,
-				`  • Успешных: ${stats.payments.completed}`,
-				`  • Ожидают активации: ${stats.payments.pending_activation}`,
-				`  • Не удалось: ${stats.payments.failed}`,
-				`  • Доход: ${stats.payments.totalRevenue} ⭐`,
+				`<b>💰 ${t('admin.notifications.weekly_summary.sales_title')}:</b>`,
+				`  • ${t('admin.notifications.weekly_summary.field_total_payments')}: ${stats.payments.total}`,
+				`  • ${t('admin.notifications.weekly_summary.field_successful')}: ${stats.payments.completed}`,
+				`  • ${t('admin.notifications.weekly_summary.field_pending')}: ${stats.payments.pending_activation}`,
+				`  • ${t('admin.notifications.weekly_summary.field_failed')}: ${stats.payments.failed}`,
+				`  • ${t('admin.notifications.weekly_summary.field_revenue')}: ${stats.payments.totalRevenue} ⭐`,
 				'',
-				'<b>🔑 Ключи:</b>',
-				`  • Создано новых: ${stats.keys.created}`,
-				`  • Активных сейчас: ${stats.keys.active}`,
-				`  • Истекло: ${stats.keys.expired}`,
+				`<b>🔑 ${t('admin.notifications.weekly_summary.keys_title')}:</b>`,
+				`  • ${t('admin.notifications.weekly_summary.field_created')}: ${stats.keys.created}`,
+				`  • ${t('admin.notifications.weekly_summary.field_active')}: ${stats.keys.active}`,
+				`  • ${t('admin.notifications.weekly_summary.field_expired')}: ${stats.keys.expired}`,
 				''
 			];
 
 			// Топ планов
 			if (stats.topPlans.length > 0) {
-				message.push('<b>📈 Популярные планы:</b>');
+				message.push(`<b>📈 ${t('admin.notifications.weekly_summary.popular_plans_title')}:</b>`);
 				stats.topPlans.forEach((plan, index) => {
-					message.push(`  ${index + 1}. ${plan.plan_id}: ${plan.count} покупок`);
+					message.push(`  ${index + 1}. ${plan.plan_id}: ${plan.count} ${t('admin.notifications.weekly_summary.purchases_label')}`);
 				});
 				message.push('');
 			}
 
 			// Статистика по пользователям
-			message.push('<b>👥 Пользователи:</b>');
-			message.push(`  • Всего: ${stats.users.total}`);
-			message.push(`  • Новых за неделю: ${stats.users.newThisWeek}`);
-			message.push(`  • С активными ключами: ${stats.users.withActiveKeys}`);
+			message.push(`<b>👥 ${t('admin.notifications.weekly_summary.users_title')}:</b>`);
+			message.push(`  • ${t('admin.notifications.weekly_summary.field_total_users')}: ${stats.users.total}`);
+			message.push(`  • ${t('admin.notifications.weekly_summary.field_new_this_week')}: ${stats.users.newThisWeek}`);
+			message.push(`  • ${t('admin.notifications.weekly_summary.field_with_active')}: ${stats.users.withActiveKeys}`);
 
 			await this.notifyAdmins(message.join('\n'));
 

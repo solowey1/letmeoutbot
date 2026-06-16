@@ -42,7 +42,11 @@
       "title": "Пользователи",
       "last_10": "Пользователи (последние 10):",
       "no_users": "Нет пользователей",
-      "user_keys": "Ключей"
+      "user_keys": "Ключей",
+      "no_username": "без username",
+      "purchased": "Куплено",
+      "activated": "Активировано",
+      "active_now": "Активно сейчас"
     },
     "pending_keys": {
       "title": "Неактивированные ключи",
@@ -145,6 +149,46 @@
       "settings": {
         "title": "Настройки бота",
         "description": "Конфигурация управляется через переменные окружения (.env)."
+      }
+    },
+    "notifications": {
+      "new_purchase": {
+        "title": "Новая покупка!",
+        "key_created": "Ключ успешно создан",
+        "key_pending": "Ключ ожидает активации",
+        "key_failed": "Ошибка создания ключа",
+        "field_user": "Пользователь",
+        "field_id": "Telegram ID",
+        "field_plan": "План",
+        "field_amount": "Сумма",
+        "field_status": "Статус",
+        "field_key_id": "Key ID",
+        "field_expires": "Истекает",
+        "field_error": "Ошибка"
+      },
+      "expiring_tomorrow": {
+        "title": "Ключи, истекающие завтра",
+        "field_total": "Всего",
+        "keys_count": "ключей"
+      },
+      "weekly_summary": {
+        "title": "Недельная сводка",
+        "sales_title": "Продажи",
+        "field_total_payments": "Всего платежей",
+        "field_successful": "Успешных",
+        "field_pending": "Ожидают активации",
+        "field_failed": "Не удалось",
+        "field_revenue": "Доход",
+        "keys_title": "Ключи",
+        "field_created": "Создано новых",
+        "field_active": "Активных сейчас",
+        "field_expired": "Истекло",
+        "popular_plans_title": "Популярные планы",
+        "purchases_label": "покупок",
+        "users_title": "Пользователи",
+        "field_total_users": "Всего",
+        "field_new_this_week": "Новых за неделю",
+        "field_with_active": "С активными ключами"
       }
     }
   },
