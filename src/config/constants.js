@@ -255,6 +255,8 @@ const CALLBACK_ACTIONS = {
 			VIEW: 'admin_withdrawal_view',
 			APPROVE: 'withdrawal_approve',
 			REJECT: 'withdrawal_reject',
+			MANUAL_PAID: 'withdrawal_manual_paid',
+			MANUAL_UNPAID: 'withdrawal_manual_unpaid',
 		},
 		BROADCAST: 'admin_broadcast',
 		BROADCAST_AUDIENCE: {

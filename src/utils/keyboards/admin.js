@@ -14,6 +14,18 @@ function createWithdrawalAdminKeyboard(t, withdrawalId) {
 	]);
 }
 
+function createWithdrawalManualConfirmKeyboard(t, withdrawalId) {
+	return Markup.inlineKeyboard([
+		[
+			Markup.button.callback(t('buttons.admin.withdrawal_manual_paid'), `${CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.MANUAL_PAID}_${withdrawalId}`),
+			Markup.button.callback(t('buttons.admin.withdrawal_manual_unpaid'), `${CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.MANUAL_UNPAID}_${withdrawalId}`),
+		],
+		[
+			Markup.button.callback(t('buttons.admin.withdrawal_back_to_list'), CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING),
+		]
+	]);
+}
+
 function createWithdrawalListKeyboard(t, withdrawals) {
 	const rows = [];
 	for (let i = 0; i < withdrawals.length; i += 4) {
@@ -56,5 +68,6 @@ function createAdminKeyboard(t) {
 module.exports = {
 	createAdminKeyboard,
 	createWithdrawalAdminKeyboard,
+	createWithdrawalManualConfirmKeyboard,
 	createWithdrawalListKeyboard,
 };

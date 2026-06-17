@@ -147,6 +147,12 @@ class CallbackHandler {
 			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.REJECT}_`)) {
 				const withdrawalId = parseInt(callbackData.split('_').pop());
 				await this.adminCallbacks.handleRejectWithdrawal(ctx, withdrawalId);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.MANUAL_PAID}_`)) {
+				const withdrawalId = parseInt(callbackData.split('_').pop());
+				await this.adminCallbacks.handleManualPaid(ctx, withdrawalId);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.MANUAL_UNPAID}_`)) {
+				const withdrawalId = parseInt(callbackData.split('_').pop());
+				await this.adminCallbacks.handleManualUnpaid(ctx, withdrawalId);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.BROADCAST || callbackData === 'admin_broadcast') {
 				await this.broadcastCallbacks.handleBroadcastMenu(ctx);
 			} else if (callbackData === 'broadcast_new') {

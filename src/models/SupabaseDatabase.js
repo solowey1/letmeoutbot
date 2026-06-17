@@ -765,6 +765,15 @@ class SupabaseDatabase {
 
 	// ============== WITHDRAWALS ==============
 
+	async cancelUserPendingWithdrawals(userId) {
+		const { error } = await this.supabase
+			.from('withdrawals')
+			.update({ status: 'rejected', notes: 'replaced_by_new_request' })
+			.eq('user_id', userId)
+			.eq('status', 'pending');
+		if (error) throw error;
+	}
+
 	async createWithdrawal(userId, amount, tonAmount = null, tonWallet = null) {
 		const { data, error } = await this.supabase
 			.from('withdrawals')

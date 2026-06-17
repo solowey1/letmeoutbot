@@ -48,6 +48,8 @@
       "pending_withdrawals": "Выплаты",
       "withdrawal_approve": "✅ Выплатить",
       "withdrawal_reject": "❌ Отклонить",
+      "withdrawal_manual_paid": "✅ Выплатил",
+      "withdrawal_manual_unpaid": "❌ Не выплатил",
       "withdrawal_back_to_list": "◀ Все запросы",
       "broadcast": "Рассылка",
       "broadcast_all": "Всем пользователям",

@@ -75,6 +75,7 @@ class KeyboardUtils {
 	// admin
 	static createAdminKeyboard(t) { return admin.createAdminKeyboard(t); }
 	static createWithdrawalAdminKeyboard(t, withdrawalId) { return admin.createWithdrawalAdminKeyboard(t, withdrawalId); }
+	static createWithdrawalManualConfirmKeyboard(t, withdrawalId) { return admin.createWithdrawalManualConfirmKeyboard(t, withdrawalId); }
 	static createWithdrawalListKeyboard(t, withdrawals) { return admin.createWithdrawalListKeyboard(t, withdrawals); }
 
 	// broadcast

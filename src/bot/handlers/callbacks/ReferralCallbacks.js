@@ -198,6 +198,9 @@ class ReferralCallbacks {
 			tonAmount = await starsToTon(amount);
 		} catch (_) {}
 
+		// Отменяем существующие ожидающие запросы перед созданием нового
+		await this.db.cancelUserPendingWithdrawals(user.id);
+
 		// Создаём запись о выводе средств в базе данных
 		const withdrawalId = await this.db.createWithdrawal(user.id, amount, tonAmount, user.ton_wallet);
 
