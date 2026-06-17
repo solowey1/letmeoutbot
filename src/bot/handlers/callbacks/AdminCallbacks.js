@@ -397,18 +397,70 @@ class AdminCallbacks {
 				withdrawals,
 				this.db.getUserById.bind(this.db)
 			);
-			const keyboard = KeyboardUtils.createAdminKeyboard(t);
+			const keyboard = KeyboardUtils.createWithdrawalListKeyboard(t, withdrawals);
 
-			await ctx.editMessageText(message, {
-				...keyboard,
-				parse_mode: 'HTML'
-			});
+			try {
+				await ctx.editMessageText(message, {
+					...keyboard,
+					parse_mode: 'HTML'
+				});
+			} catch (editError) {
+				if (editError.description && editError.description.includes('message is not modified')) {
+					console.log('Выплаты: сообщение не изменилось');
+				} else {
+					throw editError;
+				}
+			}
 		} catch (error) {
 			console.error('Ошибка получения pending выплат:', error);
-			await ctx.editMessageText(
-				t('admin.loading_error', { ns: 'message' }),
-				KeyboardUtils.createAdminKeyboard(t)
-			);
+			try {
+				await ctx.editMessageText(
+					t('admin.loading_error', { ns: 'message' }),
+					KeyboardUtils.createAdminKeyboard(t)
+				);
+			} catch (_) {}
+		}
+	}
+
+	async handleViewWithdrawal(ctx, withdrawalId) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		try {
+			const withdrawal = await this.db.getWithdrawal(withdrawalId);
+			if (!withdrawal) {
+				await ctx.answerCbQuery(t('admin.withdrawals.not_found', { ns: 'message' }));
+				return;
+			}
+
+			const user = await this.db.getUserById(withdrawal.user_id);
+			const message = AdminMessages.withdrawalDetail(t, withdrawal, user);
+			const keyboard = KeyboardUtils.createWithdrawalAdminKeyboard(t, withdrawalId);
+
+			try {
+				await ctx.editMessageText(message, {
+					...keyboard,
+					parse_mode: 'HTML'
+				});
+			} catch (editError) {
+				if (editError.description && editError.description.includes('message is not modified')) {
+					console.log('Детали выплаты: сообщение не изменилось');
+				} else {
+					throw editError;
+				}
+			}
+		} catch (error) {
+			console.error('Ошибка получения выплаты:', error);
+			try {
+				await ctx.editMessageText(
+					t('admin.loading_error', { ns: 'message' }),
+					KeyboardUtils.createAdminKeyboard(t)
+				);
+			} catch (_) {}
 		}
 	}
 

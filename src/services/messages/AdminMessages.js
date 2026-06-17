@@ -169,7 +169,7 @@ class AdminMessages {
 	}
 
 	/**
-	 * Список ожидающих выплат
+	 * Список ожидающих выплат (с нумерацией, без инструкций)
 	 * @param {Function} t - Функция перевода
 	 * @param {Array} withdrawals - Массив выплат
 	 * @param {Function} getUserById - Функция для получения пользователя
@@ -180,24 +180,48 @@ class AdminMessages {
 			return t('admin.withdrawals.no_pending', { ns: 'message' });
 		}
 
-		// Формируем список
-		const list = await Promise.all(withdrawals.map(async (w) => {
+		const list = await Promise.all(withdrawals.map(async (w, index) => {
 			const user = await getUserById(w.user_id);
-			const userName = user?.username || user?.first_name || 'Unknown';
+			const userName = user?.username ? `@${user.username}` : (user?.first_name || 'Unknown');
 			const date = new Date(w.requested_at).toLocaleDateString();
-
-			return `🆔 ${w.id} | ${userName} (${user?.telegram_id})\n💰 ${w.amount} ⭐ | ${date}`;
+			return `${index + 1}. 🆔 ${w.id} | ${userName} — ${w.amount} ⭐ | ${date}`;
 		}));
 
-		const message = [
+		return [
 			`<b>${t('admin.withdrawals.title', { ns: 'message' })}</b>`,
 			'',
 			...list,
-			'',
-			t('admin.withdrawals.instructions', { ns: 'message' })
 		].join('\n');
+	}
 
-		return message;
+	/**
+	 * Детальная информация об одной выплате
+	 * @param {Function} t - Функция перевода
+	 * @param {Object} withdrawal - Объект выплаты
+	 * @param {Object|null} user - Пользователь
+	 * @returns {string}
+	 */
+	static withdrawalDetail(t, withdrawal, user) {
+		const userName = user?.username ? `@${user.username}` : (user?.first_name || 'Unknown');
+		const date = new Date(withdrawal.requested_at).toLocaleString();
+
+		const lines = [
+			`<b>${t('admin.withdrawals.detail_title', { ns: 'message', id: withdrawal.id })}</b>`,
+			'',
+			`👤 ${t('common.user', { ns: 'main' })}: ${userName} (${user?.telegram_id || withdrawal.user_id})`,
+			`💰 Stars: ${withdrawal.amount} ⭐`,
+		];
+
+		if (withdrawal.ton_amount) {
+			lines.push(`💎 TON: ${withdrawal.ton_amount}`);
+		}
+		if (withdrawal.ton_wallet) {
+			lines.push(`💳 ${t('admin.withdrawals.wallet', { ns: 'message' })}: <code>${withdrawal.ton_wallet}</code>`);
+		}
+
+		lines.push(`📅 ${t('admin.withdrawals.requested_at', { ns: 'message' })}: ${date}`);
+
+		return lines.join('\n');
 	}
 
 	/**

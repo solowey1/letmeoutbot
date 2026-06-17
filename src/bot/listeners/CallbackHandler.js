@@ -138,6 +138,9 @@ class CallbackHandler {
 				await this.adminCallbacks.handleRetryActivateKey(ctx, keyId);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.PENDING) {
 				await this.adminCallbacks.handlePendingWithdrawals(ctx);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.VIEW}_`)) {
+				const withdrawalId = parseInt(callbackData.split('_').pop());
+				await this.adminCallbacks.handleViewWithdrawal(ctx, withdrawalId);
 			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.WITHDRAWALS.APPROVE}_`)) {
 				const withdrawalId = parseInt(callbackData.split('_').pop());
 				await this.adminCallbacks.handleApproveWithdrawal(ctx, withdrawalId);
