@@ -252,6 +252,7 @@ const CALLBACK_ACTIONS = {
 		USERS: { MENU: 'admin_users_menu' },
 		WITHDRAWALS: {
 			PENDING: 'admin_withdrawals_pending',
+			VIEW: 'admin_withdrawal_view',
 			APPROVE: 'withdrawal_approve',
 			REJECT: 'withdrawal_reject',
 		},

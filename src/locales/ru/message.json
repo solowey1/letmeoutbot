@@ -64,7 +64,9 @@
     "withdrawals": {
       "title": "📜 Ожидающие выплаты",
       "no_pending": "📜 Нет ожидающих выплат",
-      "instructions": "Используйте /approve_withdrawal <id> или /reject_withdrawal <id>",
+      "detail_title": "💸 Запрос на выплату #{{id}}",
+      "wallet": "Кошелёк",
+      "requested_at": "Запрошено",
       "no_access": "Нет доступа",
       "not_found": "Запрос не найден",
       "already_processed": "Запрос уже обработан",

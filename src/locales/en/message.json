@@ -63,7 +63,9 @@
     "withdrawals": {
       "title": "📜 Pending Withdrawals",
       "no_pending": "📜 No pending withdrawals",
-      "instructions": "Use /approve_withdrawal <id> or /reject_withdrawal <id>",
+      "detail_title": "💸 Withdrawal Request #{{id}}",
+      "wallet": "Wallet",
+      "requested_at": "Requested at",
       "no_access": "Access denied",
       "not_found": "Request not found",
       "already_processed": "Request already processed",
