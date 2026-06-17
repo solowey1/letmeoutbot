@@ -48,6 +48,8 @@
       "pending_withdrawals": "Withdrawals",
       "withdrawal_approve": "✅ Pay Out",
       "withdrawal_reject": "❌ Reject",
+      "withdrawal_manual_paid": "✅ Paid",
+      "withdrawal_manual_unpaid": "❌ Not Paid",
       "withdrawal_back_to_list": "◀ All Requests",
       "broadcast": "Broadcast",
       "broadcast_all": "All users",

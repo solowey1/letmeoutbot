@@ -485,43 +485,149 @@ class AdminCallbacks {
 			const user = await this.db.getUserById(withdrawal.user_id);
 			const telegramId = user?.telegram_id;
 			const tonAmount = withdrawal.ton_amount;
-			const tonWallet = withdrawal.ton_wallet;
+			// Используем кошелёк из запроса, или текущий кошелёк пользователя
+			const tonWallet = withdrawal.ton_wallet || user?.ton_wallet;
 
-			// Отправляем TON автоматически если есть кошелёк и сумма
-			let txHash = null;
-			let txError = null;
+			// Если есть кошелёк и сумма — пробуем автоматически отправить TON
 			if (tonWallet && tonAmount) {
+				let txHash = null;
+				let txError = null;
 				try {
 					txHash = await sendTon(tonWallet, tonAmount);
 				} catch (err) {
 					txError = err.message;
 					console.error('Ошибка отправки TON:', err);
 				}
+
+				if (txHash) {
+					// Автоматическая выплата прошла успешно
+					await this.db.updateWithdrawalStatus(withdrawalId, 'completed', ctx.from.id, null, txHash);
+
+					const adminNote = [
+						t('admin.withdrawals.approve_note', { ns: 'message', id: withdrawalId, userId: telegramId, stars: withdrawal.amount }),
+						t('admin.withdrawals.approve_note_ton', { ns: 'message', amount: tonAmount }),
+						t('admin.withdrawals.ton_sent', { ns: 'message', txHash }),
+					].join('\n');
+					await ctx.editMessageText(adminNote, { parse_mode: 'HTML' });
+
+					try {
+						await ctx.telegram.sendMessage(
+							telegramId,
+							t('admin.withdrawals.user_approved_ton', { ns: 'message', amount: tonAmount, txHash }),
+							{ parse_mode: 'HTML' }
+						);
+					} catch (_) {}
+					return;
+				}
+
+				// Ошибка отправки — просим подтвердить вручную
+				const manualKeyboard = KeyboardUtils.createWithdrawalManualConfirmKeyboard(t, withdrawalId);
+				const prompt = t('admin.withdrawals.manual_confirm_ton_error', {
+					ns: 'message',
+					error: txError,
+					wallet: tonWallet,
+					stars: withdrawal.amount,
+					tonAmount: tonAmount,
+				});
+				await ctx.editMessageText(prompt, { ...manualKeyboard, parse_mode: 'HTML' });
+				return;
 			}
 
-			await this.db.updateWithdrawalStatus(withdrawalId, 'completed', ctx.from.id, txError, txHash);
-
-			const statusLine = txHash
-				? t('admin.withdrawals.ton_sent', { ns: 'message', txHash })
-				: txError
-					? t('admin.withdrawals.ton_error', { ns: 'message', error: txError, wallet: tonWallet })
-					: t('admin.withdrawals.no_wallet', { ns: 'message' });
-
-			const adminNoteParts = [
-				t('admin.withdrawals.approve_note', { ns: 'message', id: withdrawalId, userId: telegramId, stars: withdrawal.amount }),
-				tonAmount ? t('admin.withdrawals.approve_note_ton', { ns: 'message', amount: tonAmount }) : '',
-				statusLine,
-			].filter(Boolean);
-			await ctx.editMessageText(adminNoteParts.join('\n'), { parse_mode: 'HTML' });
-
-			try {
-				const userMsg = txHash
-					? t('admin.withdrawals.user_approved_ton', { ns: 'message', amount: tonAmount, txHash })
-					: t('admin.withdrawals.user_approved_manual', { ns: 'message', stars: withdrawal.amount });
-				await ctx.telegram.sendMessage(telegramId, userMsg, { parse_mode: 'HTML' });
-			} catch (_) {}
+			// Нет кошелька или суммы — запрашиваем ручное подтверждение
+			const manualKeyboard = KeyboardUtils.createWithdrawalManualConfirmKeyboard(t, withdrawalId);
+			const prompt = tonWallet
+				? t('admin.withdrawals.manual_confirm_wallet', { ns: 'message', wallet: tonWallet, stars: withdrawal.amount })
+				: t('admin.withdrawals.manual_confirm_no_wallet', { ns: 'message', stars: withdrawal.amount });
+			await ctx.editMessageText(prompt, { ...manualKeyboard, parse_mode: 'HTML' });
 		} catch (error) {
 			console.error('Ошибка подтверждения выплаты:', error);
+			await ctx.answerCbQuery(t('admin.withdrawals.processing_error', { ns: 'message' }));
+		}
+	}
+
+	async handleManualPaid(ctx, withdrawalId) {
+		const t = ctx.i18n.t;
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery(t('admin.withdrawals.no_access', { ns: 'message' }));
+			return;
+		}
+
+		try {
+			const withdrawal = await this.db.getWithdrawal(withdrawalId);
+			if (!withdrawal) {
+				await ctx.answerCbQuery(t('admin.withdrawals.not_found', { ns: 'message' }));
+				return;
+			}
+			if (withdrawal.status !== 'pending') {
+				await ctx.answerCbQuery(t('admin.withdrawals.already_processed', { ns: 'message' }));
+				return;
+			}
+
+			const user = await this.db.getUserById(withdrawal.user_id);
+			const telegramId = user?.telegram_id;
+
+			await this.db.updateWithdrawalStatus(withdrawalId, 'completed', ctx.from.id, 'manual');
+
+			const adminNote = t('admin.withdrawals.manual_paid_note', {
+				ns: 'message',
+				id: withdrawalId,
+				userId: telegramId,
+				stars: withdrawal.amount,
+			});
+			await ctx.editMessageText(adminNote, { parse_mode: 'HTML' });
+
+			try {
+				await ctx.telegram.sendMessage(
+					telegramId,
+					t('admin.withdrawals.user_approved_manual_done', { ns: 'message', stars: withdrawal.amount }),
+					{ parse_mode: 'HTML' }
+				);
+			} catch (_) {}
+		} catch (error) {
+			console.error('Ошибка подтверждения ручной выплаты:', error);
+			await ctx.answerCbQuery(t('admin.withdrawals.processing_error', { ns: 'message' }));
+		}
+	}
+
+	async handleManualUnpaid(ctx, withdrawalId) {
+		const t = ctx.i18n.t;
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCbQuery(t('admin.withdrawals.no_access', { ns: 'message' }));
+			return;
+		}
+
+		try {
+			const withdrawal = await this.db.getWithdrawal(withdrawalId);
+			if (!withdrawal) {
+				await ctx.answerCbQuery(t('admin.withdrawals.not_found', { ns: 'message' }));
+				return;
+			}
+			if (withdrawal.status !== 'pending') {
+				await ctx.answerCbQuery(t('admin.withdrawals.already_processed', { ns: 'message' }));
+				return;
+			}
+
+			const user = await this.db.getUserById(withdrawal.user_id);
+			const telegramId = user?.telegram_id;
+
+			await this.db.updateWithdrawalStatus(withdrawalId, 'rejected', ctx.from.id, 'manual_unpaid');
+
+			const adminNote = t('admin.withdrawals.manual_unpaid_note', {
+				ns: 'message',
+				id: withdrawalId,
+				userId: telegramId,
+				stars: withdrawal.amount,
+			});
+			await ctx.editMessageText(adminNote, { parse_mode: 'HTML' });
+
+			try {
+				await ctx.telegram.sendMessage(
+					telegramId,
+					t('admin.withdrawals.user_rejected', { ns: 'message', stars: withdrawal.amount })
+				);
+			} catch (_) {}
+		} catch (error) {
+			console.error('Ошибка отклонения ручной выплаты:', error);
 			await ctx.answerCbQuery(t('admin.withdrawals.processing_error', { ns: 'message' }));
 		}
 	}
