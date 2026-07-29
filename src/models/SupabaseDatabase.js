@@ -117,7 +117,7 @@ class SupabaseDatabase {
 
 			if (purchasedError) console.error('Error counting purchased keys:', purchasedError);
 
-			// Всего активировано (ключи, которые были добавлены в Outline)
+			// Всего активировано (ключи, выданные на VPN-сервере)
 			const { count: totalActivated, error: activatedError } = await this.supabase
 				.from('keys')
 				.select('*', { count: 'exact', head: true })

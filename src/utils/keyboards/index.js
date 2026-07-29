@@ -15,10 +15,10 @@ const referrals = require('./referrals');
  * Модули лежат в keyboards/:
  *   common     — btn(), removeKeyboard(), createBackToMenuKeyboard, ошибки, пагинация
  *   menu       — главное меню
- *   payments   — выбор типа, планы, оплата
+ *   payments   — тарифы, оплата
  *   keys       — мои ключи, детали, статистика
  *   help       — помощь, поддержка
- *   protocols  — приложения, добавление ключей, Outline/VLESS
+ *   protocols  — приложения, добавление ключей (VLESS + Hysteria2)
  *   settings   — настройки, язык
  *   admin      — админ-панель
  *   broadcast  — рассылки
@@ -38,17 +38,14 @@ class KeyboardUtils {
 	static createMainMenu(t, isAdmin, showGift) { return menu.createMainMenu(t, isAdmin, showGift); }
 
 	// payments
-	static createTypeSelectionKeyboard(t) { return payments.createTypeSelectionKeyboard(t); }
-	static createPlansKeyboardByType(t, plans, type) { return payments.createPlansKeyboardByType(t, plans, type); }
-	static createPlansKeyboard(t, isAdmin) { return payments.createPlansKeyboard(t, isAdmin); }
-	static createPlanDetailsKeyboard(t, planId, planType) { return payments.createPlanDetailsKeyboard(t, planId, planType); }
+	static createPlansKeyboard(t, plans) { return payments.createPlansKeyboard(t, plans); }
+	static createPlanDetailsKeyboard(t, planId) { return payments.createPlanDetailsKeyboard(t, planId); }
 	static createPaymentConfirmationKeyboard(t, planId) { return payments.createPaymentConfirmationKeyboard(t, planId); }
-	static createDirectCheckoutKeyboard(t, planId) { return payments.createDirectCheckoutKeyboard(t, planId); }
 	static createAppsDownloadKeyboard(t) { return payments.createAppsDownloadKeyboard(t); }
 
 	// keys
 	static createKeysKeyboard(t, keys) { return keysKb.createKeysKeyboard(t, keys); }
-	static createKeyDetailsKeyboard(t, keyId, keyType) { return keysKb.createKeyDetailsKeyboard(t, keyId, keyType); }
+	static createKeyDetailsKeyboard(t, keyId) { return keysKb.createKeyDetailsKeyboard(t, keyId); }
 	static createKeyStatsKeyboard(t, keyId) { return keysKb.createKeyStatsKeyboard(t, keyId); }
 
 	// help
@@ -57,13 +54,9 @@ class KeyboardUtils {
 
 	// protocols — путь "Как добавить ключ"
 	static createHowToAddKeyKeyboard(t) { return protocols.createHowToAddKeyKeyboard(t); }
-	static createHowToAddKeyProtocolKeyboard(t, protocol) { return protocols.createHowToAddKeyProtocolKeyboard(t, protocol); }
-	static createHowtoOutlineAppsKeyboard(t) { return protocols.createHowtoOutlineAppsKeyboard(t); }
 	static createHowtoVlessOsKeyboard(t) { return protocols.createHowtoVlessOsKeyboard(t); }
 	static createHowtoVlessAppsBackKeyboard(t) { return protocols.createHowtoVlessAppsBackKeyboard(t); }
 	// protocols — путь "Приложения для VPN"
-	static createVpnAppsProtocolKeyboard(t) { return protocols.createVpnAppsProtocolKeyboard(t); }
-	static createOutlineAppsKeyboard(t) { return protocols.createOutlineAppsKeyboard(t); }
 	static createVlessOsKeyboard(t) { return protocols.createVlessOsKeyboard(t); }
 	static createVlessAppsBackKeyboard(t) { return protocols.createVlessAppsBackKeyboard(t); }
 

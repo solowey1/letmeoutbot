@@ -36,51 +36,18 @@ class MenuMessages {
 	}
 
 	/**
-	 * Как добавить ключ — выбор протокола
+	 * Как добавить ключ — инструкция
 	 */
 	static howToAddKey(t) {
-		return t('how_to_add_key.choose_protocol', { ns: 'message' });
-	}
-
-	/**
-	 * Как добавить ключ — инструкция для протокола
-	 */
-	static howToAddKeyProtocol(t, protocol) {
-		const steps = t(`how_to_add_key.${protocol}.steps`, { ns: 'message' });
+		const steps = t('how_to_add_key.steps', { ns: 'message' });
 		const stepsList = Array.isArray(steps)
 			? steps.map((item, i) => `${i + 1}. ${item}`)
 			: [`1. ${steps}`];
 
 		return [
-			`<b>${t(`how_to_add_key.${protocol}.title`, { ns: 'message' })}</b>`,
+			`<b>${t('how_to_add_key.title', { ns: 'message' })}</b>`,
 			'',
 			...stepsList
-		].join('\n');
-	}
-
-	/**
-	 * Приложения для VPN — выбор протокола
-	 */
-	static vpnApps(t) {
-		return t('vpn_apps.choose_protocol', { ns: 'message' });
-	}
-
-	/**
-	 * Outline — список приложений
-	 */
-	static outlineApps(t) {
-		const steps = t('vpn_apps.outline.steps', { ns: 'message' });
-		const stepsList = Array.isArray(steps)
-			? steps.map(item => `•  ${item}`)
-			: [steps];
-
-		return [
-			`<b>${t('vpn_apps.outline.title', { ns: 'message' })}</b>`,
-			t('vpn_apps.outline.description', { ns: 'message' }),
-			'',
-			...stepsList,
-			'',
-			t('vpn_apps.outline.action_text', { ns: 'message' })
 		].join('\n');
 	}
 

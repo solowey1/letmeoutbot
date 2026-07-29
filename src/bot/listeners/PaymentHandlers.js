@@ -1,7 +1,8 @@
 const KeyboardUtils = require('../../utils/keyboards');
-const { PlanMessages, KeyMessages } = require('../../services/messages');
+const { KeyMessages } = require('../../services/messages');
 const PlanService = require('../../services/PlanService');
 const ReferralService = require('../../services/ReferralService');
+const config = require('../../config');
 
 class PaymentHandlers {
 	constructor(paymentService, keysService, database, adminNotificationService = null) {
@@ -14,9 +15,16 @@ class PaymentHandlers {
 
 	async handlePreCheckoutQuery(ctx) {
 		try {
+			const t = ctx.i18n?.t || ((key) => key);
+
+			if (config.maintenanceMode) {
+				await ctx.answerPreCheckoutQuery(false, t('payments.maintenance', { ns: 'message' }));
+				return;
+			}
+
 			// Отвечаем сразу — Telegram требует ответ в течение 10 секунд.
-			// Проверка Outline API здесь не нужна: если ключ не создастся,
-			// handleSuccessfulPayment имеет retry-логику и fallback на pending_activation.
+			// Если ключ не создастся, handleSuccessfulPayment имеет retry-логику
+			// и fallback на pending_activation.
 			await ctx.answerPreCheckoutQuery(true);
 		} catch (error) {
 			console.error('Ошибка пре-чекаута:', error);
@@ -77,7 +85,7 @@ class PaymentHandlers {
 
 			console.log('📝 Создаем и активируем ключ с retry-логикой...');
 
-			const results = await this.keysService.createAndActivateKeyWithRetry(
+			const result = await this.keysService.createAndActivateKeyWithRetry(
 				completedPayment.user_id,
 				completedPayment.plan_id,
 				paymentId,
@@ -85,10 +93,10 @@ class PaymentHandlers {
 				5 // максимум 5 попыток с прогрессивной задержкой
 			);
 
-			console.log(`✅ Создано ключей: ${results.length}`, results);
+			console.log('✅ Ключ создан:', result);
 			console.log('📤 Отправляем сообщение пользователю...');
 
-			await this.sendAccessKeyMessage(ctx, completedPayment, results);
+			await this.sendAccessKeyMessage(ctx, result);
 
 			// Начисляем реферальный бонус, если есть реферер
 			try {
@@ -112,7 +120,7 @@ class PaymentHandlers {
 					const plan = PlanService.getPlanById(completedPayment.plan_id);
 					await this.adminNotificationService.notifyNewPurchase(
 						completedPayment,
-						results[0].key,
+						result.key,
 						user,
 						plan,
 						'success'
@@ -159,30 +167,15 @@ class PaymentHandlers {
 		}
 	}
 
-	async sendAccessKeyMessage(ctx, payment, activationResults) {
+	async sendAccessKeyMessage(ctx, result) {
 		const t = ctx.i18n?.t || ((key) => key);
 		const keyboard = KeyboardUtils.createAppsDownloadKeyboard(t);
 		const { generateQR } = require('../../utils/qr');
 
 		let message = `🎉 <b>${t('payments.success_title', { ns: 'message' })}</b>\n\n`;
-
-		const outlineResult = activationResults.find(r => r.protocol === 'outline');
-		const vlessResult = activationResults.find(r => r.protocol === 'vless');
-
-		if (outlineResult && vlessResult) {
-			message += `✅ ${t('payments.keys_activated', { ns: 'message' })}\n\n`;
-			message += `🌿 <b>${t('payments.outline_key_label', { ns: 'message' })}</b>\n<code>${outlineResult.accessUrl}</code>\n\n`;
-			message += `⚡ <b>${t('payments.vless_key_label', { ns: 'message' })}</b>\n<code>${vlessResult.accessUrl}</code>\n\n`;
-			message += t('payments.add_key_to_app', { ns: 'message' });
-		} else if (vlessResult) {
-			message += `✅ ${t('payments.vless_key_activated', { ns: 'message' })}\n\n`;
-			message += `⚡ <b>${t('payments.vless_key_label', { ns: 'message' })}</b>\n<code>${vlessResult.accessUrl}</code>\n\n`;
-			message += t('payments.add_key_hiddify', { ns: 'message' });
-		} else if (outlineResult) {
-			message += `✅ ${t('payments.key_activated', { ns: 'message' })}\n\n`;
-			message += `🌿 <b>${t('payments.connection_key_label', { ns: 'message' })}</b>\n<code>${outlineResult.accessUrl}</code>\n\n`;
-			message += t('payments.add_key_outline', { ns: 'message' });
-		}
+		message += `✅ ${t('payments.key_activated', { ns: 'message' })}\n\n`;
+		message += `🔗 <b>${t('payments.subscription_key_label', { ns: 'message' })}</b>\n<code>${result.accessUrl}</code>\n\n`;
+		message += t('payments.add_key_hiddify', { ns: 'message' });
 
 		await ctx.reply(message, {
 			...keyboard,
@@ -190,20 +183,14 @@ class PaymentHandlers {
 			disable_web_page_preview: true
 		});
 
-		// Отправляем QR-коды для всех ключей
-		for (const result of activationResults) {
-			try {
-				const captionKey = result.protocol === 'vless'
-					? 'payments.vless_qr_caption'
-					: 'payments.outline_qr_caption';
-				const qrBuffer = await generateQR(result.accessUrl);
-				await ctx.replyWithPhoto(
-					{ source: qrBuffer, filename: `${result.protocol}-qr.png` },
-					{ caption: t(captionKey, { ns: 'message' }) }
-				);
-			} catch (qrError) {
-				console.error('⚠️ Не удалось отправить QR-код:', qrError.message);
-			}
+		try {
+			const qrBuffer = await generateQR(result.accessUrl);
+			await ctx.replyWithPhoto(
+				{ source: qrBuffer, filename: 'vpn-qr.png' },
+				{ caption: t('payments.qr_caption', { ns: 'message' }) }
+			);
+		} catch (qrError) {
+			console.error('⚠️ Не удалось отправить QR-код:', qrError.message);
 		}
 	}
 

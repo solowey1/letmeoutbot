@@ -1,16 +1,14 @@
-const { PLANS, KEY_TYPE, COMBO_DISCOUNT } = require('../config/constants');
+const { PLANS } = require('../config/constants');
 const moment = require('moment');
 
 class PlanService {
 
 	/**
-	 * Получить все планы определённого типа
-	 * @param {'outline'|'vless'|'both'} type
-	 * @param {boolean} includeHidden - включать тестовые планы
+	 * Получить все видимые платные планы (единая тарифная сетка)
+	 * @param {boolean} includeHidden - включать тестовые/подарочные планы
 	 */
-	static getPlansByType(type, includeHidden = false) {
+	static getPlans(includeHidden = false) {
 		return Object.values(PLANS).filter(p =>
-			p.type === type &&
 			p.price > 0 &&
 			(includeHidden || !p.hidden)
 		);
@@ -88,7 +86,7 @@ class PlanService {
 		// Если ключа нет — используем дефолтные строки
 		let description, invoice;
 		try {
-			description = t(`plans.${plan.id}.description`, { discount: Math.round(COMBO_DISCOUNT * 100) });
+			description = t(`plans.${plan.id}.description`);
 		} catch {
 			description = plan.name;
 		}
@@ -106,34 +104,17 @@ class PlanService {
 			invoice = `${plan.name} — ${dataLimitFormatted} / ${durationFormatted}`;
 		}
 
-		const typePrefix = { both: 'Outline + VLESS', outline: 'Outline', vless: 'VLESS' }[plan.type] || plan.type;
 		return {
 			...plan,
 			description,
 			invoice,
-			displayName: `${plan.emoji} ${typePrefix} ${dataLimitFormatted}`,
+			displayName: `${plan.emoji} ${dataLimitFormatted}`,
 			displayDescription: `${dataLimitFormatted} / ${durationFormatted}`,
 			displayDataLimit: dataLimitFormatted,
 			displayDuration: durationFormatted,
 			displayPrice: priceFormatted,
 			fullDescription: `${description}\n💾 ${dataLimitFormatted}\n⏰ ${durationFormatted}\n💰 ${priceFormatted}`
 		};
-	}
-
-	static calculateSavings(plan) {
-		if (plan.type === 'both') {
-			const outlinePlan = Object.values(PLANS).find(p =>
-				p.type === 'outline' && p.dataLimit === plan.dataLimit && !p.hidden
-			);
-			const vlessPlan = Object.values(PLANS).find(p =>
-				p.type === 'vless' && p.dataLimit === plan.dataLimit
-			);
-			if (outlinePlan && vlessPlan) {
-				const fullPrice = outlinePlan.price + vlessPlan.price;
-				return fullPrice - Math.round(fullPrice * (1 - COMBO_DISCOUNT));
-			}
-		}
-		return 0;
 	}
 
 	static async loadPrices(db) {

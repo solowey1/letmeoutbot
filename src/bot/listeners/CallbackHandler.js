@@ -62,9 +62,6 @@ class CallbackHandler {
 			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.KEYS.STATS}_`)) {
 				const keyId = parseInt(callbackData.split('_')[2]);
 				await this.KeysCallbacks.handleKeyStats(ctx, keyId);
-			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.KEYS.REFRESH}_`)) {
-				const keyId = parseInt(callbackData.split('_')[2]);
-				await this.KeysCallbacks.handleRefreshKey(ctx, keyId);
 			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.KEYS.RAW_VLESS}_`)) {
 				const keyId = parseInt(callbackData.split('_').pop());
 				await this.KeysCallbacks.handleRawVlessKey(ctx, keyId);
@@ -84,13 +81,7 @@ class CallbackHandler {
 			// ── Как добавить ключ (howto) ──
 			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY) {
 				await this.menuCallbacks.handleHowToAddKey(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_OUTLINE) {
-				await this.menuCallbacks.handleHowToAddKeyProtocol(ctx, 'outline');
-			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY_VLESS) {
-				await this.menuCallbacks.handleHowToAddKeyProtocol(ctx, 'vless');
-			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOWTO_APPS_OUTLINE) {
-				await this.menuCallbacks.handleHowtoOutlineApps(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOWTO_APPS_VLESS) {
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOWTO_APPS) {
 				await this.menuCallbacks.handleHowtoVlessChooseOs(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOWTO_VLESS_APPS_LINUX) {
 				await this.menuCallbacks.handleHowtoVlessApps(ctx, 'linux');
@@ -105,10 +96,6 @@ class CallbackHandler {
 			// ── Приложения для VPN ──
 			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VPN_APPS) {
 				await this.menuCallbacks.handleVpnApps(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VPN_APPS_OUTLINE) {
-				await this.menuCallbacks.handleOutlineApps(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VPN_APPS_VLESS) {
-				await this.menuCallbacks.handleVlessChooseOs(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VLESS_APPS_LINUX) {
 				await this.menuCallbacks.handleVlessApps(ctx, 'linux');
 			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VLESS_APPS_WINDOWS) {
@@ -191,15 +178,8 @@ class CallbackHandler {
 				await this.giftCallbacks.handleGiftInfo(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.GIFT.CLAIM) {
 				await this.giftCallbacks.handleGiftClaim(ctx);
-				// ── Выбор типа подключения ──
 			} else if (callbackData === CALLBACK_ACTIONS.KEYS.BUY) {
 				await this.planCallbacks.handleShowPlans(ctx);
-			} else if (callbackData === CALLBACK_ACTIONS.KEYS.TYPE_OUTLINE) {
-				await this.planCallbacks.handleShowPlansByType(ctx, 'outline');
-			} else if (callbackData === CALLBACK_ACTIONS.KEYS.TYPE_VLESS) {
-				await this.planCallbacks.handleShowPlansByType(ctx, 'vless');
-			} else if (callbackData === CALLBACK_ACTIONS.KEYS.TYPE_BOTH) {
-				await this.planCallbacks.handleShowPlansByType(ctx, 'both');
 			} else {
 				// Неизвестный callback
 				await ctx.editMessageText(t('generic.unknown_command', { ns: 'error' }), KeyboardUtils.createBackToMenuKeyboard(t));

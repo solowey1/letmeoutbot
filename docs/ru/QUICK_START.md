@@ -32,10 +32,10 @@ sudo bash install.sh
 - Отправьте `/start` боту [@userinfobot](https://t.me/userinfobot)
 - Скопируйте ваш ID
 
-### 3. Outline VPN API URL
-- Установите [Outline Manager](https://getoutline.org/get-started/)
-- Создайте сервер
-- Скопируйте "Management API URL" из настроек
+### 3. 3x-ui панель (VLESS + Hysteria2)
+- Разверните панель [3x-ui](https://github.com/MHSanaei/3x-ui)
+- Создайте инбаунды VLESS (Reality/XHTTP) и Hysteria2
+- Скопируйте URL панели, API-токен и ID инбаундов
 
 ### 4. База данных (выберите одну)
 

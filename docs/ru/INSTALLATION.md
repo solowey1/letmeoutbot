@@ -13,7 +13,7 @@ sudo bash install.sh
 Скрипт проведёт вас через:
 1. **Выбор базы данных** (SQLite, PostgreSQL или Supabase)
 2. **Настройка БД** (учётные данные в зависимости от выбора)
-3. **Настройка бота** (токен Telegram, ID админа, Outline API URL)
+3. **Настройка бота** (токен Telegram, ID админа, данные панели 3x-ui)
 4. **Автоматическая настройка** (Docker, сервисы, файрвол)
 
 ### Варианты баз данных
@@ -70,7 +70,10 @@ nano .env
 ```env
 TELEGRAM_BOT_TOKEN=ваш_токен_бота
 ADMIN_IDS=ваш_telegram_id
-OUTLINE_API_URL=https://ваш-сервер:порт/api-ключ
+XRAY_PANEL_URL=https://ваш-сервер:порт/базовый-путь
+XRAY_API_TOKEN=ваш-api-токен
+XRAY_INBOUNDS=1,2
+XRAY_SUB_BASE_URL=https://sub.ваш-домен/vpn
 DATABASE_TYPE=supabase  # или sqlite, postgres
 ```
 
@@ -117,14 +120,12 @@ docker-compose -f docker-compose.prod.yml up -d --build
 
 Отправьте `/start` боту [@userinfobot](https://t.me/userinfobot)
 
-### Outline VPN API URL
+### 3x-ui панель (VLESS + Hysteria2)
 
-1. Установите [Outline Manager](https://getoutline.org/get-started/)
-2. Создайте сервер
-3. Нажмите ⚙️ Настройки
-4. Скопируйте "Management API URL"
-
-Пример: `https://1.2.3.4:12345/aBcDeFgHiJ`
+1. Разверните панель [3x-ui](https://github.com/MHSanaei/3x-ui)
+2. Создайте инбаунды VLESS (Reality/XHTTP) и Hysteria2
+3. В настройках панели → «Учётная запись» скопируйте API-токен
+4. Скопируйте ID нужных инбаундов и настройте домен для подписки (`XRAY_SUB_BASE_URL`)
 
 ### Учётные данные Supabase
 

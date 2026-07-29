@@ -1,9 +1,9 @@
 {
   "buttons": {
     "buy": {
-      "first": "Купить первый ключ",
-      "key": "Купить ключ",
-      "more": "Купить еще"
+      "first": "Купить VPN",
+      "key": "Купить VPN",
+      "more": "Купить ещё VPN"
     },
     "gift": "🎁 Получить подарок",
     "claim_gift": "Получить",
@@ -29,7 +29,6 @@
     "ton_wallet_withdraw_now": "💸 Вывести сейчас",
     "ton_wallet_referrals": "Рефералы",
     "retry": "Попробовать снова",
-    "refresh_key": "Обновить ключ",
     "referral_actions": {
       "invite": "Пригласить друзей",
       "get_link": "Получить ссылку",
@@ -75,13 +74,6 @@
       "english": "English"
     },
     "raw_vless_key": "Получить ключи по отдельности",
-    "type_vless": "VLESS + Hysteria2",
-    "type_outline": "Outline VPN",
-    "type_both": "Всё вместе (скидка {{discount}}%)",
-    "protocols": {
-      "outline": "Outline",
-      "vless": "VLESS"
-    },
     "pagination": {
       "prev": "Назад",
       "next": "Вперёд"
@@ -132,73 +124,29 @@
   },
   "plans": {
     "unlimited": "Безлимит",
-    "outline_test": {
-      "description": "Если хочется проверить работоспособность",
-      "invoice": "Тестовый ключ Outline VPN — 1 Гб на 1 день"
-    },
     "vless_test": {
-      "description": "Тест VLESS Reality — проверка работоспособности",
-      "invoice": "Тестовый ключ VLESS Reality — 1 Гб на 1 день"
-    },
-    "outline_2gb": {
-      "description": "Попробовать Outline за минимальную цену",
-      "invoice": "Ключ Outline VPN — 2 Гб на 1 месяц"
-    },
-    "outline_10gb": {
-      "description": "Базовый доступ через Outline",
-      "invoice": "Ключ Outline VPN — 10 Гб на 1 месяц"
-    },
-    "outline_50gb": {
-      "description": "Популярный выбор для ежедневного использования",
-      "invoice": "Ключ Outline VPN — 50 Гб на 1 месяц"
-    },
-    "outline_100gb": {
-      "description": "Для активного использования",
-      "invoice": "Ключ Outline VPN — 100 Гб на 1 месяц"
-    },
-    "outline_unlim": {
-      "description": "Outline без ограничений по трафику",
-      "invoice": "Ключ Outline VPN — Безлимит на 1 месяц"
+      "description": "Тестовый ключ — проверка работоспособности",
+      "invoice": "Тестовый ключ — 1 Гб на 1 день"
     },
     "vless_2gb": {
-      "description": "Попробовать VLESS Reality за минимальную цену",
-      "invoice": "Ключ VLESS Reality — 2 Гб на 1 месяц"
+      "description": "Попробовать VPN за минимальную цену",
+      "invoice": "Ключ VPN — 2 Гб на 1 месяц"
     },
     "vless_10gb": {
-      "description": "Современный протокол, сложно обнаружить",
-      "invoice": "Ключ VLESS Reality — 10 Гб на 1 месяц"
+      "description": "Оптимальный вариант для повседневного использования",
+      "invoice": "Ключ VPN — 10 Гб на 1 месяц"
     },
     "vless_50gb": {
-      "description": "VLESS для ежедневного использования",
-      "invoice": "Ключ VLESS Reality — 50 Гб на 1 месяц"
+      "description": "Для активного использования",
+      "invoice": "Ключ VPN — 50 Гб на 1 месяц"
     },
     "vless_100gb": {
-      "description": "VLESS для активного использования",
-      "invoice": "Ключ VLESS Reality — 100 Гб на 1 месяц"
+      "description": "Для максимальной нагрузки",
+      "invoice": "Ключ VPN — 100 Гб на 1 месяц"
     },
     "vless_unlim": {
-      "description": "VLESS без ограничений по трафику",
-      "invoice": "Ключ VLESS Reality — Безлимит на 1 месяц"
-    },
-    "both_2gb": {
-      "description": "Два протокола со скидкой {{discount}}%",
-      "invoice": "Outline + VLESS — 2 Гб на 1 месяц"
-    },
-    "both_10gb": {
-      "description": "Два протокола со скидкой {{discount}}%",
-      "invoice": "Outline + VLESS — 10 Гб на 1 месяц"
-    },
-    "both_50gb": {
-      "description": "Два протокола для ежедневного использования",
-      "invoice": "Outline + VLESS — 50 Гб на 1 месяц"
-    },
-    "both_100gb": {
-      "description": "Два протокола для активного использования",
-      "invoice": "Outline + VLESS — 100 Гб на 1 месяц"
-    },
-    "both_unlim": {
-      "description": "Максимальная надёжность без ограничений",
-      "invoice": "Outline + VLESS — Безлимит на 1 месяц"
+      "description": "Без ограничений по трафику",
+      "invoice": "Ключ VPN — Безлимит на 1 месяц"
     }
   },
   "statuses": {

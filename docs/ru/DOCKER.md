@@ -193,10 +193,13 @@ DATABASE_TYPE=sqlite
 DATABASE_PATH=/app/data/database.db
 ```
 
-### Outline VPN
+### 3x-ui (VLESS + Hysteria2)
 
 ```env
-OUTLINE_API_URL=https://your-server:port/your-api-key
+XRAY_PANEL_URL=https://your-server:port/base-path
+XRAY_API_TOKEN=your-api-token
+XRAY_INBOUNDS=1,2
+XRAY_SUB_BASE_URL=https://sub.your-domain/vpn
 ```
 
 ## Troubleshooting

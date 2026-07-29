@@ -273,9 +273,6 @@ create_env_file() {
 TELEGRAM_BOT_TOKEN=${telegram_token}
 ADMIN_IDS=${admin_ids}
 
-# Outline VPN Configuration
-OUTLINE_API_URL=${outline_url}
-
 # Database Configuration
 DATABASE_TYPE=${DB_TYPE}
 
@@ -460,7 +457,6 @@ setup_project() {
 
     read -p "Enter your Telegram Bot Token: " telegram_token
     read -p "Enter Admin Telegram ID(s) (comma-separated): " admin_ids
-    read -p "Enter Outline VPN API URL: " outline_url
 
     # Создание .env файла
     create_env_file
