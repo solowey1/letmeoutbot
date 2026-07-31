@@ -28,7 +28,7 @@ class AdminNotificationService {
 
 		for (const adminId of ADMIN_IDS) {
 			try {
-				await this.bot.telegram.sendMessage(adminId, message, defaultOptions);
+				await this.bot.api.sendMessage(adminId, message, defaultOptions);
 				results.push({ adminId, success: true });
 				console.log(`✅ Уведомление отправлено админу ${adminId}`);
 			} catch (error) {

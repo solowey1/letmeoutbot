@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Telegraf } = require('telegraf');
+const { Bot } = require('grammy');
 
 // Импорты сервисов и моделей
 const SQLiteDatabase = require('../models/Database');
@@ -31,8 +31,8 @@ const PlanService = require('../services/PlanService');
 
 class TelegramBot {
 	constructor() {
-		// Инициализируем Telegraf бота
-		this.bot = new Telegraf(config.telegram.token, config.telegram.options);
+		// Инициализируем grammY бота
+		this.bot = new Bot(config.telegram.token);
         
 		// Инициализируем базу данных и сервисы
 		if (config.database.type === 'supabase') {
@@ -101,13 +101,13 @@ class TelegramBot {
 		this.messageHandlers.register(this.bot);
 
 		// Обработка callback запросов
-		this.bot.on('callback_query', async (ctx) => {
+		this.bot.on('callback_query:data', async (ctx) => {
 			await this.CallbackHandler.handleCallback(ctx);
 		});
 
 		// Обработка ошибок
 		this.bot.catch((err) => {
-			console.error('Ошибка бота:', err);
+			console.error('Ошибка бота:', err.error ?? err);
 		});
 	}
 
@@ -122,18 +122,10 @@ class TelegramBot {
 			console.log('🤖 VPN Bot запускается...');
 			await PlanService.loadPrices(this.db);
 
-			await this.bot.launch();
-			console.log('✅ VPN Bot успешно запущен!');
-            
 			// Устанавливаем команды бота
-			// await this.bot.telegram.setMyCommands([
+			// await this.bot.api.setMyCommands([
 			// 	{ command: 'start', description: 'Start working with the bot' },
 			// 	{ command: 'help', description: 'Help and information' }
-			// ]);
-			
-			// await this.bot.telegram.setMyCommands([
-			// 	{ command: 'start', description: 'Начать работу с ботом' },
-			// 	{ command: 'help', description: 'Помощь и информация' }
 			// ]);
 
 			// Graceful stop
@@ -147,6 +139,12 @@ class TelegramBot {
 				this.stop();
 			});
 
+			// bot.start() запускает long polling; промис разрешается
+			// только после остановки бота
+			await this.bot.start({
+				onStart: (botInfo) => console.log(`✅ VPN Bot успешно запущен! (@${botInfo.username})`)
+			});
+
 		} catch (error) {
 			console.error('❌ Ошибка запуска бота:', error);
 			this.db.close();
@@ -154,10 +152,10 @@ class TelegramBot {
 		}
 	}
 
-	stop() {
+	async stop() {
 		console.log('🛑 Остановка бота...');
 		this.schedulerManager.stop();
-		this.bot.stop('SIGINT');
+		await this.bot.stop();
 		this.db.close();
 		console.log('✅ Бот успешно остановлен');
 		process.exit(0);

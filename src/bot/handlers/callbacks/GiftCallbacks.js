@@ -1,7 +1,7 @@
 const KeyboardUtils = require('../../../utils/keyboards');
 const { MenuMessages } = require('../../../services/messages');
 const { ADMIN_IDS } = require('../../../config/constants');
-const { Markup } = require('telegraf');
+const { Markup } = require('../../../utils/markup');
 
 class GiftCallbacks {
 	constructor(database, keysService) {

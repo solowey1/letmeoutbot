@@ -1,11 +1,11 @@
-const { Markup } = require('telegraf');
+const { Markup } = require('../markup');
 const { CALLBACK_ACTIONS } = require('../../config/constants');
 const { BUTTON_PRESETS } = require('../../config/buttonPresets');
 
 /**
  * Создать кнопку по пресету.
  *
- * Поддерживает те же методы, что и Telegraf Button:
+ * Поддерживает те же методы, что и раньше (шим в utils/markup):
  *   callback (по умолчанию), url, switchToChat
  *
  * @param {Function} t      — функция перевода

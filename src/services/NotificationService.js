@@ -1,4 +1,4 @@
-const { Markup } = require('telegraf');
+const { Markup } = require('../utils/markup');
 const { NOTIFICATION_TYPES, CALLBACK_ACTIONS } = require('../config/constants');
 
 class NotificationService {
@@ -79,7 +79,7 @@ class NotificationService {
 				[Markup.button.callback(t('buttons.my_keys'), CALLBACK_ACTIONS.KEYS.MENU)]
 			]);
 
-			await this.bot.telegram.sendMessage(telegramId, message, {
+			await this.bot.api.sendMessage(telegramId, message, {
 				parse_mode: 'HTML',
 				disable_web_page_preview: true,
 				...keyboard
@@ -96,7 +96,7 @@ class NotificationService {
 	async sendAdminNotification(message, adminIds) {
 		try {
 			for (const adminId of adminIds) {
-				await this.bot.telegram.sendMessage(adminId, `🔧 <b>Admin:</b> ${message}`, {
+				await this.bot.api.sendMessage(adminId, `🔧 <b>Admin:</b> ${message}`, {
 					parse_mode: 'HTML',
 					disable_web_page_preview: true
 				});
@@ -123,7 +123,7 @@ class NotificationService {
 					Object.assign(options, keyboard);
 				}
 
-				await this.bot.telegram.sendMessage(userId, message, options);
+				await this.bot.api.sendMessage(userId, message, options);
 				successCount++;
 
 				// Небольшая задержка между отправками

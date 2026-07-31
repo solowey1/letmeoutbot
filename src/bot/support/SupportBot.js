@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Telegraf } = require('telegraf');
+const { Bot } = require('grammy');
 const { ADMIN_IDS } = require('../../config/constants');
 
 // Импорты для БД
@@ -14,13 +14,13 @@ const supportStrings = ruMessages.support.bot;
 
 class SupportBot {
 	constructor() {
-		// Инициализируем Telegraf бота с токеном support бота
+		// Инициализируем grammY бота с токеном support бота
 		const supportToken = process.env.SUPPORT_BOT_TOKEN;
 		if (!supportToken) {
 			throw new Error('SUPPORT_BOT_TOKEN не найден в переменных окружения');
 		}
 
-		this.bot = new Telegraf(supportToken, config.telegram.options);
+		this.bot = new Bot(supportToken);
 
 		// Используем ту же базу данных, что и основной бот
 		if (config.database.type === 'supabase') {
@@ -46,7 +46,7 @@ class SupportBot {
 
 	setupHandlers() {
 		// Команда /start
-		this.bot.start(async (ctx) => {
+		this.bot.command('start', async (ctx) => {
 			const isAdmin = ADMIN_IDS.includes(ctx.from.id);
 
 			if (isAdmin) {
@@ -57,18 +57,18 @@ class SupportBot {
 		});
 
 		// Обработка callback'ов (кнопка "Ответить")
-		this.bot.on('callback_query', async (ctx) => {
+		this.bot.on('callback_query:data', async (ctx) => {
 			const callbackData = ctx.callbackQuery.data;
 
 			if (callbackData.startsWith('reply_')) {
 				await this.handleReplyButton(ctx, callbackData);
 			}
 
-			await ctx.answerCbQuery();
+			await ctx.answerCallbackQuery();
 		});
 
 		// Обработка текстовых сообщений
-		this.bot.on('text', async (ctx) => {
+		this.bot.on('message:text', async (ctx) => {
 			const adminId = ctx.from.id;
 			const isAdmin = ADMIN_IDS.includes(adminId);
 
@@ -83,7 +83,7 @@ class SupportBot {
 
 		// Обработка ошибок
 		this.bot.catch((err) => {
-			console.error('Ошибка Support Bot:', err);
+			console.error('Ошибка Support Bot:', err.error ?? err);
 		});
 	}
 
@@ -132,7 +132,7 @@ class SupportBot {
 		// Отправляем уведомление всем админам
 		for (const adminId of ADMIN_IDS) {
 			try {
-				await this.bot.telegram.sendMessage(adminId, message, {
+				await this.bot.api.sendMessage(adminId, message, {
 					parse_mode: 'HTML',
 					reply_markup: keyboard
 				});
@@ -182,7 +182,7 @@ class SupportBot {
 
 		try {
 			// Отправляем ответ пользователю
-			await this.bot.telegram.sendMessage(
+			await this.bot.api.sendMessage(
 				userId,
 				`💬 <b>${supportStrings.reply_from_support}</b>\n\n${replyText}`,
 				{ parse_mode: 'HTML' }
@@ -216,8 +216,6 @@ class SupportBot {
 	async start() {
 		try {
 			console.log('🤖 Support Bot запускается...');
-			await this.bot.launch();
-			console.log('✅ Support Bot успешно запущен!');
 
 			// Graceful stop
 			process.once('SIGINT', () => {
@@ -230,15 +228,21 @@ class SupportBot {
 				this.stop();
 			});
 
+			// bot.start() запускает long polling; промис разрешается
+			// только после остановки бота
+			await this.bot.start({
+				onStart: (botInfo) => console.log(`✅ Support Bot успешно запущен! (@${botInfo.username})`)
+			});
+
 		} catch (error) {
 			console.error('❌ Ошибка запуска Support Bot:', error);
 			process.exit(1);
 		}
 	}
 
-	stop() {
+	async stop() {
 		console.log('🛑 Остановка Support Bot...');
-		this.bot.stop('SIGINT');
+		await this.bot.stop();
 		console.log('✅ Support Bot успешно остановлен');
 	}
 }

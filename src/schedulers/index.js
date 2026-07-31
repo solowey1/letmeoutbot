@@ -78,21 +78,21 @@ class SchedulerManager {
 	 */
 	async runManually(scheduler, taskName) {
 		switch (scheduler) {
-		case 'keys':
-			await this.keysScheduler.runManually(taskName);
-			break;
-		case 'admin':
-			await this.adminScheduler.runManually(taskName);
-			break;
-		case 'broadcast':
-			if (this.broadcastScheduler) {
-				await this.broadcastScheduler.runManually(taskName);
-			} else {
-				throw new Error('Broadcast scheduler not initialized');
-			}
-			break;
-		default:
-			throw new Error(`Неизвестный планировщик: ${scheduler}`);
+			case 'keys':
+				await this.keysScheduler.runManually(taskName);
+				break;
+			case 'admin':
+				await this.adminScheduler.runManually(taskName);
+				break;
+			case 'broadcast':
+				if (this.broadcastScheduler) {
+					await this.broadcastScheduler.runManually(taskName);
+				} else {
+					throw new Error('Broadcast scheduler not initialized');
+				}
+				break;
+			default:
+				throw new Error(`Неизвестный планировщик: ${scheduler}`);
 		}
 	}
 }

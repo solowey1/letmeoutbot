@@ -3,7 +3,7 @@ const { CALLBACK_ACTIONS } = require('./constants');
 /**
  * Пресеты кнопок — единое место управления текстом, действием, стилем и иконкой.
  *
- * method — тип кнопки Telegraf: 'callback' (по умолчанию) | 'url' | 'switchToChat'
+ * method — тип кнопки: 'callback' (по умолчанию) | 'url' | 'switchToChat'
  * text   — ключ локализации (передаётся в t())
  * action — callback_data (для method='callback')
  * url    — URL (для method='url')

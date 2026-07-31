@@ -20,7 +20,7 @@ class BroadcastCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(t('admin.no_access', { ns: 'error' }));
+			await ctx.answerCallbackQuery(t('admin.no_access', { ns: 'error' }));
 			return;
 		}
 
@@ -40,7 +40,7 @@ class BroadcastCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(t('admin.no_access', { ns: 'error' }));
+			await ctx.answerCallbackQuery(t('admin.no_access', { ns: 'error' }));
 			return;
 		}
 
@@ -60,7 +60,7 @@ class BroadcastCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(t('admin.no_access', { ns: 'error' }));
+			await ctx.answerCallbackQuery(t('admin.no_access', { ns: 'error' }));
 			return;
 		}
 
@@ -70,9 +70,8 @@ class BroadcastCallbacks {
 			const recipientsCount = recipients.length;
 
 			if (recipientsCount === 0) {
-				await ctx.answerCbQuery(
-					t('admin.broadcast.no_recipients', { ns: 'message' }),
-					{ show_alert: true }
+				await ctx.answerCallbackQuery(
+					{ text: t('admin.broadcast.no_recipients', { ns: 'message' }), show_alert: true }
 				);
 				return;
 			}
@@ -93,12 +92,11 @@ class BroadcastCallbacks {
 				parse_mode: 'HTML'
 			});
 
-			await ctx.answerCbQuery();
+			await ctx.answerCallbackQuery();
 		} catch (error) {
 			console.error('Error selecting filter:', error);
-			await ctx.answerCbQuery(
-				t('admin.broadcast.error', { ns: 'message' }),
-				{ show_alert: true }
+			await ctx.answerCallbackQuery(
+				{ text: t('admin.broadcast.error', { ns: 'message' }), show_alert: true }
 			);
 		}
 	}
@@ -145,7 +143,7 @@ class BroadcastCallbacks {
 		const session = this.broadcastSessions.get(ctx.from.id);
 
 		if (!session || session.step !== 'selecting_language') {
-			await ctx.answerCbQuery();
+			await ctx.answerCallbackQuery();
 			return;
 		}
 
@@ -155,9 +153,8 @@ class BroadcastCallbacks {
 			const filtered = await this.db.getBroadcastRecipients(session.filterType, null, langFilter);
 
 			if (filtered.length === 0) {
-				await ctx.answerCbQuery(
-					t('admin.broadcast.no_recipients', { ns: 'message' }),
-					{ show_alert: true }
+				await ctx.answerCallbackQuery(
+					{ text: t('admin.broadcast.no_recipients', { ns: 'message' }), show_alert: true }
 				);
 				return;
 			}
@@ -182,12 +179,11 @@ class BroadcastCallbacks {
 				...keyboard,
 				parse_mode: 'HTML'
 			});
-			await ctx.answerCbQuery();
+			await ctx.answerCallbackQuery();
 		} catch (error) {
 			console.error('Error selecting language:', error);
-			await ctx.answerCbQuery(
-				t('admin.broadcast.error', { ns: 'message' }),
-				{ show_alert: true }
+			await ctx.answerCallbackQuery(
+				{ text: t('admin.broadcast.error', { ns: 'message' }), show_alert: true }
 			);
 		}
 	}
@@ -200,7 +196,7 @@ class BroadcastCallbacks {
 		const session = this.broadcastSessions.get(ctx.from.id);
 
 		if (!session || session.step !== 'confirming') {
-			await ctx.answerCbQuery();
+			await ctx.answerCallbackQuery();
 			return;
 		}
 
@@ -219,14 +215,13 @@ class BroadcastCallbacks {
 			const message = BroadcastMessages.broadcastStarted(t, result.broadcastId, false);
 
 			await ctx.editMessageText(message, { parse_mode: 'HTML' });
-			await ctx.answerCbQuery(
+			await ctx.answerCallbackQuery(
 				t('admin.broadcast.started', { ns: 'message' })
 			);
 		} catch (error) {
 			console.error('Error starting broadcast:', error);
-			await ctx.answerCbQuery(
-				t('admin.broadcast.error', { ns: 'message' }),
-				{ show_alert: true }
+			await ctx.answerCallbackQuery(
+				{ text: t('admin.broadcast.error', { ns: 'message' }), show_alert: true }
 			);
 		}
 	}
@@ -241,7 +236,7 @@ class BroadcastCallbacks {
 
 		const message = BroadcastMessages.broadcastCancelled(t);
 		await ctx.editMessageText(message, { parse_mode: 'HTML' });
-		await ctx.answerCbQuery();
+		await ctx.answerCallbackQuery();
 
 		// Возвращаемся в меню рассылок
 		setTimeout(() => this.handleBroadcastMenu(ctx), 1500);
@@ -254,7 +249,7 @@ class BroadcastCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(t('admin.no_access', { ns: 'error' }));
+			await ctx.answerCallbackQuery(t('admin.no_access', { ns: 'error' }));
 			return;
 		}
 
@@ -269,9 +264,8 @@ class BroadcastCallbacks {
 			});
 		} catch (error) {
 			console.error('Error getting broadcast history:', error);
-			await ctx.answerCbQuery(
-				t('admin.broadcast.error', { ns: 'message' }),
-				{ show_alert: true }
+			await ctx.answerCallbackQuery(
+				{ text: t('admin.broadcast.error', { ns: 'message' }), show_alert: true }
 			);
 		}
 	}

@@ -1,3 +1,4 @@
+const { InputFile } = require('grammy');
 const KeyboardUtils = require('../../utils/keyboards');
 const { KeyMessages } = require('../../services/messages');
 const PlanService = require('../../services/PlanService');
@@ -77,7 +78,7 @@ class PaymentHandlers {
 			// Удаляем сообщение с инвойсом, если оно было сохранено
 			if (completedPayment.invoice_message_id) {
 				try {
-					await ctx.telegram.deleteMessage(ctx.chat.id, completedPayment.invoice_message_id);
+					await ctx.api.deleteMessage(ctx.chat.id, completedPayment.invoice_message_id);
 					console.log(`🗑️ Удалено сообщение с инвойсом: ${completedPayment.invoice_message_id}`);
 				} catch (deleteError) {
 					console.warn('⚠️ Не удалось удалить сообщение с инвойсом:', deleteError.message);
@@ -192,7 +193,7 @@ class PaymentHandlers {
 		try {
 			const qrBuffer = await generateQR(result.accessUrl);
 			await ctx.replyWithPhoto(
-				{ source: qrBuffer, filename: 'vpn-qr.png' },
+				new InputFile(qrBuffer, 'vpn-qr.png'),
 				{ caption: t('payments.qr_caption', { ns: 'message' }) }
 			);
 		} catch (qrError) {
@@ -223,7 +224,7 @@ class PaymentHandlers {
 			await this.handlePreCheckoutQuery(ctx);
 		});
 
-		bot.on('successful_payment', async (ctx) => {
+		bot.on('message:successful_payment', async (ctx) => {
 			try {
 				await this.handleSuccessfulPayment(ctx);
 			} catch (error) {

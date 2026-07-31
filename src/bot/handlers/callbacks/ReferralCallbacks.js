@@ -32,7 +32,7 @@ class ReferralCallbacks {
 		} catch (_) {}
 
 		// Генерируем реферальную ссылку
-		const botInfo = await ctx.telegram.getMe();
+		const botInfo = await ctx.api.getMe();
 		const referralLink = ReferralService.generateReferralLink(botInfo.username, user.telegram_id);
 
 		// Текст для приглашения
@@ -70,7 +70,7 @@ class ReferralCallbacks {
 		const user = await this.db.getUserByTelegramId(ctx.from.id);
 
 		// Генерируем реферальную ссылку
-		const botInfo = await ctx.telegram.getMe();
+		const botInfo = await ctx.api.getMe();
 		const referralLink = ReferralService.generateReferralLink(botInfo.username, user.telegram_id);
 
 		// Текст для приглашения
@@ -95,7 +95,7 @@ class ReferralCallbacks {
 		const user = await this.db.getUserByTelegramId(ctx.from.id);
 
 		// Генерируем реферальную ссылку
-		const botInfo = await ctx.telegram.getMe();
+		const botInfo = await ctx.api.getMe();
 		const referralLink = ReferralService.generateReferralLink(botInfo.username, user.telegram_id);
 
 		// Генерируем сообщение
@@ -184,7 +184,7 @@ class ReferralCallbacks {
 		const user = await this.db.getUserByTelegramId(ctx.from.id);
 
 		if (!user.ton_wallet) {
-			await ctx.answerCbQuery(t('referral.withdrawal.wallet_required', { ns: 'message' }));
+			await ctx.answerCallbackQuery(t('referral.withdrawal.wallet_required', { ns: 'message' }));
 			return;
 		}
 
@@ -218,7 +218,7 @@ class ReferralCallbacks {
 		const withdrawalKeyboard = KeyboardUtils.createWithdrawalAdminKeyboard(t, withdrawalId);
 		for (const adminId of ADMIN_IDS) {
 			try {
-				await this.bot.telegram.sendMessage(adminId, adminMessage, {
+				await this.bot.api.sendMessage(adminId, adminMessage, {
 					parse_mode: 'HTML',
 					...withdrawalKeyboard,
 				});

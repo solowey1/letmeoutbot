@@ -36,7 +36,7 @@ class CallbackHandler {
 
 		try {
 			// Отвечаем на callback запрос чтобы убрать загрузку
-			await ctx.answerCbQuery();
+			await ctx.answerCallbackQuery();
 
 			// Роутинг callback'ов к соответствующим модулям
 			if (callbackData === CALLBACK_ACTIONS.BASIC.HOME) {
@@ -193,7 +193,7 @@ class CallbackHandler {
 		} catch (error) {
 			console.error(`Ошибка обработки callback [${callbackData}]:`, error.message);
 			try {
-				await ctx.answerCbQuery(t('generic.default', { ns: 'error' }));
+				await ctx.answerCallbackQuery(t('generic.default', { ns: 'error' }));
 			} catch (_) { /* уже отвечено */ }
 		}
 	}

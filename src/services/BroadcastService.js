@@ -104,7 +104,7 @@ class BroadcastService {
 				// Отправляем сообщения
 				for (const recipient of recipients) {
 					try {
-						await this.bot.telegram.sendMessage(
+						await this.bot.api.sendMessage(
 							recipient.telegram_id,
 							broadcast.message_text,
 							{ parse_mode: 'HTML' }
