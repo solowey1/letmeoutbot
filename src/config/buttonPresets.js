@@ -1,4 +1,4 @@
-const { CALLBACK_ACTIONS, COMBO_DISCOUNT } = require('./constants');
+const { CALLBACK_ACTIONS } = require('./constants');
 
 /**
  * Пресеты кнопок — единое место управления текстом, действием, стилем и иконкой.
@@ -29,40 +29,25 @@ const BUTTON_PRESETS = {
 	// support:      { text: 'buttons.support',                     action: CALLBACK_ACTIONS.BASIC.SUPPORT,          style: null,        icon: '6021618194228187816' },  // не используется — см. contact_support (url)
 	retry:           { text: 'buttons.retry',                       action: CALLBACK_ACTIONS.BASIC.RETRY,            style: null,        icon: '5850346984501680054' },
 
-	// ── Покупка / Оплата ────────────────────────────────────────────
+	// ── Покупка / Оплата ─────────────────────────────────────────────
 	buy:             { text: 'buttons.buy.key',                     action: CALLBACK_ACTIONS.KEYS.BUY,               style: 'primary',   icon: '5427168083074628963' },
 	buy_first:       { text: 'buttons.buy.first',                   action: CALLBACK_ACTIONS.KEYS.BUY,               style: 'primary',   icon: '5427168083074628963' },
 	buy_more:        { text: 'buttons.buy.more',                    action: CALLBACK_ACTIONS.KEYS.BUY,               style: 'primary',   icon: '5427168083074628963' },
+	buy_proxy:       { text: 'buttons.buy_proxy',                   action: CALLBACK_ACTIONS.PROXY.MENU,             style: 'primary',   icon: '6030445631921721471' },
 	pay:             { text: 'buttons.pay',                         action: null,                                    style: 'primary',   icon: '5895708410447401643' },
 	confirm:         { text: 'buttons.confirm',            					action: null,                                    style: 'success',   icon: '5774022692642492953' },
 	cancel:          { text: 'buttons.cancel',                      action: null,                                    style: 'danger',    icon: '5774077015388852135' },
 
 	// ── Ключи ───────────────────────────────────────────────────────
 	stats:           { text: 'buttons.stats',                       action: null,                                    style: null,        icon: '5936143551854285132' },
-	refresh_key:     { text: 'buttons.refresh_key',                 action: null,                                    style: null,        icon: '6030657343744644592' },
 	raw_vless_key:   { text: 'buttons.raw_vless_key',               action: null,                                    style: null,        icon: '5884491244360438851' },
 
 	// ── Помощь / Приложения ─────────────────────────────────────────
 	vpn_apps:        { text: 'buttons.vpn_apps',                    action: CALLBACK_ACTIONS.BASIC.VPN_APPS,         style: null,        icon: '5963087934696459905' },
 	how_to_add_key:  { text: 'buttons.how_to_add_key',              action: CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_KEY,   style: null,        icon: '6030848053177486888' },
+	how_to_add_proxy:{ text: 'buttons.how_to_add_proxy',            action: CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_PROXY, style: null,        icon: '6030445631921721471' },
 	contact_support: { text: 'buttons.contact_support', method: 'url', url: 'https://t.me/letmeoutsupportbot',       style: null,        icon: '6021618194228187816' },
-
-	// ── Выбор типа подключения ──────────────────────────────────────
-	type_outline:    { text: 'buttons.type_outline',                action: CALLBACK_ACTIONS.KEYS.TYPE_OUTLINE,      style: null,        icon: null },
-	type_vless:      { text: 'buttons.type_vless',                  action: CALLBACK_ACTIONS.KEYS.TYPE_VLESS,        style: null,        icon: null },
-	type_both:       { text: 'buttons.type_both',                   action: CALLBACK_ACTIONS.KEYS.TYPE_BOTH,         style: null,        icon: null, params: { discount: Math.round(COMBO_DISCOUNT * 100) } },
-
-	// ── Протоколы (для помощи / приложений) ─────────────────────────
-	outline:         { text: 'buttons.protocols.outline',           action: null,                                    style: null,        icon: null },
-	vless:           { text: 'buttons.protocols.vless',             action: null,                                    style: null,        icon: null },
-
-	// ── Outline: ссылки на приложения ───────────────────────────────
-	outline_app_website: { text: 'buttons.apps.website', method: 'url', url: 'https://getoutline.org/ru/get-started/#step-3',                             						style: null, icon: '5776233299424843260' },
-	outline_app_android: { text: 'buttons.apps.android', method: 'url', url: 'https://play.google.com/store/apps/details?id=org.outline.android.client',  						style: null, icon: '6030400221232501136' },
-	outline_app_ios:     { text: 'buttons.apps.ios',     method: 'url', url: 'https://apps.apple.com/app/outline-app/id1356177741',                       						style: null, icon: '5775870512127283512' },
-	outline_app_windows: { text: 'buttons.apps.windows', method: 'url', url: 'https://s3.amazonaws.com/outline-releases/client/windows/stable/Outline-Client.exe', 		style: null, icon: '5837069325034331827' },
-	outline_app_macos:   { text: 'buttons.apps.macos',   method: 'url', url: 'https://s3.amazonaws.com/outline-releases/client/macos/stable/Outline-Client.dmg', 			style: null, icon: '5942734685976138521' },
-	outline_app_linux:   { text: 'buttons.apps.linux',   method: 'url', url: 'https://s3.amazonaws.com/outline-releases/client/linux/stable/Outline-Client.AppImage', style: null, icon: '5323366978457445319' },
+	connect_proxy:   { text: 'buttons.connect_proxy',               method: 'url', url: '',                          style: 'primary',   icon: '6028338546736107668' },
 
 	// ── ОС (VLESS приложения) ───────────────────────────────────────
 	vless_app_android:   { text: 'buttons.apps.android',                  action: CALLBACK_ACTIONS.BASIC.VLESS_APPS_ANDROID, style: null,      icon: '6030400221232501136' },
@@ -111,7 +96,7 @@ const BUTTON_PRESETS = {
 	broadcast_lang_all:  						{ text: 'buttons.languages.all',						 params: { ns: 'main' },    action: 'broadcast_lang_all',						 style: null,			 	icon: '5769403725898584391' },
 
 	// ── Подарок ──────────────────────────────────────────────────────
-	gift_info:   { text: 'buttons.gift',       action: CALLBACK_ACTIONS.GIFT.INFO,  style: 'success', icon: null },
+	gift_info:   { text: 'buttons.gift',       action: CALLBACK_ACTIONS.GIFT.INFO,  style: 'success', icon: '6032644646587338669' },
 	claim_gift:  { text: 'buttons.claim_gift', action: CALLBACK_ACTIONS.GIFT.CLAIM, style: 'success', icon: null },
 
 	// ── Реферальная программа ────────────────────────────────────────

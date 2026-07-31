@@ -32,10 +32,10 @@ Interactive setup → Starts in dev mode
 - Send `/start` to [@userinfobot](https://t.me/userinfobot)
 - Copy your ID
 
-### 3. Outline VPN API URL
-- Install [Outline Manager](https://getoutline.org/get-started/)
-- Create server
-- Copy "Management API URL" from settings
+### 3. 3x-ui panel (VLESS + Hysteria2)
+- Deploy a [3x-ui](https://github.com/MHSanaei/3x-ui) panel
+- Create VLESS (Reality/XHTTP) and Hysteria2 inbounds
+- Copy the panel URL, API token, and inbound IDs
 
 ### 4. Database (Choose One)
 

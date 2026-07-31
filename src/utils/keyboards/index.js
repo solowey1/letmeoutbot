@@ -8,6 +8,7 @@ const settings = require('./settings');
 const admin = require('./admin');
 const broadcast = require('./broadcast');
 const referrals = require('./referrals');
+const proxy = require('./proxy');
 
 /**
  * KeyboardUtils — фасад, объединяющий все клавиатуры.
@@ -15,14 +16,15 @@ const referrals = require('./referrals');
  * Модули лежат в keyboards/:
  *   common     — btn(), removeKeyboard(), createBackToMenuKeyboard, ошибки, пагинация
  *   menu       — главное меню
- *   payments   — выбор типа, планы, оплата
+ *   payments   — тарифы, оплата
  *   keys       — мои ключи, детали, статистика
  *   help       — помощь, поддержка
- *   protocols  — приложения, добавление ключей, Outline/VLESS
+ *   protocols  — приложения, добавление ключей (VLESS + Hysteria2)
  *   settings   — настройки, язык
  *   admin      — админ-панель
  *   broadcast  — рассылки
  *   referrals  — реферальная программа
+ *   proxy      — тарифы на MTProto-прокси
  */
 class KeyboardUtils {
 	// common
@@ -38,12 +40,9 @@ class KeyboardUtils {
 	static createMainMenu(t, isAdmin, showGift) { return menu.createMainMenu(t, isAdmin, showGift); }
 
 	// payments
-	static createTypeSelectionKeyboard(t) { return payments.createTypeSelectionKeyboard(t); }
-	static createPlansKeyboardByType(t, plans, type) { return payments.createPlansKeyboardByType(t, plans, type); }
-	static createPlansKeyboard(t, isAdmin) { return payments.createPlansKeyboard(t, isAdmin); }
-	static createPlanDetailsKeyboard(t, planId, planType) { return payments.createPlanDetailsKeyboard(t, planId, planType); }
+	static createPlansKeyboard(t, plans) { return payments.createPlansKeyboard(t, plans); }
+	static createPlanDetailsKeyboard(t, planId) { return payments.createPlanDetailsKeyboard(t, planId); }
 	static createPaymentConfirmationKeyboard(t, planId) { return payments.createPaymentConfirmationKeyboard(t, planId); }
-	static createDirectCheckoutKeyboard(t, planId) { return payments.createDirectCheckoutKeyboard(t, planId); }
 	static createAppsDownloadKeyboard(t) { return payments.createAppsDownloadKeyboard(t); }
 
 	// keys
@@ -54,16 +53,13 @@ class KeyboardUtils {
 	// help
 	static createHelpKeyboard(t) { return help.createHelpKeyboard(t); }
 	static createSupportKeyboard(t) { return help.createSupportKeyboard(t); }
+	static createHowToAddProxyKeyboard(t) { return help.createHowToAddProxyKeyboard(t); }
 
 	// protocols — путь "Как добавить ключ"
 	static createHowToAddKeyKeyboard(t) { return protocols.createHowToAddKeyKeyboard(t); }
-	static createHowToAddKeyProtocolKeyboard(t, protocol) { return protocols.createHowToAddKeyProtocolKeyboard(t, protocol); }
-	static createHowtoOutlineAppsKeyboard(t) { return protocols.createHowtoOutlineAppsKeyboard(t); }
 	static createHowtoVlessOsKeyboard(t) { return protocols.createHowtoVlessOsKeyboard(t); }
 	static createHowtoVlessAppsBackKeyboard(t) { return protocols.createHowtoVlessAppsBackKeyboard(t); }
 	// protocols — путь "Приложения для VPN"
-	static createVpnAppsProtocolKeyboard(t) { return protocols.createVpnAppsProtocolKeyboard(t); }
-	static createOutlineAppsKeyboard(t) { return protocols.createOutlineAppsKeyboard(t); }
 	static createVlessOsKeyboard(t) { return protocols.createVlessOsKeyboard(t); }
 	static createVlessAppsBackKeyboard(t) { return protocols.createVlessAppsBackKeyboard(t); }
 
@@ -92,6 +88,10 @@ class KeyboardUtils {
 	static createReferralInviteKeyboard(t, shareText) { return referrals.createReferralInviteKeyboard(t, shareText); }
 	static createReferralBackKeyboard(t) { return referrals.createReferralBackKeyboard(t); }
 	static createWithdrawalConfirmKeyboard(t, amount) { return referrals.createWithdrawalConfirmKeyboard(t, amount); }
+
+	// proxy
+	static createProxyPlansKeyboard(t, plans) { return proxy.createProxyPlansKeyboard(t, plans); }
+	static createProxyConnectKeyboard(t, tgLink) { return proxy.createProxyConnectKeyboard(t, tgLink); }
 }
 
 module.exports = KeyboardUtils;

@@ -1,10 +1,6 @@
-const { ADMIN_IDS, COMBO_DISCOUNT } = require('../../../config/constants');
 const KeyboardUtils = require('../../../utils/keyboards');
 const PlanService = require('../../../services/PlanService');
-const { PlanMessages } = require('../../../services/messages');
-
-const discountPercent = Math.round(COMBO_DISCOUNT * 100);
-const TYPE_EMOJIS = { outline: '🌿', vless: '⚡', both: '👑' };
+const config = require('../../../config');
 
 class PlanCallbacks {
 	constructor(database, paymentService, keysService) {
@@ -13,39 +9,15 @@ class PlanCallbacks {
 		this.keysService = keysService;
 	}
 
-	// ============== ШАГ 1: выбор типа подключения ==============
+	// ============== ШАГ 1: список тарифов ==============
 
 	async handleShowPlans(ctx) {
 		const t = ctx.i18n.t;
-		const d = { discount: discountPercent };
-		const message = [
-			`🔐 <b>${t('plans.select_type_title', { ns: 'message' })}</b>`,
-			'',
-			`⚡ <b>VLESS</b> — ${t('plans.type_vless_desc', { ns: 'message' })}`,
-			`🌿 <b>Outline</b> — ${t('plans.type_outline_desc', { ns: 'message' })}`,
-			`👑 <b>${t('plans.type_names.both', { ns: 'message' })}</b> — ${t('plans.type_both_desc', { ns: 'message', ...d })}`
-		].join('\n');
-
-		const keyboard = KeyboardUtils.createTypeSelectionKeyboard(t);
-
-		await ctx.editMessageText(message, {
-			...keyboard,
-			parse_mode: 'HTML'
-		});
-	}
-
-	// ============== ШАГ 2: выбор тарифа ==============
-
-	async handleShowPlansByType(ctx, type) {
-		const t = ctx.i18n.t;
+		const { ADMIN_IDS } = require('../../../config/constants');
 		const isAdmin = ADMIN_IDS.includes(ctx.from.id);
-		const plans = PlanService.getPlansByType(type, isAdmin);
-		const d = { discount: discountPercent };
+		const plans = PlanService.getPlans(isAdmin);
 
-		const typeName = `${TYPE_EMOJIS[type]} ${t(`plans.type_names.${type}`, { ns: 'message' })}`;
-		const typeDesc = t(`plans.type_descriptions.${type}`, { ns: 'message', ...d });
-
-		let message = `<b>${typeName}</b>\n<i>${typeDesc}</i>\n\n`;
+		let message = `<b>${t('plans.choose', { ns: 'message' })}</b>\n\n`;
 
 		plans.forEach(plan => {
 			const formatted = PlanService.formatPlanForDisplay(t, plan);
@@ -55,7 +27,7 @@ class PlanCallbacks {
 			message += `${plan.emoji} <b>${limit}</b> — ${formatted.displayPrice}${t('plans.per_month', { ns: 'message' })}\n`;
 		});
 
-		const keyboard = KeyboardUtils.createPlansKeyboardByType(t, plans, type);
+		const keyboard = KeyboardUtils.createPlansKeyboard(t, plans);
 
 		await ctx.editMessageText(message, {
 			...keyboard,
@@ -63,7 +35,7 @@ class PlanCallbacks {
 		});
 	}
 
-	// ============== ШАГ 3: детали тарифа ==============
+	// ============== ШАГ 2: детали тарифа ==============
 
 	async handleShowPlanDetails(ctx, planId) {
 		const t = ctx.i18n.t;
@@ -78,33 +50,19 @@ class PlanCallbacks {
 		}
 
 		const formatted = PlanService.formatPlanForDisplay(t, plan);
-		const savings = PlanService.calculateSavings(plan);
 
 		let message = `<b>${formatted.displayName}</b>\n\n`;
-		message += `<b>${t('plans.whats_included', { ns: 'message' })}:</b>\n`;
+		message += `<b>${t('plans.whats_included', { ns: 'message' })}</b>\n`;
 		message += `• ${t('plans.data_volume', { ns: 'message' })}: ${formatted.displayDataLimit}\n`;
 		message += `• ${t('plans.validity_period', { ns: 'message' })}: ${formatted.displayDuration}\n`;
 		message += `• ${t('plans.unlimited_speed', { ns: 'message' })}\n`;
 		message += `• ${t('plans.all_devices', { ns: 'message' })}\n`;
-
-		if (plan.type === 'vless' || plan.type === 'both') {
-			message += `• ${t('plans.features.vless_reality', { ns: 'message' })}\n`;
-		}
-		if (plan.type === 'outline' || plan.type === 'both') {
-			message += `• ${t('plans.features.outline_ss', { ns: 'message' })}\n`;
-		}
-		if (plan.type === 'both') {
-			message += `• ${t('plans.features.two_protocols', { ns: 'message' })}\n`;
-		}
-
-		if (savings > 0) {
-			message += `\n💰 ${t('plans.savings_vs_separate', { ns: 'message', amount: savings })}\n`;
-		}
+		message += `• ${t('plans.features.reliable', { ns: 'message' })}\n`;
 
 		message += `\n<b>${t('plans.price', { ns: 'message' })}: ${formatted.displayPrice}</b>`;
 		message += `\n<i>${t('plans.via_stars', { ns: 'message' })}</i>`;
 
-		const keyboard = KeyboardUtils.createPlanDetailsKeyboard(t, planId, plan.type);
+		const keyboard = KeyboardUtils.createPlanDetailsKeyboard(t, planId);
 
 		await ctx.editMessageText(message, {
 			...keyboard,
@@ -130,7 +88,7 @@ class PlanCallbacks {
 			: t('plans.unlimited');
 
 		let message = `🛒 <b>${t('payments.confirmation_title', { ns: 'message' })}</b>\n\n`;
-		message += `${plan.emoji} <b>${formatted.displayName}</b>\n`;
+		message += `<b>${formatted.displayName}</b>\n`;
 		message += `💾 ${t('plans.data_volume', { ns: 'message' })}: ${limit}\n`;
 		message += `⏰ ${t('plans.validity_period', { ns: 'message' })}: ${formatted.displayDuration}\n`;
 		message += `💰 ${t('payments.to_pay', { ns: 'message' })}: <b>${formatted.displayPrice}</b>\n\n`;
@@ -151,6 +109,14 @@ class PlanCallbacks {
 
 	async handleCreateInvoice(ctx, planId) {
 		const t = ctx.i18n.t;
+
+		if (config.maintenanceMode) {
+			await ctx.editMessageText(
+				t('payments.maintenance', { ns: 'message' }),
+				KeyboardUtils.createBackToMenuKeyboard(t)
+			);
+			return;
+		}
 
 		try {
 			const plan = PlanService.getPlanById(planId);

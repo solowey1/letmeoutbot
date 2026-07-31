@@ -34,17 +34,18 @@ const config = {
 		}
 	},
 
-	outline: {
-		apiUrl: process.env.OUTLINE_API_URL,
-		timeout: 10000 // 10 секунд
-	},
+	maintenanceMode: process.env.MAINTENANCE_MODE === 'true',
 
 	xray: {
 		panelUrl: process.env.XRAY_PANEL_URL,
 		apiKey: process.env.XRAY_API_TOKEN || '',
-		publicKey: process.env.XRAY_PUBLIC_KEY || '',
 		subBaseUrl: process.env.XRAY_SUB_BASE_URL || '',
 		inboundIds: (process.env.XRAY_INBOUNDS || '1').split(',').map(s => parseInt(s.trim())).filter(Boolean)
+	},
+
+	mtproto: {
+		apiUrl: process.env.MTPROTO_API_URL || '',
+		apiToken: process.env.MTPROTO_API_TOKEN || ''
 	},
 
 	app: {

@@ -119,7 +119,11 @@ class KeysCallbacks {
 			}
 
 			if (key.access_url) {
-				if (key.key_type === 'vless') {
+				if (key.key_type === 'mtproto') {
+					message += `🔗 <b>${t('proxy.link_label', { ns: 'message' })}</b>\n`;
+					message += `<code>${key.access_url}</code>\n\n`;
+					message += t('proxy.how_to_add.short', { ns: 'message' });
+				} else if (key.key_type === 'vless') {
 					if (key.access_url.startsWith('http')) {
 						message += `🔗 <b>${t('keys.subscription_title', { ns: 'message' })}</b>\n`;
 						message += `<code>${key.access_url}</code>\n\n`;
@@ -134,6 +138,7 @@ class KeysCallbacks {
 						steps.forEach((step, i) => { message += `${i + 1}. ${step}\n`; });
 					}
 				} else {
+					// Ключ старого формата, который не удалось перевыпустить — показываем как есть
 					message += `🔐 <b>${t('keys.access_key_title', { ns: 'message' })}</b>\n`;
 					message += `<code>${key.access_url}</code>\n\n`;
 					message += `📱 <b>${t('keys.how_to_connect', { ns: 'message' })}</b>\n`;
@@ -227,7 +232,7 @@ class KeysCallbacks {
 
 			message += `💡 ${t('keys.raw_vless_hint', { ns: 'message' })}`;
 
-			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId, 'vless');
+			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId);
 			await ctx.editMessageText(message, { ...keyboard, parse_mode: 'HTML' });
 		} catch (error) {
 			console.error('Ошибка получения отдельных ключей:', error);
@@ -235,24 +240,6 @@ class KeysCallbacks {
 				t('generic.loading_error', { ns: 'error' }),
 				KeyboardUtils.createBackToMenuKeyboard(t)
 			);
-		}
-	}
-
-	async handleRefreshKey(ctx, keyId) {
-		const t = ctx.i18n.t;
-
-		try {
-			await ctx.answerCbQuery(t('keys.refreshing', { ns: 'message' }));
-			const newAccessUrl = await this.keyService.refreshAccessUrl(keyId);
-
-			const keyboard = KeyboardUtils.createKeyStatsKeyboard(t, keyId);
-			await ctx.editMessageText(
-				`🔄 <b>${t('keys.refresh_success', { ns: 'message' })}</b>\n\n<code>${newAccessUrl}</code>`,
-				{ ...keyboard, parse_mode: 'HTML' }
-			);
-		} catch (error) {
-			console.error('Ошибка обновления ключа:', error);
-			await ctx.answerCbQuery(t('generic.default', { ns: 'error' }), { show_alert: true });
 		}
 	}
 

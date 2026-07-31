@@ -3,29 +3,16 @@ const { v4: uuidv4 } = require('uuid');
 
 /**
  * Сервис для работы с 3X-UI API (v3.x)
- * Сервер: 45.145.163.170 (let-me-out.com)
- * Протокол: VLESS + Reality
+ * Клиент всегда выдаётся через подписку (XRAY_SUB_BASE_URL), которая
+ * агрегирует все протоколы из XRAY_INBOUNDS (VLESS Reality + XHTTP, Hysteria2, ...)
+ * в одну ссылку — выбор протокола на уровне бота не нужен.
  */
 class XRayService {
-	constructor(panelUrl, apiToken, publicKey, subBaseUrl = '', inboundIds = [1]) {
+	constructor(panelUrl, apiToken, subBaseUrl, inboundIds = [1]) {
 		this.panelUrl = panelUrl;
 		this.apiToken = apiToken;
 		this.subBaseUrl = subBaseUrl;
 		this.inboundIds = inboundIds.length > 0 ? inboundIds : [1];
-
-		this.REALITY_INBOUND_ID = this.inboundIds[0];
-
-		this.REALITY_CONFIG = {
-			address: 'let-me-out.com',
-			port: 56867,
-			pbk: publicKey,
-			sid: 'e3',
-			sni: 'www.google.com',
-			fp: 'chrome',
-			flow: 'xtls-rprx-vision',
-			type: 'tcp',
-			security: 'reality'
-		};
 	}
 
 	async apiRequest(method, path, data = null) {
@@ -80,7 +67,7 @@ class XRayService {
 			uuid,
 			email,
 			enable: true,
-			flow: 'xtls-rprx-vision',
+			flow: '', // пусто: xtls-rprx-vision несовместим с XHTTP-инбаундом
 			limitIp: 0,
 			totalGB: totalGB > 0 ? Math.round(totalGB * 1024 * 1024 * 1024) : 0,
 			expiryTime,
@@ -90,11 +77,9 @@ class XRayService {
 			comment: 'LetMeOut Bot'
 		});
 
-		const accessUrl = this.subBaseUrl
-			? this._buildSubUrl(subId)
-			: this._buildRealityUrl(uuid, email);
+		if (!this.subBaseUrl) throw new Error('XRAY_SUB_BASE_URL не задан — не могу построить ссылку на подписку');
 
-		return { uuid, subId, accessUrl, email, type: 'reality' };
+		return { uuid, subId, accessUrl: this._buildSubUrl(subId), email, type: 'reality' };
 	}
 
 	async deleteRealityClient(email) {
@@ -115,7 +100,7 @@ class XRayService {
 		return this.updateClient(email, {
 			email,
 			enable: true,
-			flow: 'xtls-rprx-vision',
+			flow: '',
 			limitIp: 0,
 			totalGB: totalGB > 0 ? Math.round(totalGB * 1024 * 1024 * 1024) : 0,
 			expiryTime,
@@ -127,7 +112,7 @@ class XRayService {
 		return this.updateClient(email, {
 			email,
 			enable: false,
-			flow: 'xtls-rprx-vision',
+			flow: '',
 			limitIp: 0,
 			totalGB: totalGB > 0 ? Math.round(totalGB * 1024 * 1024 * 1024) : 0,
 			expiryTime,
@@ -139,7 +124,7 @@ class XRayService {
 		return this.updateClient(email, {
 			email,
 			enable: true,
-			flow: 'xtls-rprx-vision',
+			flow: '',
 			limitIp: 0,
 			totalGB: totalGB > 0 ? Math.round(totalGB * 1024 * 1024 * 1024) : 0,
 			expiryTime,
@@ -157,16 +142,6 @@ class XRayService {
 
 	_buildSubUrl(subId) {
 		return `${this.subBaseUrl}/${subId}`;
-	}
-
-	_buildRealityUrl(uuid, name) {
-		const c = this.REALITY_CONFIG;
-		const params = new URLSearchParams({
-			type: c.type, encryption: 'none', security: c.security,
-			pbk: c.pbk, sid: c.sid, sni: c.sni,
-			fp: c.fp, flow: c.flow, spx: '/'
-		});
-		return `vless://${uuid}@${c.address}:${c.port}?${params.toString()}#${encodeURIComponent(name)}`;
 	}
 
 	_generateSubId() {

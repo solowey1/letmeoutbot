@@ -33,13 +33,11 @@ function createKeysKeyboard(t, keys) {
 
 function createKeyDetailsKeyboard(t, keyId, keyType) {
 	const rows = [
-		[btn(t, 'stats', `${CALLBACK_ACTIONS.KEYS.STATS}_${keyId}`)],
+		[btn(t, 'stats', `${CALLBACK_ACTIONS.KEYS.STATS}_${keyId}`)]
 	];
 
-	if (keyType === 'vless') {
+	if (keyType !== 'mtproto') {
 		rows.push([btn(t, 'raw_vless_key', `${CALLBACK_ACTIONS.KEYS.RAW_VLESS}_${keyId}`)]);
-	} else {
-		rows.push([btn(t, 'refresh_key', `${CALLBACK_ACTIONS.KEYS.REFRESH}_${keyId}`)]);
 	}
 
 	rows.push([

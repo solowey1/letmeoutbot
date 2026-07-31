@@ -1,31 +1,16 @@
 // ============================================================
 // ПЛАНЫ ТАРИФИКАЦИИ
-// Каждый план существует в трёх вариантах:
-//   outline  — только Outline VPN (Shadowsocks)
-//   vless    — только VLESS (WS + Reality)
-//   both     — оба протокола со скидкой (см. COMBO_DISCOUNT)
+// Единая сетка: объём + срок. Технически ключ выдаётся через VLESS
+// (+ Hysteria2 в той же подписке), протокол пользователю не показывается.
 //
 // Рыночные цены (Telegram Stars, 1 Star ≈ $0.013):
 //   Конкуренты: ~$2–4/мес за 10–30 GB, ~$5–8/мес за 100 GB
 // ============================================================
 
-const COMBO_DISCOUNT = 0.20; // 20% скидка на тариф «оба протокола»
-
 const PLANS = {
 	// ─────────────────────────────────────────
 	// ТЕСТОВЫЙ (только для разработки/отладки)
 	// ─────────────────────────────────────────
-	TEST: {
-		id: 'outline_test',
-		name: 'TEST OUTLINE',
-		type: 'outline',
-		dataLimitGB: 1,
-		dataLimit: 100 * 1024 * 1024,
-		duration: 1,
-		price: 1,
-		emoji: '🐌',
-		hidden: true    // не показывать обычным пользователям
-	},
 	TEST_VLESS: {
 		id: 'vless_test',
 		name: 'TEST VLESS',
@@ -54,19 +39,8 @@ const PLANS = {
 	},
 	GIFT_VLESS_500MB: {
 		id: 'gift_vless_500mb',
-		name: 'VLESS 500 MB (Gift)',
+		name: '500 MB (Gift)',
 		type: 'vless',
-		dataLimitGB: 0,
-		dataLimit: 500 * 1024 * 1024,
-		duration: 2,
-		price: 0,
-		emoji: '🎁',
-		hidden: true
-	},
-	GIFT_OUTLINE_500MB: {
-		id: 'gift_outline_500mb',
-		name: 'Outline 500 MB (Gift)',
-		type: 'outline',
 		dataLimitGB: 0,
 		dataLimit: 500 * 1024 * 1024,
 		duration: 2,
@@ -76,11 +50,11 @@ const PLANS = {
 	},
 
 	// ─────────────────────────────────────────
-	// VLESS — только VLESS (Reality)
+	// ОСНОВНАЯ ТАРИФНАЯ СЕТКА
 	// ─────────────────────────────────────────
 	VLESS_2GB: {
 		id: 'vless_2gb',
-		name: 'VLESS 2 GB',
+		name: '2 GB',
 		type: 'vless',
 		dataLimitGB: 2,
 		dataLimit: 2 * 1024 * 1024 * 1024,
@@ -90,17 +64,17 @@ const PLANS = {
 	},
 	VLESS_10GB: {
 		id: 'vless_10gb',
-		name: 'VLESS 10 GB',
+		name: '10 GB',
 		type: 'vless',
 		dataLimitGB: 10,
 		dataLimit: 10 * 1024 * 1024 * 1024,
 		duration: 30,
-		price: 100,                // ~$1.3/мес
+		price: 90,                 // ~$1.17/мес
 		emoji: '⚡'
 	},
 	VLESS_50GB: {
 		id: 'vless_50gb',
-		name: 'VLESS 50 GB',
+		name: '50 GB',
 		type: 'vless',
 		dataLimitGB: 50,
 		dataLimit: 50 * 1024 * 1024 * 1024,
@@ -110,7 +84,7 @@ const PLANS = {
 	},
 	VLESS_100GB: {
 		id: 'vless_100gb',
-		name: 'VLESS 100 GB',
+		name: '100 GB',
 		type: 'vless',
 		dataLimitGB: 100,
 		dataLimit: 100 * 1024 * 1024 * 1024,
@@ -120,7 +94,7 @@ const PLANS = {
 	},
 	VLESS_UNLIM: {
 		id: 'vless_unlim',
-		name: 'VLESS Unlimited',
+		name: 'Unlimited',
 		type: 'vless',
 		dataLimitGB: 0,
 		dataLimit: 0,
@@ -130,89 +104,39 @@ const PLANS = {
 	},
 
 	// ─────────────────────────────────────────
-	// OUTLINE — только Outline VPN
+	// PROXY — MTProto-прокси для Telegram (только срок, без объёма)
 	// ─────────────────────────────────────────
-	OUTLINE_2GB: {
-		id: 'outline_2gb',
-		name: 'Outline 2 GB',
-		type: 'outline',
-		dataLimitGB: 2,
-		dataLimit: 2 * 1024 * 1024 * 1024,
-		duration: 30,
-		price: 10,                 // ~$0.13/мес
-		emoji: '🌱'
+	PROXY_1WEEK: {
+		id: 'proxy_1week',
+		name: 'Proxy 1 week',
+		type: 'mtproto',
+		dataLimitGB: 0,
+		dataLimit: 0,
+		duration: 7,
+		price: 12,
+		emoji: '📡'
 	},
-	OUTLINE_10GB: {
-		id: 'outline_10gb',
-		name: 'Outline 10 GB',
-		type: 'outline',
-		dataLimitGB: 10,
-		dataLimit: 10 * 1024 * 1024 * 1024,
-		duration: 30,
-		price: 50,                 // ~$0.65/мес
-		emoji: '🌿'
-	},
-	OUTLINE_50GB: {
-		id: 'outline_50gb',
-		name: 'Outline 50 GB',
-		type: 'outline',
-		dataLimitGB: 50,
-		dataLimit: 50 * 1024 * 1024 * 1024,
-		duration: 30,
-		price: 200,                // ~$2.6/мес
-		emoji: '🌲'
-	},
-	OUTLINE_100GB: {
-		id: 'outline_100gb',
-		name: 'Outline 100 GB',
-		type: 'outline',
-		dataLimitGB: 100,
-		dataLimit: 100 * 1024 * 1024 * 1024,
-		duration: 30,
-		price: 350,                // ~$4.6/мес
-		emoji: '🌳'
-	},
-	OUTLINE_UNLIM: {
-		id: 'outline_unlim',
-		name: 'Outline Unlimited',
-		type: 'outline',
+	PROXY_1MONTH: {
+		id: 'proxy_1month',
+		name: 'Proxy 1 month',
+		type: 'mtproto',
 		dataLimitGB: 0,
 		dataLimit: 0,
 		duration: 30,
-		price: 500,                // ~$6.5/мес
-		emoji: '🌏'
+		price: 40,
+		emoji: '📡'
 	},
-
+	PROXY_3MONTHS: {
+		id: 'proxy_3months',
+		name: 'Proxy 3 months',
+		type: 'mtproto',
+		dataLimitGB: 0,
+		dataLimit: 0,
+		duration: 90,
+		price: 150,
+		emoji: '📡'
+	}
 };
-
-// ─────────────────────────────────────────
-// BOTH — Outline + VLESS со скидкой (авто)
-// ─────────────────────────────────────────
-const BOTH_EMOJIS = { 2: '🌱', 10: '💎', 50: '💠', 100: '👑', 0: '🔱' };
-
-const outlinePlans = Object.values(PLANS).filter(p => p.type === 'outline' && !p.hidden);
-const vlessPlans   = Object.values(PLANS).filter(p => p.type === 'vless'   && !p.hidden);
-
-for (const outline of outlinePlans) {
-	const vless = vlessPlans.find(v => v.dataLimitGB === outline.dataLimitGB);
-	if (!vless) continue;
-
-	const gb = outline.dataLimitGB;
-	const label = gb === 0 ? 'Unlimited' : `${gb} GB`;
-	const key = `BOTH_${gb === 0 ? 'UNLIM' : gb + 'GB'}`;
-	const fullPrice = outline.price + vless.price;
-
-	PLANS[key] = {
-		id: `both_${gb === 0 ? 'unlim' : gb + 'gb'}`,
-		name: `Outline + VLESS ${label}`,
-		type: 'both',
-		dataLimitGB: gb,
-		dataLimit: outline.dataLimit,
-		duration: outline.duration,
-		price: Math.round(fullPrice * (1 - COMBO_DISCOUNT)),
-		emoji: BOTH_EMOJIS[gb] || '💎'
-	};
-}
 
 const KEY_STATUS = {
 	ACTIVE: 'active',
@@ -222,8 +146,8 @@ const KEY_STATUS = {
 };
 
 const KEY_TYPE = {
-	OUTLINE: 'outline',
-	VLESS: 'vless'
+	VLESS: 'vless',
+	MTPROTO: 'mtproto'
 };
 
 const LANG = {
@@ -271,18 +195,14 @@ const CALLBACK_ACTIONS = {
 		HOME: 'home',
 		HELP: 'help',
 		VPN_APPS: 'vpn_apps',
-		VPN_APPS_OUTLINE: 'vpn_apps_outline',
-		VPN_APPS_VLESS: 'vpn_apps_vless',
 		VLESS_APPS_LINUX: 'vless_apps_linux',
 		VLESS_APPS_WINDOWS: 'vless_apps_windows',
 		VLESS_APPS_MACOS: 'vless_apps_macos',
 		VLESS_APPS_IOS: 'vless_apps_ios',
 		VLESS_APPS_ANDROID: 'vless_apps_android',
 		HOW_TO_ADD_KEY: 'how_to_add_key',
-		HOW_TO_ADD_KEY_OUTLINE: 'how_to_add_key_outline',
-		HOW_TO_ADD_KEY_VLESS: 'how_to_add_key_vless',
-		HOWTO_APPS_OUTLINE: 'howto_apps_outline',
-		HOWTO_APPS_VLESS: 'howto_apps_vless',
+		HOW_TO_ADD_PROXY: 'how_to_add_proxy',
+		HOWTO_APPS: 'howto_apps',
 		HOWTO_VLESS_APPS_LINUX: 'howto_vless_apps_linux',
 		HOWTO_VLESS_APPS_WINDOWS: 'howto_vless_apps_windows',
 		HOWTO_VLESS_APPS_MACOS: 'howto_vless_apps_macos',
@@ -296,14 +216,8 @@ const CALLBACK_ACTIONS = {
 		BUY: 'keys_buy',
 		DETAILS: 'key_details',
 		STATS: 'key_stats',
-		REFRESH: 'key_refresh',
 		CHECKOUT: 'checkout',
-		RAW_VLESS: 'key_raw_vless',
-		// Выбор типа подключения
-		SELECT_TYPE: 'keys_select_type',
-		TYPE_OUTLINE: 'plans_type_outline',
-		TYPE_VLESS: 'plans_type_vless',
-		TYPE_BOTH: 'plans_type_both'
+		RAW_VLESS: 'key_raw_vless'
 	},
 	PAYMENT: {
 		CONFIRM: 'payment_confirm',
@@ -332,6 +246,9 @@ const CALLBACK_ACTIONS = {
 	GIFT: {
 		INFO: 'gift_info',
 		CLAIM: 'gift_claim'
+	},
+	PROXY: {
+		MENU: 'proxy_menu'
 	}
 };
 
@@ -365,7 +282,6 @@ const ADMIN_IDS = process.env.ADMIN_IDS
 
 module.exports = {
 	PLANS,
-	COMBO_DISCOUNT,
 	KEY_STATUS,
 	KEY_TYPE,
 	LANG,

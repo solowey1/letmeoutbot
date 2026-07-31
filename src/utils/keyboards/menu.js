@@ -4,6 +4,7 @@ const { btn } = require('./common');
 function createMainMenu(t, isAdmin = false, showGift = false) {
 	const buttons = [
 		[btn(t, 'buy')],
+		[btn(t, 'buy_proxy')],
 		[btn(t, 'my_keys')],
 		[btn(t, 'help')],
 		[btn(t, 'referral')],
@@ -11,7 +12,7 @@ function createMainMenu(t, isAdmin = false, showGift = false) {
 	];
 
 	if (showGift) {
-		buttons.splice(1, 0, [btn(t, 'gift_info')]);
+		buttons.splice(2, 0, [btn(t, 'gift_info')]);
 	}
 
 	if (isAdmin) {

@@ -1,12 +1,14 @@
 {
   "buttons": {
     "buy": {
-      "first": "Buy First Key",
-      "key": "Buy a key",
-      "more": "Buy More"
+      "first": "Buy VPN",
+      "key": "Buy VPN",
+      "more": "Buy more VPN"
     },
-    "gift": "🎁 Get Free Trial",
+    "gift": "Get Free Trial",
     "claim_gift": "Claim",
+    "buy_proxy": "Buy Telegram Proxy",
+    "connect_proxy": "Connect",
     "my_keys": "My Keys",
     "referral": "Referral Program",
     "admin_panel": "Admin Panel",
@@ -15,6 +17,7 @@
     "stats": "Statistics",
     "vpn_apps": "📱 VPN Apps",
     "how_to_add_key": "How to add a key?",
+    "how_to_add_proxy": "How to add a proxy?",
     "support": "Support",
     "contact_support": "Contact support",
     "pay": "Pay",
@@ -29,7 +32,6 @@
     "ton_wallet_withdraw_now": "💸 Withdraw Now",
     "ton_wallet_referrals": "Referrals",
     "retry": "Try Again",
-    "refresh_key": "Refresh Key",
     "referral_actions": {
       "invite": "Invite Friends",
       "get_link": "Get Link",
@@ -75,13 +77,6 @@
       "english": "English"
     },
     "raw_vless_key": "Get Individual Keys",
-    "type_vless": "VLESS + Hysteria2",
-    "type_outline": "Outline VPN",
-    "type_both": "Both ({{discount}}% off)",
-    "protocols": {
-      "outline": "Outline",
-      "vless": "VLESS"
-    },
     "pagination": {
       "prev": "Prev",
       "next": "Next"
@@ -109,6 +104,11 @@
         "some": "days",
         "many": "days"
       },
+      "week": {
+        "one": "week",
+        "some": "weeks",
+        "many": "weeks"
+      },
       "month": {
         "one": "month",
         "some": "months",
@@ -132,73 +132,41 @@
   },
   "plans": {
     "unlimited": "Unlimited",
-    "outline_test": {
-      "description": "Perfect for testing the service",
-      "invoice": "Test Outline VPN key — 1 GB for 1 day"
-    },
     "vless_test": {
-      "description": "Test VLESS Reality — check if it works",
-      "invoice": "Test VLESS Reality key — 1 GB for 1 day"
-    },
-    "outline_2gb": {
-      "description": "Try Outline at the lowest price",
-      "invoice": "Outline VPN key — 2 GB for 1 month"
-    },
-    "outline_10gb": {
-      "description": "Basic access via Outline",
-      "invoice": "Outline VPN key — 10 GB for 1 month"
-    },
-    "outline_50gb": {
-      "description": "Popular choice for daily use",
-      "invoice": "Outline VPN key — 50 GB for 1 month"
-    },
-    "outline_100gb": {
-      "description": "For active usage",
-      "invoice": "Outline VPN key — 100 GB for 1 month"
-    },
-    "outline_unlim": {
-      "description": "Outline with unlimited traffic",
-      "invoice": "Outline VPN key — Unlimited for 1 month"
+      "description": "Test key — check if it works",
+      "invoice": "Test key — 1 GB for 1 day"
     },
     "vless_2gb": {
-      "description": "Try VLESS Reality at the lowest price",
-      "invoice": "VLESS Reality key — 2 GB for 1 month"
+      "description": "Try the VPN at the lowest price",
+      "invoice": "VPN key — 2 GB for 1 month"
     },
     "vless_10gb": {
-      "description": "Modern protocol, hard to detect",
-      "invoice": "VLESS Reality key — 10 GB for 1 month"
+      "description": "The best fit for everyday use",
+      "invoice": "VPN key — 10 GB for 1 month"
     },
     "vless_50gb": {
-      "description": "VLESS for daily use",
-      "invoice": "VLESS Reality key — 50 GB for 1 month"
+      "description": "For active usage",
+      "invoice": "VPN key — 50 GB for 1 month"
     },
     "vless_100gb": {
-      "description": "VLESS for active usage",
-      "invoice": "VLESS Reality key — 100 GB for 1 month"
+      "description": "For heavy usage",
+      "invoice": "VPN key — 100 GB for 1 month"
     },
     "vless_unlim": {
-      "description": "VLESS with unlimited traffic",
-      "invoice": "VLESS Reality key — Unlimited for 1 month"
+      "description": "No traffic limits",
+      "invoice": "VPN key — Unlimited for 1 month"
     },
-    "both_2gb": {
-      "description": "Two protocols with {{discount}}% discount",
-      "invoice": "Outline + VLESS — 2 GB for 1 month"
+    "proxy_1week": {
+      "description": "Try the proxy for a week",
+      "invoice": "MTProto proxy for Telegram — 1 week"
     },
-    "both_10gb": {
-      "description": "Two protocols with {{discount}}% discount",
-      "invoice": "Outline + VLESS — 10 GB for 1 month"
+    "proxy_1month": {
+      "description": "The best fit for a month",
+      "invoice": "MTProto proxy for Telegram — 1 month"
     },
-    "both_50gb": {
-      "description": "Two protocols for daily use",
-      "invoice": "Outline + VLESS — 50 GB for 1 month"
-    },
-    "both_100gb": {
-      "description": "Two protocols for active usage",
-      "invoice": "Outline + VLESS — 100 GB for 1 month"
-    },
-    "both_unlim": {
-      "description": "Maximum reliability with no limits",
-      "invoice": "Outline + VLESS — Unlimited for 1 month"
+    "proxy_3months": {
+      "description": "Better value for 3 months",
+      "invoice": "MTProto proxy for Telegram — 3 months"
     }
   },
   "statuses": {

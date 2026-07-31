@@ -5,8 +5,8 @@ const { Telegraf } = require('telegraf');
 const SQLiteDatabase = require('../models/Database');
 const PostgresDatabase = require('../models/PostgresDatabase');
 const SupabaseDatabase = require('../models/SupabaseDatabase');
-const OutlineService = require('../services/OutlineService');
 const XRayService = require('../services/XRayService');
+const MTProtoService = require('../services/MTProtoService');
 const PaymentService = require('../services/PaymentService');
 const KeysService = require('../services/KeysService');
 const NotificationService = require('../services/NotificationService');
@@ -49,10 +49,10 @@ class TelegramBot {
 			this.db = new SQLiteDatabase(config.database.path);
 		}
 		this.i18nService = new I18nService();
-		this.outlineService = new OutlineService(config.outline.apiUrl);
-		this.xrayService = new XRayService(config.xray.panelUrl, config.xray.apiKey, config.xray.publicKey, config.xray.subBaseUrl, config.xray.inboundIds);
+		this.xrayService = new XRayService(config.xray.panelUrl, config.xray.apiKey, config.xray.subBaseUrl, config.xray.inboundIds);
+		this.mtprotoService = new MTProtoService(config.mtproto.apiUrl, config.mtproto.apiToken);
 		this.paymentService = new PaymentService(this.db);
-		this.keysService = new KeysService(this.db, this.outlineService, this.xrayService);
+		this.keysService = new KeysService(this.db, this.xrayService, this.mtprotoService);
 		this.notificationService = new NotificationService(this.bot, this.i18nService, this.db);
 		this.adminNotificationService = new AdminNotificationService(this.bot, this.db, this.i18nService);
 		this.broadcastService = new BroadcastService(this.bot, this.db);

@@ -1,16 +1,27 @@
-const { PLANS, KEY_TYPE, COMBO_DISCOUNT } = require('../config/constants');
+const { PLANS } = require('../config/constants');
 const moment = require('moment');
 
 class PlanService {
 
 	/**
-	 * Получить все планы определённого типа
-	 * @param {'outline'|'vless'|'both'} type
-	 * @param {boolean} includeHidden - включать тестовые планы
+	 * Получить все видимые платные VPN-планы (единая тарифная сетка)
+	 * @param {boolean} includeHidden - включать тестовые/подарочные планы
 	 */
-	static getPlansByType(type, includeHidden = false) {
+	static getPlans(includeHidden = false) {
 		return Object.values(PLANS).filter(p =>
-			p.type === type &&
+			p.type === 'vless' &&
+			p.price > 0 &&
+			(includeHidden || !p.hidden)
+		);
+	}
+
+	/**
+	 * Получить все видимые платные тарифы на MTProto-прокси
+	 * @param {boolean} includeHidden - включать тестовые/подарочные планы
+	 */
+	static getProxyPlans(includeHidden = false) {
+		return Object.values(PLANS).filter(p =>
+			p.type === 'mtproto' &&
 			p.price > 0 &&
 			(includeHidden || !p.hidden)
 		);
@@ -64,6 +75,13 @@ class PlanService {
 				t('common.periods.month.some'),
 				t('common.periods.month.many')
 			)}`;
+		} else if (days >= 7 && days % 7 === 0) {
+			const weeks = days / 7;
+			return `${weeks} ${this.getPlural(weeks,
+				t('common.periods.week.one'),
+				t('common.periods.week.some'),
+				t('common.periods.week.many')
+			)}`;
 		}
 		return `${days} ${this.getPlural(days,
 			t('common.periods.day.one'),
@@ -88,7 +106,7 @@ class PlanService {
 		// Если ключа нет — используем дефолтные строки
 		let description, invoice;
 		try {
-			description = t(`plans.${plan.id}.description`, { discount: Math.round(COMBO_DISCOUNT * 100) });
+			description = t(`plans.${plan.id}.description`);
 		} catch {
 			description = plan.name;
 		}
@@ -106,34 +124,22 @@ class PlanService {
 			invoice = `${plan.name} — ${dataLimitFormatted} / ${durationFormatted}`;
 		}
 
-		const typePrefix = { both: 'Outline + VLESS', outline: 'Outline', vless: 'VLESS' }[plan.type] || plan.type;
+		// У прокси нет объёма данных — в списках показываем срок, а не «Безлимит»
+		const displayName = plan.type === 'mtproto'
+			? `${plan.emoji} ${durationFormatted}`
+			: `${plan.emoji} ${dataLimitFormatted}`;
+
 		return {
 			...plan,
 			description,
 			invoice,
-			displayName: `${plan.emoji} ${typePrefix} ${dataLimitFormatted}`,
+			displayName,
 			displayDescription: `${dataLimitFormatted} / ${durationFormatted}`,
 			displayDataLimit: dataLimitFormatted,
 			displayDuration: durationFormatted,
 			displayPrice: priceFormatted,
 			fullDescription: `${description}\n💾 ${dataLimitFormatted}\n⏰ ${durationFormatted}\n💰 ${priceFormatted}`
 		};
-	}
-
-	static calculateSavings(plan) {
-		if (plan.type === 'both') {
-			const outlinePlan = Object.values(PLANS).find(p =>
-				p.type === 'outline' && p.dataLimit === plan.dataLimit && !p.hidden
-			);
-			const vlessPlan = Object.values(PLANS).find(p =>
-				p.type === 'vless' && p.dataLimit === plan.dataLimit
-			);
-			if (outlinePlan && vlessPlan) {
-				const fullPrice = outlinePlan.price + vlessPlan.price;
-				return fullPrice - Math.round(fullPrice * (1 - COMBO_DISCOUNT));
-			}
-		}
-		return 0;
 	}
 
 	static async loadPrices(db) {

@@ -27,7 +27,7 @@ vpnbot/
 │   ├── services/
 │   │   ├── PaymentService.js       # Сервис платежей
 │   │   ├── KeysService.js          # Управление ключами
-│   │   ├── OutlineService.js       # API Outline VPN
+│   │   ├── XRayService.js          # API 3x-ui (VLESS + Hysteria2)
 │   │   ├── PlanService.js          # Тарифные планы
 │   │   ├── NotificationService.js  # Уведомления
 │   │   └── I18nService.js          # Интернационализация
@@ -72,7 +72,7 @@ vpnbot/
 ### 2. Service Layer (Бизнес-логика)
 - **PaymentService**: Создание инвойсов, обработка платежей
 - **KeysService**: Создание, мониторинг, управление VPN ключами
-- **OutlineService**: Интеграция с Outline VPN API
+- **XRayService**: Интеграция с панелью 3x-ui (VLESS + Hysteria2)
 - **PlanService**: Управление тарифными планами
 - **NotificationService**: Отправка уведомлений пользователям
 - **I18nService**: Многоязычная поддержка
@@ -109,7 +109,7 @@ Telegram показывает форму оплаты
   ↓
 PaymentHandlers обрабатывает успешную оплату
   ↓
-KeysService создаёт VPN ключ (OutlineService)
+KeysService создаёт VPN ключ (XRayService)
   ↓
 Ключ сохраняется в БД
   ↓
@@ -125,7 +125,7 @@ KeysService.checkAllActiveKeys()
   ↓
 Для каждого активного ключа:
   ↓
-OutlineService получает использование трафика
+XRayService получает использование трафика
   ↓
 Сравнивает с лимитами
   ↓
@@ -137,7 +137,7 @@ NotificationService отправляет уведомление
   ↓
 Если превышен лимит:
   ↓
-OutlineService удаляет ключ
+XRayService приостанавливает ключ
   ↓
 Обновляет статус в БД
 ```
@@ -164,7 +164,10 @@ OutlineService удаляет ключ
   id: Integer (PK),
   user_id: Integer (FK → users),
   plan_id: String,
-  outline_key_id: Integer,
+  key_type: String (vless),
+  external_key_id: String,
+  external_client_id: String,
+  external_sub_id: String,
   access_url: Text,
   data_limit: BigInt (bytes),
   data_used: BigInt (bytes),
@@ -247,7 +250,7 @@ if (DATABASE_TYPE === 'supabase') {
 
 ### Обработка ошибок
 - Try-catch блоки во всех критичных местах
-- Retry механизм для Outline API (3 попытки)
+- Retry механизм для 3x-ui API (5 попыток с нарастающей задержкой)
 - Логирование всех ошибок
 - Уведомление пользователей о проблемах
 
@@ -277,9 +280,9 @@ if (DATABASE_TYPE === 'supabase') {
 - Telegram Stars платежи
 - Webhook / Long polling
 
-### Outline VPN API
-- Создание ключей доступа
-- Мониторинг использования
+### 3x-ui API (VLESS + Hysteria2)
+- Создание ключей доступа (единая подписка на клиента)
+- Мониторинг использования трафика
 - Управление лимитами
 - Удаление ключей
 
@@ -296,8 +299,11 @@ if (DATABASE_TYPE === 'supabase') {
 TELEGRAM_BOT_TOKEN=xxx
 ADMIN_IDS=123,456
 
-# Outline
-OUTLINE_API_URL=https://...
+# 3x-ui (VLESS + Hysteria2)
+XRAY_PANEL_URL=https://...
+XRAY_API_TOKEN=xxx
+XRAY_INBOUNDS=1,2
+XRAY_SUB_BASE_URL=https://sub.example.com/vpn
 
 # Database
 DATABASE_TYPE=supabase
@@ -345,7 +351,7 @@ LOG_LEVEL=info
 
 ### Алерты
 - Критические ошибки
-- Проблемы с Outline API
+- Проблемы с 3x-ui API
 - Превышение лимитов
 - Неуспешные платежи
 
@@ -371,7 +377,7 @@ LOG_LEVEL=info
 ### Планируется
 - [ ] Реферальная программа
 - [ ] Telegram Mini App для статистики
-- [ ] Множественные Outline серверы
+- [ ] Множественные ноды 3x-ui
 - [ ] Аналитика поведения пользователей
 - [ ] A/B тестирование цен
 - [ ] Webhook вместо long polling

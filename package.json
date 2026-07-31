@@ -1,5 +1,5 @@
 {
-  "name": "vpn-outline-telegram-bot",
+  "name": "letmeout-vpn-bot",
   "version": "2.1.0",
   "description": "Telegram bot for purchasing VPN keys with Telegram Stars",
   "main": "src/index.js",
@@ -16,7 +16,6 @@
     "telegram",
     "bot",
     "vpn",
-    "outline",
     "vless",
     "keys",
     "payment",

@@ -6,6 +6,7 @@ function createHelpKeyboard(t) {
 	return Markup.inlineKeyboard([
 		[btn(t, 'buy')],
 		[btn(t, 'how_to_add_key')],
+		[btn(t, 'how_to_add_proxy')],
 		[btn(t, 'contact_support')],
 		[btn(t, 'home')]
 	]);
@@ -21,7 +22,17 @@ function createSupportKeyboard(t) {
 	]);
 }
 
+function createHowToAddProxyKeyboard(t) {
+	return Markup.inlineKeyboard([
+		[
+			btn(t, 'back', CALLBACK_ACTIONS.BASIC.HELP),
+			btn(t, 'home')
+		]
+	]);
+}
+
 module.exports = {
 	createHelpKeyboard,
-	createSupportKeyboard
+	createSupportKeyboard,
+	createHowToAddProxyKeyboard
 };

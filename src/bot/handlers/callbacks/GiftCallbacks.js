@@ -38,12 +38,11 @@ class GiftCallbacks {
 		const user = await this.db.getUserByTelegramId(telegramId);
 
 		try {
-			const { vless, outline } = await this.keysService.claimGiftKeys(user.id, telegramId);
+			const result = await this.keysService.claimGiftKeys(user.id, telegramId);
 
 			const text = t('gift.success', {
 				ns: 'message',
-				vlessUrl: vless.accessUrl,
-				outlineUrl: outline.accessUrl
+				accessUrl: result.accessUrl
 			});
 
 			const isAdmin = ADMIN_IDS.includes(telegramId);

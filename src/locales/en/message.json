@@ -1,21 +1,21 @@
 {
   "gift": {
-    "info": "🎁 <b>Free Trial Access</b>\n\nNew users can test the VPN completely for free.\n\nGet keys for <b>VLESS + Hysteria2</b> and <b>Outline</b> at no cost. Each key is valid for <b>48 hours</b> or <b>500 MB</b> of traffic.",
-    "success": "✅ <b>Your free keys are ready!</b>\n\n⚡ <b>VLESS + Hysteria2:</b>\n<code>{{vlessUrl}}</code>\n\n🌿 <b>Outline:</b>\n<code>{{outlineUrl}}</code>\n\n<i>Each key is valid for 48 hours or 500 MB of traffic.\nAdd the keys to your VPN app and enjoy!</i>",
+    "info": "🎁 <b>Free Trial Access</b>\n\nNew users can test the VPN completely for free.\n\nGet a free key valid for <b>48 hours</b> or <b>500 MB</b> of traffic.",
+    "success": "✅ <b>Your free key is ready!</b>\n\n🔗 <code>{{accessUrl}}</code>\n\n<i>The key is valid for 48 hours or 500 MB of traffic.\nAdd it to your VPN app and enjoy!</i>",
     "already_received": "You have already received your free gift.",
     "not_eligible": "Gift is not available.",
-    "error": "Failed to issue keys. Please try again later."
+    "error": "Failed to issue a key. Please try again later."
   },
   "welcome": {
     "title": "Welcome to Let me Out VPN!",
-    "description": "Here you can purchase access to secure and fast VPN via VLESS + Hysteria2 or Outline.",
+    "description": "Here you can purchase access to secure and fast VPN.",
     "steps": [
       "⭐️ Payment via Telegram Stars",
       "🚀 Instant activation after purchase",
       "🔐 Complete anonymity and security",
-      "🇷🇺 For users in Russia we recommend VLESS + Hysteria2 — these protocols are harder to detect and block"
+      "🛡️ Resistant to blocking — works where other VPNs don't"
     ],
-    "action_text": "To get started, click \"Buy a key\""
+    "action_text": "To get started, tap \"Buy VPN\""
   },
   "admin": {
     "title": "Administrative panel",
@@ -57,8 +57,7 @@
       "activating": "🔄 Activating key...",
       "activate_error": "❌ Error: {{error}}",
       "activated_title": "🎉 Your key has been activated!",
-      "vless_label": "⚡ VLESS + Hysteria2:",
-      "outline_label": "🌿 Outline key:"
+      "vless_label": "🔗 Subscription link:"
     },
     "withdrawals": {
       "title": "📜 Pending Withdrawals",
@@ -193,20 +192,8 @@
     }
   },
   "vpn_apps": {
-    "choose_protocol": "📱 <b>VPN Apps</b>\n\nWhich protocol do you use?",
-    "outline": {
-      "title": "🌿 Outline Apps",
-      "description": "Choose the app for your operating system:",
-      "steps": [
-        "<b>Android</b> — Google Play Store",
-        "<b>iOS</b> — App Store",
-        "<b>Windows</b> — direct link",
-        "<b>macOS</b> — direct link"
-      ],
-      "action_text": "After installation, add your access key to the app."
-    },
     "vless": {
-      "choose_os": "⚡ <b>VLESS Apps</b>\n\nChoose your operating system:",
+      "choose_os": "📱 <b>VPN Apps</b>\n\nChoose your operating system:",
       "linux": {
         "title": "🐧 Linux",
         "apps": [
@@ -287,36 +274,40 @@
   "help": {
     "title": "Bot Help",
     "steps": [
-      "Choose a protocol and plan",
+      "Choose a plan",
       "Pay via Telegram Stars",
       "Get instant VPN access",
-      "Use the key in the corresponding app"
+      "Use the key in a compatible app"
     ]
   },
   "how_to_add_key": {
-    "choose_protocol": "🔑 <b>How to add a key?</b>\n\nChoose your protocol:",
-    "outline": {
-      "title": "🌿 How to add an Outline key",
-      "steps": [
-        "Download and open <b>Outline Client</b>",
-        "Tap <b>\"+\"</b> (add server)",
-        "Copy your access key (starts with <code>ss://</code>)",
-        "Paste the key into the input field",
-        "Tap <b>\"Add Server\"</b>",
-        "Turn on VPN — done!"
-      ]
-    },
-    "vless": {
-      "title": "⚡ How to add a VLESS key",
-      "steps": [
-        "Download a compatible app (v2rayN, v2rayNG, Streisand, etc.) for your OS",
-        "If you can't find any of the apps, change the store region or create a new account in another region",
-        "Copy your access key (starts with <code>vless://</code>)",
-        "In the app, tap <b>\"+\"</b> or <b>\"Import from clipboard\"</b>",
-        "The key will be automatically recognized and added",
-        "Select the added server and connect",
-        "If the app supports QR — you can scan instead of pasting"
-      ]
+    "title": "🔑 How to add a key",
+    "steps": [
+      "Download a compatible app (v2rayN, v2rayNG, Streisand, etc.) for your OS",
+      "If you can't find any of the apps, change the store region or create a new account in another region",
+      "Copy your access key (starts with <code>vless://</code> or <code>hysteria2://</code>) or your subscription link",
+      "In the app, tap <b>\"+\"</b> or <b>\"Import from clipboard\"</b> (for a subscription — \"Add subscription\")",
+      "The key will be automatically recognized and added",
+      "Select the added server and connect",
+      "If the app supports QR — you can scan instead of pasting"
+    ]
+  },
+  "proxy": {
+    "intro": "📡 <b>MTProto Proxy for Telegram</b>\n\nMTProto is Telegram's own proxy protocol. Unlike a VPN it wraps only Telegram's own traffic, not your whole device — so banks and marketplaces that block users with an active VPN never see the proxy, and everything else keeps working as usual.\n\nChoose a duration:",
+    "success": "Proxy activated!",
+    "link_label": "Proxy link:",
+    "how_to_add": {
+      "short": "💡 You usually won't need this — tap \"Connect\" above and Telegram will offer to enable the proxy right away. If the button didn't work: Settings → Data and Storage → Proxy Settings → paste the link above.",
+      "full": {
+        "title": "📡 How to add a proxy",
+        "steps": [
+          "Tap \"Connect\" in the purchase message — Telegram opens straight to the add-proxy screen",
+          "Don't have the message handy? Open \"My Keys\" → select the proxy, the same link is there",
+          "If nothing opened automatically: Settings → Data and Storage → Proxy Settings",
+          "Turn the toggle on and paste the link from the purchase message",
+          "Done — Telegram will now run through the proxy"
+        ]
+      }
     }
   },
   "keys": {
@@ -330,8 +321,6 @@
     "usage_title": "Usage:",
     "days_until_expiry": "Days until expiry",
     "access_key_title": "Access Key:",
-    "refreshing": "Refreshing key...",
-    "refresh_success": "Key refreshed! Copy the new key and add it to the app:",
     "how_to_connect": "How to connect:",
     "connect_steps": [
       "Download the app",
@@ -347,12 +336,12 @@
       "support_hint": "If you don't receive the key within 30 minutes, please contact support."
     },
     "subscription_title": "Subscription link:",
-    "subscription_hint": "Add this link to Hiddify, Nekobox or FoXray — the app will load VLESS + Hysteria2 automatically.",
+    "subscription_hint": "Add this link to Hiddify, Nekobox or FoXray — the app will load all protocols automatically.",
     "subscription_how_to": "How to connect:",
     "subscription_steps": [
       "Download Hiddify, Nekobox or FoXray",
       "Click \"Add subscription\" and paste the link above",
-      "The app will automatically load VLESS + Hysteria2"
+      "The app will automatically load everything you need"
     ],
     "raw_vless_title": "Individual keys",
     "raw_vless_hint": "Use these for clients without subscription support. Hiddify, Nekobox and FoXray also work with both formats."
@@ -366,28 +355,10 @@
     "unlimited_speed": "Unlimited speed",
     "all_devices": "All devices supported",
     "support": "Technical support",
-    "savings": "Savings",
-    "savings_vs_separate": "Savings: {{amount}} ⭐ vs buying separately",
     "price": "Price",
     "per_month": "/mo",
-    "select_type_title": "Choose connection type",
-    "type_vless_desc": "subscription includes VLESS Reality + Hysteria2 — harder to detect and block",
-    "type_outline_desc": "simple and reliable VPN based on Shadowsocks",
-    "type_both_desc": "VLESS Reality + Hysteria2 + Outline with {{discount}}% discount — maximum reliability",
-    "type_names": {
-      "outline": "Outline VPN",
-      "vless": "VLESS Reality + Hysteria2",
-      "both": "VLESS Reality + Hysteria2 + Outline"
-    },
-    "type_descriptions": {
-      "vless": "Subscription includes VLESS Reality + Hysteria2. One URL — multiple protocols to choose from.",
-      "outline": "Unfortunately, it does not always work; however, it is the easiest to configure.",
-      "both": "VLESS Reality + Hysteria2 + Outline + {{discount}}% discount — switch anytime"
-    },
     "features": {
-      "vless_reality": "VLESS Reality + Hysteria2",
-      "outline_ss": "Outline Shadowsocks",
-      "two_protocols": "VLESS Reality + Hysteria2 + Outline in one plan"
+      "reliable": "Reliable, block-resistant protocol"
     },
     "via_stars": "Payment via Telegram Stars"
   },
@@ -399,17 +370,11 @@
     "via_stars": "Payment via Telegram Stars",
     "invoice_sent": "Invoice sent! Click \"Pay\" to complete the purchase.",
     "success_title": "Payment successful!",
-    "keys_activated": "Keys activated!",
     "key_activated": "Your VPN key is activated!",
-    "vless_key_activated": "Keys activated!",
-    "outline_key_label": "Outline key:",
-    "vless_key_label": "VLESS + Hysteria2:",
-    "connection_key_label": "Connection key:",
-    "add_key_to_app": "Add the key you need to the app.",
+    "subscription_key_label": "Subscription link:",
     "add_key_hiddify": "Add the subscription link to Hiddify, Nekobox or FoXray — the app will load all protocols automatically.",
-    "add_key_outline": "Add the key to the Outline app.",
-    "vless_qr_caption": "📲 QR code for VLESS connection",
-    "outline_qr_caption": "📲 QR code for Outline connection",
+    "qr_caption": "📲 QR code to connect",
+    "maintenance": "🛠 Maintenance in progress. Purchases are temporarily unavailable, please try again shortly.",
     "connect_instructions": "How to connect:",
     "connect_steps": [
       "Download the app",
@@ -426,7 +391,7 @@
     "check_stats": "You can check usage statistics in the \"My Keys\" section",
     "receipt": {
       "title": "Payment receipt",
-      "details": "Детали заказа:",
+      "details": "Order details:",
       "vpn_key": "VPN key:",
       "thanks": "Thank you for your purchase! 🎉"
     }

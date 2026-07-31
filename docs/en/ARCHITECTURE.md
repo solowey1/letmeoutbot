@@ -27,7 +27,7 @@ vpnbot/
 │   ├── services/
 │   │   ├── PaymentService.js       # Payment service
 │   │   ├── KeysService.js          # Key management
-│   │   ├── OutlineService.js       # Outline VPN API
+│   │   ├── XRayService.js          # 3x-ui API (VLESS + Hysteria2)
 │   │   ├── PlanService.js          # Pricing plans
 │   │   ├── NotificationService.js  # Notifications
 │   │   └── I18nService.js          # Internationalization
@@ -72,7 +72,7 @@ vpnbot/
 ### 2. Service Layer (Business Logic)
 - **PaymentService**: Invoice creation, payment processing
 - **KeysService**: VPN key creation, monitoring, management
-- **OutlineService**: Outline VPN API integration
+- **XRayService**: 3x-ui panel integration (VLESS + Hysteria2)
 - **PlanService**: Pricing plan management
 - **NotificationService**: User notifications
 - **I18nService**: Multi-language support
@@ -109,7 +109,7 @@ User pays
   ↓
 PaymentHandlers processes successful payment
   ↓
-KeysService creates VPN key (OutlineService)
+KeysService creates VPN key (XRayService)
   ↓
 Key saved to database
   ↓
@@ -125,7 +125,7 @@ KeysService.checkAllActiveKeys()
   ↓
 For each active key:
   ↓
-OutlineService gets traffic usage
+XRayService gets traffic usage
   ↓
 Compares with limits
   ↓
@@ -137,7 +137,7 @@ Saves to DB (to avoid duplicates)
   ↓
 If limit exceeded:
   ↓
-OutlineService deletes key
+XRayService suspends key
   ↓
 Updates status in DB
 ```
@@ -164,7 +164,10 @@ Updates status in DB
   id: Integer (PK),
   user_id: Integer (FK → users),
   plan_id: String,
-  outline_key_id: Integer,
+  key_type: String (vless),
+  external_key_id: String,
+  external_client_id: String,
+  external_sub_id: String,
   access_url: Text,
   data_limit: BigInt (bytes),
   data_used: BigInt (bytes),
@@ -247,7 +250,7 @@ if (DATABASE_TYPE === 'supabase') {
 
 ### Error Handling
 - Try-catch blocks in all critical places
-- Retry mechanism for Outline API (3 attempts)
+- Retry mechanism for 3x-ui API (5 attempts with backoff)
 - Logging of all errors
 - User notifications about problems
 
@@ -277,9 +280,9 @@ if (DATABASE_TYPE === 'supabase') {
 - Telegram Stars payments
 - Webhook / Long polling
 
-### Outline VPN API
-- Access key creation
-- Usage monitoring
+### 3x-ui API (VLESS + Hysteria2)
+- Access key creation (single subscription per client)
+- Traffic usage monitoring
 - Limit management
 - Key deletion
 
@@ -296,8 +299,11 @@ if (DATABASE_TYPE === 'supabase') {
 TELEGRAM_BOT_TOKEN=xxx
 ADMIN_IDS=123,456
 
-# Outline
-OUTLINE_API_URL=https://...
+# 3x-ui (VLESS + Hysteria2)
+XRAY_PANEL_URL=https://...
+XRAY_API_TOKEN=xxx
+XRAY_INBOUNDS=1,2
+XRAY_SUB_BASE_URL=https://sub.example.com/vpn
 
 # Database
 DATABASE_TYPE=supabase
@@ -345,7 +351,7 @@ LOG_LEVEL=info
 
 ### Alerts
 - Critical errors
-- Outline API issues
+- 3x-ui API issues
 - Limit exceeded
 - Failed payments
 
@@ -371,7 +377,7 @@ LOG_LEVEL=info
 ### Planned
 - [ ] Referral program
 - [ ] Telegram Mini App for statistics
-- [ ] Multiple Outline servers
+- [ ] Multiple 3x-ui nodes
 - [ ] User behavior analytics
 - [ ] A/B price testing
 - [ ] Webhook instead of long polling

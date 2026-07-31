@@ -92,7 +92,7 @@ if [ -f .env ]; then
     # Check required variables
     check_with_msg "TELEGRAM_BOT_TOKEN set" "test -n \"$TELEGRAM_BOT_TOKEN\"" "Set in .env file"
     check_with_msg "ADMIN_IDS set" "test -n \"$ADMIN_IDS\"" "Set in .env file"
-    check_with_msg "OUTLINE_API_URL set" "test -n \"$OUTLINE_API_URL\"" "Set in .env file"
+    check_with_msg "XRAY_PANEL_URL set" "test -n \"$XRAY_PANEL_URL\"" "Set in .env file"
     check_with_msg "DATABASE_TYPE set" "test -n \"$DATABASE_TYPE\"" "Set in .env file"
     
     # Database-specific checks

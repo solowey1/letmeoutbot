@@ -1,0 +1,28 @@
+name: mtproto
+
+# alexbers/mtprotoproxy: многопользовательский MTProto с FakeTLS.
+# Ставится НА НОДУ (83.217.222.151), порт 8443 уже открыт в ufw.
+#
+# Перед первым запуском остановить одиночный mtg, он занимает тот же порт:
+#   systemctl disable --now mtg
+
+services:
+  mtprotoproxy:
+    # :latest — рассмотрите пин на конкретный тег/дигест перед продакшн-запуском,
+    # чтобы обновление образа не поменяло поведение FakeTLS без предупреждения.
+    image: alexbers/mtprotoproxy:latest
+    container_name: mtprotoproxy
+    restart: unless-stopped
+    mem_limit: 256m
+    network_mode: host          # прокси должен видеть реальные адреса клиентов
+    environment:
+      USERS_FILE: /data/users.json
+      MTP_PORT: 8443
+      TLS_DOMAIN: ${TLS_DOMAIN:-www.cloudflare.com}
+      MAX_CONNS_PER_USER: ${MAX_CONNS_PER_USER:-0}
+    volumes:
+      - ./config.py:/app/config.py:ro
+      - ./data:/data
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }

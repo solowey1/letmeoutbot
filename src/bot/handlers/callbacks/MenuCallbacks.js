@@ -84,10 +84,10 @@ class MenuCallbacks {
 		});
 	}
 
-	async handleHowToAddKeyProtocol(ctx, protocol) {
+	async handleHowToAddProxy(ctx) {
 		const t = ctx.i18n.t;
-		const message = MenuMessages.howToAddKeyProtocol(t, protocol);
-		const keyboard = KeyboardUtils.createHowToAddKeyProtocolKeyboard(t, protocol);
+		const message = MenuMessages.howToAddProxy(t);
+		const keyboard = KeyboardUtils.createHowToAddProxyKeyboard(t);
 
 		await ctx.editMessageText(message, {
 			...keyboard,
@@ -97,8 +97,8 @@ class MenuCallbacks {
 
 	async handleVpnApps(ctx) {
 		const t = ctx.i18n.t;
-		const message = MenuMessages.vpnApps(t);
-		const keyboard = KeyboardUtils.createVpnAppsProtocolKeyboard(t);
+		const message = MenuMessages.vlessChooseOs(t);
+		const keyboard = KeyboardUtils.createVlessOsKeyboard(t);
 
 		await ctx.editMessageText(message, {
 			...keyboard,
@@ -107,18 +107,6 @@ class MenuCallbacks {
 	}
 
 	// ── Путь: Помощь → Как добавить ключ → Приложения ──
-
-	async handleHowtoOutlineApps(ctx) {
-		const t = ctx.i18n.t;
-		const message = MenuMessages.outlineApps(t);
-		const keyboard = KeyboardUtils.createHowtoOutlineAppsKeyboard(t);
-
-		await ctx.editMessageText(message, {
-			...keyboard,
-			parse_mode: 'HTML',
-			disable_web_page_preview: true
-		});
-	}
 
 	async handleHowtoVlessChooseOs(ctx) {
 		const t = ctx.i18n.t;
@@ -144,29 +132,6 @@ class MenuCallbacks {
 	}
 
 	// ── Путь: Помощь → Приложения для VPN ──
-
-	async handleOutlineApps(ctx) {
-		const t = ctx.i18n.t;
-		const message = MenuMessages.outlineApps(t);
-		const keyboard = KeyboardUtils.createOutlineAppsKeyboard(t);
-
-		await ctx.editMessageText(message, {
-			...keyboard,
-			parse_mode: 'HTML',
-			disable_web_page_preview: true
-		});
-	}
-
-	async handleVlessChooseOs(ctx) {
-		const t = ctx.i18n.t;
-		const message = MenuMessages.vlessChooseOs(t);
-		const keyboard = KeyboardUtils.createVlessOsKeyboard(t);
-
-		await ctx.editMessageText(message, {
-			...keyboard,
-			parse_mode: 'HTML'
-		});
-	}
 
 	async handleVlessApps(ctx, os) {
 		const t = ctx.i18n.t;
