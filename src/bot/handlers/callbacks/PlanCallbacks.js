@@ -2,6 +2,8 @@ const KeyboardUtils = require('../../../utils/keyboards');
 const PlanService = require('../../../services/PlanService');
 const config = require('../../../config');
 
+const STAR_CUSTOM_EMOJI_ID = '5920433463428650761';
+
 class PlanCallbacks {
 	constructor(database, paymentService, keysService) {
 		this.db = database;
@@ -17,22 +19,63 @@ class PlanCallbacks {
 		const isAdmin = ADMIN_IDS.includes(ctx.from.id);
 		const plans = PlanService.getPlans(isAdmin);
 
-		let message = `<b>${t('plans.choose', { ns: 'message' })}</b>\n\n`;
+		const keyboard = KeyboardUtils.createPlansKeyboard(t, plans);
 
-		plans.forEach(plan => {
-			const formatted = PlanService.formatPlanForDisplay(t, plan);
+		const starEmoji = {
+			type: 'custom_emoji',
+			custom_emoji_id: STAR_CUSTOM_EMOJI_ID,
+			alternative_text: '⭐'
+		};
+
+		const headerCells = [
+			{
+				text: { type: 'bold', text: t('plans.data_volume', { ns: 'message' }) },
+				is_header: true, align: 'left', valign: 'middle'
+			},
+			{
+				text: { type: 'bold', text: `${t('plans.price', { ns: 'message' })}${t('plans.per_month', { ns: 'message' })}` },
+				is_header: true, align: 'right', valign: 'middle'
+			}
+		];
+
+		const planRows = plans.map(plan => {
 			const limit = plan.dataLimitGB > 0
 				? `${plan.dataLimitGB} ${t('common.memory.gb')}`
 				: t('plans.unlimited');
-			message += `${plan.emoji} <b>${limit}</b> — ${formatted.displayPrice}${t('plans.per_month', { ns: 'message' })}\n`;
+			return [
+				{ text: limit, align: 'left', valign: 'middle' },
+				{ text: [starEmoji, ` ${plan.price}`], align: 'right', valign: 'middle' }
+			];
 		});
 
-		const keyboard = KeyboardUtils.createPlansKeyboard(t, plans);
-
-		await ctx.editMessageText(message, {
-			...keyboard,
-			parse_mode: 'HTML'
-		});
+		// Rich Messages (Bot API 10.1): Telegraf 4.x не знает rich_message,
+		// поэтому редактируем через callApi напрямую
+		try {
+			await ctx.telegram.callApi('editMessageText', {
+				chat_id: ctx.chat.id,
+				message_id: ctx.callbackQuery.message.message_id,
+				rich_message: {
+					blocks: [
+						{ type: 'paragraph', text: { type: 'bold', text: t('plans.choose', { ns: 'message' }) } },
+						{ type: 'table', is_bordered: true, is_striped: true, cells: [headerCells, ...planRows] }
+					]
+				},
+				reply_markup: keyboard.reply_markup
+			});
+		} catch (error) {
+			console.error('Rich message failed, falling back to plain text:', error.message);
+			let message = `<b>${t('plans.choose', { ns: 'message' })}</b>\n\n`;
+			plans.forEach(plan => {
+				const limit = plan.dataLimitGB > 0
+					? `${plan.dataLimitGB} ${t('common.memory.gb')}`
+					: t('plans.unlimited');
+				message += `<b>${limit}</b> — ${plan.price}${t('plans.per_month', { ns: 'message' })}\n`;
+			});
+			await ctx.editMessageText(message, {
+				...keyboard,
+				parse_mode: 'HTML'
+			});
+		}
 	}
 
 	// ============== ШАГ 2: детали тарифа ==============

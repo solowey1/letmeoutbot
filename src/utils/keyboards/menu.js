@@ -12,7 +12,7 @@ function createMainMenu(t, isAdmin = false, showGift = false) {
 	];
 
 	if (showGift) {
-		buttons.splice(2, 0, [btn(t, 'gift_info')]);
+		buttons.push([btn(t, 'gift_info')]);
 	}
 
 	if (isAdmin) {

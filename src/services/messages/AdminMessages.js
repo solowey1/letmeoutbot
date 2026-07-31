@@ -1,7 +1,7 @@
 const { PLANS } = require('../../config/constants');
 
 const PLAN_NAME_MAP = Object.values(PLANS).reduce((map, plan) => {
-	map[plan.id] = `${plan.emoji} ${plan.name}`;
+	map[plan.id] = plan.name;
 	return map;
 }, {});
 

@@ -3,11 +3,11 @@
     "buy": {
       "first": "Buy VPN",
       "key": "Buy VPN",
-      "more": "Buy more VPN"
+      "more": "Buy more VPN",
+      "proxy": "Buy Telegram Proxy"
     },
     "gift": "Get Free Trial",
     "claim_gift": "Claim",
-    "buy_proxy": "Buy Telegram Proxy",
     "connect_proxy": "Connect",
     "my_keys": "My Keys",
     "referral": "Referral Program",
