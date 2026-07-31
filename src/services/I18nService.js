@@ -45,7 +45,7 @@ class I18nService {
 
 	/**
      * Определить язык пользователя из Telegram
-     * @param {Object} ctx - Telegraf context
+     * @param {Object} ctx - grammY context
      * @returns {string} - Код языка
      */
 	detectUserLanguage(ctx) {

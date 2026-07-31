@@ -1,4 +1,4 @@
-const { Markup } = require('telegraf');
+const { Markup } = require('../../utils/markup');
 const KeyboardUtils = require('../../utils/keyboards');
 const { MenuMessages, AdminMessages, ReferralMessages } = require('../../services/messages');
 const { ADMIN_IDS } = require('../../config/constants');
@@ -18,7 +18,8 @@ class CommandHandlers {
 		const t = ctx.i18n.t;
 
 		// Проверяем, есть ли реферальный параметр в команде /start
-		const startPayload = ctx.startPayload;
+		// (grammY кладёт аргумент команды в ctx.match)
+		const startPayload = ctx.match;
 		let isNewUser = false;
 		let referrerId = null;
 
@@ -132,7 +133,7 @@ class CommandHandlers {
 
 	// Регистрация обработчиков команд в боте
 	register(bot) {
-		bot.start(async (ctx) => {
+		bot.command('start', async (ctx) => {
 			try {
 				await this.handleStart(ctx);
 			} catch (error) {
@@ -142,7 +143,7 @@ class CommandHandlers {
 			}
 		});
 
-		bot.help(async (ctx) => {
+		bot.command('help', async (ctx) => {
 			try {
 				await this.handleHelp(ctx);
 			} catch (error) {

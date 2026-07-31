@@ -1,4 +1,4 @@
-const { Markup } = require('telegraf');
+const { Markup } = require('../markup');
 const { btn } = require('./common');
 
 function createMainMenu(t, isAdmin = false, showGift = false) {

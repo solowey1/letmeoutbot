@@ -66,11 +66,11 @@ class BroadcastScheduler {
 		console.log(`🔄 Запуск задачи вручную: ${taskName}`);
 
 		switch (taskName) {
-		case 'process_scheduled_broadcasts':
-			await this.broadcastService.processScheduledBroadcasts();
-			break;
-		default:
-			throw new Error(`Неизвестная задача: ${taskName}`);
+			case 'process_scheduled_broadcasts':
+				await this.broadcastService.processScheduledBroadcasts();
+				break;
+			default:
+				throw new Error(`Неизвестная задача: ${taskName}`);
 		}
 
 		console.log(`✅ Задача завершена: ${taskName}`);

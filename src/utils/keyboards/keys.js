@@ -1,4 +1,4 @@
-const { Markup } = require('telegraf');
+const { Markup } = require('../markup');
 const { CALLBACK_ACTIONS } = require('../../config/constants');
 const PlanService = require('../../services/PlanService');
 const { btn } = require('./common');

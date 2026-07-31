@@ -1,6 +1,7 @@
+const { InputFile } = require('grammy');
 const { ADMIN_IDS, CALLBACK_ACTIONS } = require('../../../config/constants');
 const { sendTon } = require('../../../services/TonService');
-const { Markup } = require('telegraf');
+const { Markup } = require('../../../utils/markup');
 const KeyboardUtils = require('../../../utils/keyboards');
 const { btn } = require('../../../utils/keyboards/common');
 const { AdminMessages } = require('../../../services/messages');
@@ -18,7 +19,7 @@ class AdminCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
 			return;
 		}
 
@@ -44,7 +45,7 @@ class AdminCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
 			return;
 		}
 
@@ -86,7 +87,7 @@ class AdminCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
 			return;
 		}
 
@@ -135,7 +136,7 @@ class AdminCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
 			return;
 		}
 
@@ -173,7 +174,7 @@ class AdminCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
 			return;
 		}
 
@@ -211,7 +212,7 @@ class AdminCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
 			return;
 		}
 
@@ -261,12 +262,12 @@ class AdminCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
 			return;
 		}
 
 		try {
-			await ctx.answerCbQuery(t('admin.pending_keys.activating', { ns: 'message' }));
+			await ctx.answerCallbackQuery(t('admin.pending_keys.activating', { ns: 'message' }));
 			const result = await this.keysService.retryActivateKey(keyId);
 
 			// Уведомляем пользователя через Telegram на его языке
@@ -285,15 +286,17 @@ class AdminCallbacks {
 
 						let msg = `<b>${ut('admin.pending_keys.activated_title', { ns: 'message' })}</b>\n\n`;
 						msg += `<b>${label}</b>\n<code>${result.accessUrl}</code>\n\n`;
-						await ctx.telegram.sendMessage(user.telegram_id, msg, { parse_mode: 'HTML' });
+						await ctx.api.sendMessage(user.telegram_id, msg, { parse_mode: 'HTML' });
 
 						if (!isProxy) {
 							try {
 								const { generateQR } = require('../../../utils/qr');
 								const qrBuffer = await generateQR(result.accessUrl);
-								await ctx.telegram.sendPhoto(user.telegram_id, {
-									source: qrBuffer, filename: 'vpn-qr.png'
-								}, { caption: ut('payments.qr_caption', { ns: 'message' }) });
+								await ctx.api.sendPhoto(
+									user.telegram_id,
+									new InputFile(qrBuffer, 'vpn-qr.png'),
+									{ caption: ut('payments.qr_caption', { ns: 'message' }) }
+								);
 							} catch (qrErr) {
 								console.error('⚠️ Не удалось отправить QR-код:', qrErr.message);
 							}
@@ -310,7 +313,7 @@ class AdminCallbacks {
 			await this.handleAdminPendingKeys(ctx);
 		} catch (error) {
 			console.error('❌ Ошибка активации ключа:', error);
-			await ctx.answerCbQuery(t('admin.pending_keys.activate_error', { ns: 'message', error: error.message }), { show_alert: true });
+			await ctx.answerCallbackQuery({ text: t('admin.pending_keys.activate_error', { ns: 'message', error: error.message }), show_alert: true });
 		}
 	}
 
@@ -318,7 +321,7 @@ class AdminCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
 			return;
 		}
 
@@ -343,7 +346,7 @@ class AdminCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
 			return;
 		}
 
@@ -356,7 +359,7 @@ class AdminCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
 			return;
 		}
 
@@ -386,7 +389,7 @@ class AdminCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
 			return;
 		}
 
@@ -426,14 +429,14 @@ class AdminCallbacks {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(AdminMessages.accessDenied(t));
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
 			return;
 		}
 
 		try {
 			const withdrawal = await this.db.getWithdrawal(withdrawalId);
 			if (!withdrawal) {
-				await ctx.answerCbQuery(t('admin.withdrawals.not_found', { ns: 'message' }));
+				await ctx.answerCallbackQuery(t('admin.withdrawals.not_found', { ns: 'message' }));
 				return;
 			}
 
@@ -467,18 +470,18 @@ class AdminCallbacks {
 	async handleApproveWithdrawal(ctx, withdrawalId) {
 		const t = ctx.i18n.t;
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(t('admin.withdrawals.no_access', { ns: 'message' }));
+			await ctx.answerCallbackQuery(t('admin.withdrawals.no_access', { ns: 'message' }));
 			return;
 		}
 
 		try {
 			const withdrawal = await this.db.getWithdrawal(withdrawalId);
 			if (!withdrawal) {
-				await ctx.answerCbQuery(t('admin.withdrawals.not_found', { ns: 'message' }));
+				await ctx.answerCallbackQuery(t('admin.withdrawals.not_found', { ns: 'message' }));
 				return;
 			}
 			if (withdrawal.status !== 'pending') {
-				await ctx.answerCbQuery(t('admin.withdrawals.already_processed', { ns: 'message' }));
+				await ctx.answerCallbackQuery(t('admin.withdrawals.already_processed', { ns: 'message' }));
 				return;
 			}
 
@@ -511,7 +514,7 @@ class AdminCallbacks {
 					await ctx.editMessageText(adminNote, { parse_mode: 'HTML' });
 
 					try {
-						await ctx.telegram.sendMessage(
+						await ctx.api.sendMessage(
 							telegramId,
 							t('admin.withdrawals.user_approved_ton', { ns: 'message', amount: tonAmount, txHash }),
 							{ parse_mode: 'HTML' }
@@ -541,25 +544,25 @@ class AdminCallbacks {
 			await ctx.editMessageText(prompt, { ...manualKeyboard, parse_mode: 'HTML' });
 		} catch (error) {
 			console.error('Ошибка подтверждения выплаты:', error);
-			await ctx.answerCbQuery(t('admin.withdrawals.processing_error', { ns: 'message' }));
+			await ctx.answerCallbackQuery(t('admin.withdrawals.processing_error', { ns: 'message' }));
 		}
 	}
 
 	async handleManualPaid(ctx, withdrawalId) {
 		const t = ctx.i18n.t;
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(t('admin.withdrawals.no_access', { ns: 'message' }));
+			await ctx.answerCallbackQuery(t('admin.withdrawals.no_access', { ns: 'message' }));
 			return;
 		}
 
 		try {
 			const withdrawal = await this.db.getWithdrawal(withdrawalId);
 			if (!withdrawal) {
-				await ctx.answerCbQuery(t('admin.withdrawals.not_found', { ns: 'message' }));
+				await ctx.answerCallbackQuery(t('admin.withdrawals.not_found', { ns: 'message' }));
 				return;
 			}
 			if (withdrawal.status !== 'pending') {
-				await ctx.answerCbQuery(t('admin.withdrawals.already_processed', { ns: 'message' }));
+				await ctx.answerCallbackQuery(t('admin.withdrawals.already_processed', { ns: 'message' }));
 				return;
 			}
 
@@ -577,7 +580,7 @@ class AdminCallbacks {
 			await ctx.editMessageText(adminNote, { parse_mode: 'HTML' });
 
 			try {
-				await ctx.telegram.sendMessage(
+				await ctx.api.sendMessage(
 					telegramId,
 					t('admin.withdrawals.user_approved_manual_done', { ns: 'message', stars: withdrawal.amount }),
 					{ parse_mode: 'HTML' }
@@ -585,25 +588,25 @@ class AdminCallbacks {
 			} catch (_) {}
 		} catch (error) {
 			console.error('Ошибка подтверждения ручной выплаты:', error);
-			await ctx.answerCbQuery(t('admin.withdrawals.processing_error', { ns: 'message' }));
+			await ctx.answerCallbackQuery(t('admin.withdrawals.processing_error', { ns: 'message' }));
 		}
 	}
 
 	async handleManualUnpaid(ctx, withdrawalId) {
 		const t = ctx.i18n.t;
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(t('admin.withdrawals.no_access', { ns: 'message' }));
+			await ctx.answerCallbackQuery(t('admin.withdrawals.no_access', { ns: 'message' }));
 			return;
 		}
 
 		try {
 			const withdrawal = await this.db.getWithdrawal(withdrawalId);
 			if (!withdrawal) {
-				await ctx.answerCbQuery(t('admin.withdrawals.not_found', { ns: 'message' }));
+				await ctx.answerCallbackQuery(t('admin.withdrawals.not_found', { ns: 'message' }));
 				return;
 			}
 			if (withdrawal.status !== 'pending') {
-				await ctx.answerCbQuery(t('admin.withdrawals.already_processed', { ns: 'message' }));
+				await ctx.answerCallbackQuery(t('admin.withdrawals.already_processed', { ns: 'message' }));
 				return;
 			}
 
@@ -621,32 +624,32 @@ class AdminCallbacks {
 			await ctx.editMessageText(adminNote, { parse_mode: 'HTML' });
 
 			try {
-				await ctx.telegram.sendMessage(
+				await ctx.api.sendMessage(
 					telegramId,
 					t('admin.withdrawals.user_rejected', { ns: 'message', stars: withdrawal.amount })
 				);
 			} catch (_) {}
 		} catch (error) {
 			console.error('Ошибка отклонения ручной выплаты:', error);
-			await ctx.answerCbQuery(t('admin.withdrawals.processing_error', { ns: 'message' }));
+			await ctx.answerCallbackQuery(t('admin.withdrawals.processing_error', { ns: 'message' }));
 		}
 	}
 
 	async handleRejectWithdrawal(ctx, withdrawalId) {
 		const t = ctx.i18n.t;
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCbQuery(t('admin.withdrawals.no_access', { ns: 'message' }));
+			await ctx.answerCallbackQuery(t('admin.withdrawals.no_access', { ns: 'message' }));
 			return;
 		}
 
 		try {
 			const withdrawal = await this.db.getWithdrawal(withdrawalId);
 			if (!withdrawal) {
-				await ctx.answerCbQuery(t('admin.withdrawals.not_found', { ns: 'message' }));
+				await ctx.answerCallbackQuery(t('admin.withdrawals.not_found', { ns: 'message' }));
 				return;
 			}
 			if (withdrawal.status !== 'pending') {
-				await ctx.answerCbQuery(t('admin.withdrawals.already_processed', { ns: 'message' }));
+				await ctx.answerCallbackQuery(t('admin.withdrawals.already_processed', { ns: 'message' }));
 				return;
 			}
 
@@ -660,14 +663,14 @@ class AdminCallbacks {
 			await ctx.editMessageText(adminNote, { parse_mode: 'HTML' });
 
 			try {
-				await ctx.telegram.sendMessage(
+				await ctx.api.sendMessage(
 					telegramId,
 					t('admin.withdrawals.user_rejected', { ns: 'message', stars: amount })
 				);
 			} catch (_) {}
 		} catch (error) {
 			console.error('Ошибка отклонения выплаты:', error);
-			await ctx.answerCbQuery(t('admin.withdrawals.processing_error', { ns: 'message' }));
+			await ctx.answerCallbackQuery(t('admin.withdrawals.processing_error', { ns: 'message' }));
 		}
 	}
 
@@ -676,7 +679,7 @@ class AdminCallbacks {
 			return this.broadcastCallbacks.handleBroadcastMenu(ctx);
 		}
 
-		await ctx.answerCbQuery('Broadcast functionality not available');
+		await ctx.answerCallbackQuery('Broadcast functionality not available');
 	}
 }
 

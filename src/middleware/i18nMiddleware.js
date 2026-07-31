@@ -1,5 +1,5 @@
 /**
- * Middleware для интеграции i18n в Telegraf context
+ * Middleware для интеграции i18n в grammY context
  */
 class I18nMiddleware {
 	constructor(i18nService, database) {
@@ -8,7 +8,7 @@ class I18nMiddleware {
 	}
 
 	/**
-     * Middleware функция для Telegraf
+     * Middleware функция для grammY
      */
 	middleware() {
 		return async (ctx, next) => {

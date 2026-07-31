@@ -48,10 +48,9 @@ class PlanCallbacks {
 			];
 		});
 
-		// Rich Messages (Bot API 10.1): Telegraf 4.x не знает rich_message,
-		// поэтому редактируем через callApi напрямую
+		// Rich Messages (Bot API 10.1): rich_message вместо text
 		try {
-			await ctx.telegram.callApi('editMessageText', {
+			await ctx.api.raw.editMessageText({
 				chat_id: ctx.chat.id,
 				message_id: ctx.callbackQuery.message.message_id,
 				rich_message: {
@@ -175,19 +174,13 @@ class PlanCallbacks {
 
 			const { paymentId, invoice } = await this.paymentService.createInvoice(user.id, localizedPlan);
 
-			const invoiceMessage = await ctx.replyWithInvoice({
-				title: invoice.title,
-				description: invoice.description,
-				payload: invoice.payload,
-				provider_token: invoice.provider_token,
-				currency: invoice.currency,
-				prices: invoice.prices,
-				need_name: false,
-				need_phone_number: false,
-				need_email: false,
-				need_shipping_address: false,
-				is_flexible: false
-			});
+			const invoiceMessage = await ctx.replyWithInvoice(
+				invoice.title,
+				invoice.description,
+				invoice.payload,
+				invoice.currency,
+				invoice.prices
+			);
 
 			await this.paymentService.saveInvoiceMessageId(paymentId, invoiceMessage.message_id);
 

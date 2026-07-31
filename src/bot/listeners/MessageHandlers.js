@@ -1,4 +1,4 @@
-const { Markup } = require('telegraf');
+const { Markup } = require('../../utils/markup');
 const KeyboardUtils = require('../../utils/keyboards');
 const { MenuMessages } = require('../../services/messages');
 const { ADMIN_IDS, CALLBACK_ACTIONS } = require('../../config/constants');
@@ -87,14 +87,14 @@ class MessageHandlers {
 
 	async _getUsersForAudience(audience) {
 		switch (audience) {
-		case 'active':
-			return this.db.getUsersWithActiveKeys();
-		case 'buyers':
-			return this.db.getBuyerUsers();
-		case 'non_buyers':
-			return this.db.getNonBuyerUsers();
-		default:
-			return this.db.getAllUsers(10000);
+			case 'active':
+				return this.db.getUsersWithActiveKeys();
+			case 'buyers':
+				return this.db.getBuyerUsers();
+			case 'non_buyers':
+				return this.db.getNonBuyerUsers();
+			default:
+				return this.db.getAllUsers(10000);
 		}
 	}
 
@@ -125,7 +125,7 @@ class MessageHandlers {
 
 		for (const user of users) {
 			try {
-				await this.bot.telegram.copyMessage(user.telegram_id, fromChatId, messageId);
+				await this.bot.api.copyMessage(user.telegram_id, fromChatId, messageId);
 				sent++;
 			} catch {
 				errors++;
@@ -136,7 +136,7 @@ class MessageHandlers {
 
 		const result = t('admin.broadcast.done', { ns: 'message', sent, errors });
 		try {
-			await this.bot.telegram.editMessageText(ctx.chat.id, statusMsg.message_id, undefined, result, { parse_mode: 'HTML' });
+			await this.bot.api.editMessageText(ctx.chat.id, statusMsg.message_id, result, { parse_mode: 'HTML' });
 		} catch {
 			await ctx.reply(result, { parse_mode: 'HTML' });
 		}
