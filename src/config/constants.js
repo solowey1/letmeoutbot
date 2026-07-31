@@ -19,7 +19,6 @@ const PLANS = {
 		dataLimit: 100 * 1024 * 1024,
 		duration: 1,
 		price: 1,
-		emoji: '🐌',
 		hidden: true
 	},
 
@@ -34,7 +33,6 @@ const PLANS = {
 		dataLimit: 10 * 1024 * 1024 * 1024,
 		duration: 7,
 		price: 0,
-		emoji: '🎁',
 		hidden: true
 	},
 	GIFT_VLESS_500MB: {
@@ -45,7 +43,6 @@ const PLANS = {
 		dataLimit: 500 * 1024 * 1024,
 		duration: 2,
 		price: 0,
-		emoji: '🎁',
 		hidden: true
 	},
 
@@ -60,7 +57,6 @@ const PLANS = {
 		dataLimit: 2 * 1024 * 1024 * 1024,
 		duration: 30,
 		price: 20,                 // ~$0.26/мес
-		emoji: '🌱'
 	},
 	VLESS_10GB: {
 		id: 'vless_10gb',
@@ -70,7 +66,6 @@ const PLANS = {
 		dataLimit: 10 * 1024 * 1024 * 1024,
 		duration: 30,
 		price: 90,                 // ~$1.17/мес
-		emoji: '⚡'
 	},
 	VLESS_50GB: {
 		id: 'vless_50gb',
@@ -80,7 +75,6 @@ const PLANS = {
 		dataLimit: 50 * 1024 * 1024 * 1024,
 		duration: 30,
 		price: 250,                // ~$3.3/мес
-		emoji: '🚀'
 	},
 	VLESS_100GB: {
 		id: 'vless_100gb',
@@ -90,7 +84,6 @@ const PLANS = {
 		dataLimit: 100 * 1024 * 1024 * 1024,
 		duration: 30,
 		price: 400,                // ~$5.2/мес
-		emoji: '🛸'
 	},
 	VLESS_UNLIM: {
 		id: 'vless_unlim',
@@ -100,7 +93,6 @@ const PLANS = {
 		dataLimit: 0,
 		duration: 30,
 		price: 600,                // ~$7.8/мес
-		emoji: '🌌'
 	},
 
 	// ─────────────────────────────────────────
@@ -114,7 +106,6 @@ const PLANS = {
 		dataLimit: 0,
 		duration: 7,
 		price: 12,
-		emoji: '📡'
 	},
 	PROXY_1MONTH: {
 		id: 'proxy_1month',
@@ -124,7 +115,6 @@ const PLANS = {
 		dataLimit: 0,
 		duration: 30,
 		price: 40,
-		emoji: '📡'
 	},
 	PROXY_3MONTHS: {
 		id: 'proxy_3months',
@@ -134,7 +124,6 @@ const PLANS = {
 		dataLimit: 0,
 		duration: 90,
 		price: 150,
-		emoji: '📡'
 	}
 };
 

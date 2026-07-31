@@ -6,7 +6,7 @@ function createPlansKeyboard(t, plans) {
 	const buttons = plans.map(plan => {
 		const limit = plan.dataLimitGB > 0 ? `${plan.dataLimitGB} ${t('common.memory.gb')}` : t('plans.unlimited');
 		const button = Markup.button.callback(
-			`${plan.price} — ${plan.emoji} ${limit}`,
+			`${plan.price} — ${limit}`,
 			`${CALLBACK_ACTIONS.KEYS.CHECKOUT}_${plan.id}`
 		);
 		button.icon_custom_emoji_id = '5920433463428650761';

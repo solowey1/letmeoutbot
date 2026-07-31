@@ -7,10 +7,10 @@ function createProxyPlansKeyboard(t, plans) {
 	const buttons = plans.map(plan => {
 		const formatted = PlanService.formatPlanForDisplay(t, plan);
 		const button = Markup.button.callback(
-			`${formatted.displayPrice} — ${formatted.displayDuration}`,
+			`${plan.price} — ${formatted.displayDuration}`,
 			`${CALLBACK_ACTIONS.PAYMENT.CREATE_INVOICE}_${plan.id}`
 		);
-		button.icon_custom_emoji_id = '6028338546736107668';
+		button.icon_custom_emoji_id = '5920433463428650761';
 		return [button];
 	});
 

@@ -126,8 +126,8 @@ class PlanService {
 
 		// У прокси нет объёма данных — в списках показываем срок, а не «Безлимит»
 		const displayName = plan.type === 'mtproto'
-			? `${plan.emoji} ${durationFormatted}`
-			: `${plan.emoji} ${dataLimitFormatted}`;
+			? durationFormatted
+			: dataLimitFormatted;
 
 		return {
 			...plan,
