@@ -278,20 +278,25 @@ class AdminCallbacks {
 						ctx.i18n.locale = user.language || 'ru';
 						const ut = ctx.i18n.t;
 
-						const label = ut('admin.pending_keys.vless_label', { ns: 'message' });
+						const isProxy = result.key.key_type === 'mtproto';
+						const label = isProxy
+							? ut('proxy.link_label', { ns: 'message' })
+							: ut('admin.pending_keys.vless_label', { ns: 'message' });
 
 						let msg = `<b>${ut('admin.pending_keys.activated_title', { ns: 'message' })}</b>\n\n`;
 						msg += `<b>${label}</b>\n<code>${result.accessUrl}</code>\n\n`;
 						await ctx.telegram.sendMessage(user.telegram_id, msg, { parse_mode: 'HTML' });
 
-						try {
-							const { generateQR } = require('../../../utils/qr');
-							const qrBuffer = await generateQR(result.accessUrl);
-							await ctx.telegram.sendPhoto(user.telegram_id, {
-								source: qrBuffer, filename: 'vpn-qr.png'
-							}, { caption: ut('payments.qr_caption', { ns: 'message' }) });
-						} catch (qrErr) {
-							console.error('⚠️ Не удалось отправить QR-код:', qrErr.message);
+						if (!isProxy) {
+							try {
+								const { generateQR } = require('../../../utils/qr');
+								const qrBuffer = await generateQR(result.accessUrl);
+								await ctx.telegram.sendPhoto(user.telegram_id, {
+									source: qrBuffer, filename: 'vpn-qr.png'
+								}, { caption: ut('payments.qr_caption', { ns: 'message' }) });
+							} catch (qrErr) {
+								console.error('⚠️ Не удалось отправить QR-код:', qrErr.message);
+							}
 						}
 
 						ctx.i18n.locale = savedLocale;

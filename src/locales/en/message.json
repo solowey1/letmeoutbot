@@ -292,6 +292,24 @@
       "If the app supports QR — you can scan instead of pasting"
     ]
   },
+  "proxy": {
+    "intro": "📡 <b>MTProto Proxy for Telegram</b>\n\nMTProto is Telegram's own proxy protocol. Unlike a VPN it wraps only Telegram's own traffic, not your whole device — so banks and marketplaces that block users with an active VPN never see the proxy, and everything else keeps working as usual.\n\nChoose a duration:",
+    "success": "Proxy activated!",
+    "link_label": "Proxy link:",
+    "how_to_add": {
+      "short": "💡 You usually won't need this — tap \"Connect\" above and Telegram will offer to enable the proxy right away. If the button didn't work: Settings → Data and Storage → Proxy Settings → paste the link above.",
+      "full": {
+        "title": "📡 How to add a proxy",
+        "steps": [
+          "Tap \"Connect\" in the purchase message — Telegram opens straight to the add-proxy screen",
+          "Don't have the message handy? Open \"My Keys\" → select the proxy, the same link is there",
+          "If nothing opened automatically: Settings → Data and Storage → Proxy Settings",
+          "Turn the toggle on and paste the link from the purchase message",
+          "Done — Telegram will now run through the proxy"
+        ]
+      }
+    }
+  },
   "keys": {
     "no_active": "You don't have any active keys yet.\n\nChoose a plan to purchase VPN access.",
     "active_list": "Your active keys:",

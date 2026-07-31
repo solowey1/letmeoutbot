@@ -3,9 +3,10 @@ const PlanService = require('./PlanService');
 const moment = require('moment');
 
 class KeysService {
-	constructor(database, xrayService = null) {
+	constructor(database, xrayService = null, mtprotoService = null) {
 		this.db = database;
 		this.xrayService = xrayService;
+		this.mtprotoService = mtprotoService;
 		this.sendNotificationToUser = null; // устанавливается извне
 	}
 
@@ -22,7 +23,7 @@ class KeysService {
 
 		const expiresAt = PlanService.calculateExpiryDate(plan);
 		const keyId = await this.db.createKey(userId, planId, plan.dataLimit, expiresAt);
-		await this.db.updateKey(keyId, { key_type: KEY_TYPE.VLESS });
+		await this.db.updateKey(keyId, { key_type: plan.type });
 		await this.db.updatePayment(paymentId, { key_id: keyId });
 
 		let lastError;
@@ -46,17 +47,39 @@ class KeysService {
 	}
 
 	/**
-	 * Активировать один ключ на VPN-сервере (VLESS + Hysteria2 через подписку).
+	 * Активировать один ключ на сервере — VLESS + Hysteria2 через подписку,
+	 * либо MTProto-прокси, в зависимости от plan.type.
 	 * @param {number} keyId - ID записи в БД
 	 * @param {object} plan - объект плана
 	 * @param {number} userTID - Telegram ID пользователя
 	 * @param {Date} expiresAt - дата истечения
 	 */
 	async activateKeyOnVpnServer(keyId, plan, userTID, expiresAt) {
+		const clientId = `LetMeOut_${keyId}_${plan.id}`;
+
+		if (plan.type === KEY_TYPE.MTPROTO) {
+			if (!this.mtprotoService) throw new Error('MTProtoService не инициализирован');
+
+			const proxyUser = await this.mtprotoService.createUser(clientId);
+
+			await this.db.updateKey(keyId, {
+				external_key_id: proxyUser.secret,
+				external_client_id: clientId,
+				access_url: proxyUser.accessUrl,
+				key_type: KEY_TYPE.MTPROTO,
+				status: KEY_STATUS.ACTIVE
+			});
+
+			return {
+				keyId,
+				accessUrl: proxyUser.accessUrl,
+				key: await this.db.getKey(keyId)
+			};
+		}
+
 		if (!this.xrayService) throw new Error('XRayService не инициализирован');
 
 		const expiryTimeMs = expiresAt.getTime();
-		const clientId = `LetMeOut_${keyId}_${plan.id}`;
 		const totalGB = plan.dataLimitGB || 0;
 
 		const vlessKey = await this.xrayService.createRealityClient(clientId, totalGB, expiryTimeMs, userTID);
@@ -162,7 +185,8 @@ class KeysService {
 		let key = await this.db.getKey(keyId);
 		if (!key) throw new Error('Ключ не найден');
 
-		if (key.status === KEY_STATUS.ACTIVE && key.key_type && key.key_type !== KEY_TYPE.VLESS) {
+		const isKnownType = key.key_type === KEY_TYPE.VLESS || key.key_type === KEY_TYPE.MTPROTO;
+		if (key.status === KEY_STATUS.ACTIVE && key.key_type && !isKnownType) {
 			key = await this.reissueLegacyKey(key);
 		}
 
@@ -287,6 +311,12 @@ class KeysService {
 				const dataLimitGB = key.data_limit > 0 ? key.data_limit / (1024 * 1024 * 1024) : 0;
 				const expiryTimeMs = new Date(key.expires_at).getTime();
 				await this.xrayService.suspendClient(key.external_key_id, key.external_client_id, dataLimitGB, expiryTimeMs);
+			}
+
+			if (key.key_type === KEY_TYPE.MTPROTO && key.external_client_id && this.mtprotoService) {
+				// У прокси нет мягкой приостановки — секрет удаляется безвозвратно,
+				// при повторной покупке будет выдан новый.
+				await this.mtprotoService.deleteUser(key.external_client_id);
 			}
 
 			await this.db.updateKey(keyId, { status: KEY_STATUS.SUSPENDED });

@@ -5,8 +5,10 @@
       "key": "Buy VPN",
       "more": "Buy more VPN"
     },
-    "gift": "🎁 Get Free Trial",
+    "gift": "Get Free Trial",
     "claim_gift": "Claim",
+    "buy_proxy": "Buy Telegram Proxy",
+    "connect_proxy": "Connect",
     "my_keys": "My Keys",
     "referral": "Referral Program",
     "admin_panel": "Admin Panel",
@@ -15,6 +17,7 @@
     "stats": "Statistics",
     "vpn_apps": "📱 VPN Apps",
     "how_to_add_key": "How to add a key?",
+    "how_to_add_proxy": "How to add a proxy?",
     "support": "Support",
     "contact_support": "Contact support",
     "pay": "Pay",
@@ -101,6 +104,11 @@
         "some": "days",
         "many": "days"
       },
+      "week": {
+        "one": "week",
+        "some": "weeks",
+        "many": "weeks"
+      },
       "month": {
         "one": "month",
         "some": "months",
@@ -147,6 +155,18 @@
     "vless_unlim": {
       "description": "No traffic limits",
       "invoice": "VPN key — Unlimited for 1 month"
+    },
+    "proxy_1week": {
+      "description": "Try the proxy for a week",
+      "invoice": "MTProto proxy for Telegram — 1 week"
+    },
+    "proxy_1month": {
+      "description": "The best fit for a month",
+      "invoice": "MTProto proxy for Telegram — 1 month"
+    },
+    "proxy_3months": {
+      "description": "Better value for 3 months",
+      "invoice": "MTProto proxy for Telegram — 3 months"
     }
   },
   "statuses": {

@@ -4,11 +4,24 @@ const moment = require('moment');
 class PlanService {
 
 	/**
-	 * Получить все видимые платные планы (единая тарифная сетка)
+	 * Получить все видимые платные VPN-планы (единая тарифная сетка)
 	 * @param {boolean} includeHidden - включать тестовые/подарочные планы
 	 */
 	static getPlans(includeHidden = false) {
 		return Object.values(PLANS).filter(p =>
+			p.type === 'vless' &&
+			p.price > 0 &&
+			(includeHidden || !p.hidden)
+		);
+	}
+
+	/**
+	 * Получить все видимые платные тарифы на MTProto-прокси
+	 * @param {boolean} includeHidden - включать тестовые/подарочные планы
+	 */
+	static getProxyPlans(includeHidden = false) {
+		return Object.values(PLANS).filter(p =>
+			p.type === 'mtproto' &&
 			p.price > 0 &&
 			(includeHidden || !p.hidden)
 		);
@@ -62,6 +75,13 @@ class PlanService {
 				t('common.periods.month.some'),
 				t('common.periods.month.many')
 			)}`;
+		} else if (days >= 7 && days % 7 === 0) {
+			const weeks = days / 7;
+			return `${weeks} ${this.getPlural(weeks,
+				t('common.periods.week.one'),
+				t('common.periods.week.some'),
+				t('common.periods.week.many')
+			)}`;
 		}
 		return `${days} ${this.getPlural(days,
 			t('common.periods.day.one'),
@@ -104,11 +124,16 @@ class PlanService {
 			invoice = `${plan.name} — ${dataLimitFormatted} / ${durationFormatted}`;
 		}
 
+		// У прокси нет объёма данных — в списках показываем срок, а не «Безлимит»
+		const displayName = plan.type === 'mtproto'
+			? `${plan.emoji} ${durationFormatted}`
+			: `${plan.emoji} ${dataLimitFormatted}`;
+
 		return {
 			...plan,
 			description,
 			invoice,
-			displayName: `${plan.emoji} ${dataLimitFormatted}`,
+			displayName,
 			displayDescription: `${dataLimitFormatted} / ${durationFormatted}`,
 			displayDataLimit: dataLimitFormatted,
 			displayDuration: durationFormatted,

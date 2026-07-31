@@ -9,6 +9,7 @@ const LanguageCallbacks = require('../handlers/callbacks/LanguageCallbacks');
 const AdminCallbacks = require('../handlers/callbacks/AdminCallbacks');
 const ReferralCallbacks = require('../handlers/callbacks/ReferralCallbacks');
 const GiftCallbacks = require('../handlers/callbacks/GiftCallbacks');
+const ProxyCallbacks = require('../handlers/callbacks/ProxyCallbacks');
 
 class CallbackHandler {
 	constructor(database, paymentService, keysService, bot, broadcastCallbacks = null) {
@@ -26,6 +27,7 @@ class CallbackHandler {
 		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService, broadcastCallbacks);
 		this.referralCallbacks = new ReferralCallbacks(database, bot);
 		this.giftCallbacks = new GiftCallbacks(database, keysService);
+		this.proxyCallbacks = new ProxyCallbacks(database, paymentService, keysService);
 	}
 
 	async handleCallback(ctx) {
@@ -93,6 +95,8 @@ class CallbackHandler {
 				await this.menuCallbacks.handleHowtoVlessApps(ctx, 'ios');
 			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOWTO_VLESS_APPS_ANDROID) {
 				await this.menuCallbacks.handleHowtoVlessApps(ctx, 'android');
+			} else if (callbackData === CALLBACK_ACTIONS.BASIC.HOW_TO_ADD_PROXY) {
+				await this.menuCallbacks.handleHowToAddProxy(ctx);
 			// ── Приложения для VPN ──
 			} else if (callbackData === CALLBACK_ACTIONS.BASIC.VPN_APPS) {
 				await this.menuCallbacks.handleVpnApps(ctx);
@@ -180,6 +184,8 @@ class CallbackHandler {
 				await this.giftCallbacks.handleGiftClaim(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.KEYS.BUY) {
 				await this.planCallbacks.handleShowPlans(ctx);
+			} else if (callbackData === CALLBACK_ACTIONS.PROXY.MENU) {
+				await this.proxyCallbacks.handleProxyMenu(ctx);
 			} else {
 				// Неизвестный callback
 				await ctx.editMessageText(t('generic.unknown_command', { ns: 'error' }), KeyboardUtils.createBackToMenuKeyboard(t));

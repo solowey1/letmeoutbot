@@ -119,7 +119,11 @@ class KeysCallbacks {
 			}
 
 			if (key.access_url) {
-				if (key.key_type === 'vless') {
+				if (key.key_type === 'mtproto') {
+					message += `🔗 <b>${t('proxy.link_label', { ns: 'message' })}</b>\n`;
+					message += `<code>${key.access_url}</code>\n\n`;
+					message += t('proxy.how_to_add.short', { ns: 'message' });
+				} else if (key.key_type === 'vless') {
 					if (key.access_url.startsWith('http')) {
 						message += `🔗 <b>${t('keys.subscription_title', { ns: 'message' })}</b>\n`;
 						message += `<code>${key.access_url}</code>\n\n`;
@@ -143,7 +147,7 @@ class KeysCallbacks {
 				}
 			}
 
-			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId);
+			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId, key.key_type);
 
 			await ctx.editMessageText(message, {
 				...keyboard,

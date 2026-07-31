@@ -31,11 +31,14 @@ function createKeysKeyboard(t, keys) {
 	return Markup.inlineKeyboard(buttons);
 }
 
-function createKeyDetailsKeyboard(t, keyId) {
+function createKeyDetailsKeyboard(t, keyId, keyType) {
 	const rows = [
-		[btn(t, 'stats', `${CALLBACK_ACTIONS.KEYS.STATS}_${keyId}`)],
-		[btn(t, 'raw_vless_key', `${CALLBACK_ACTIONS.KEYS.RAW_VLESS}_${keyId}`)]
+		[btn(t, 'stats', `${CALLBACK_ACTIONS.KEYS.STATS}_${keyId}`)]
 	];
+
+	if (keyType !== 'mtproto') {
+		rows.push([btn(t, 'raw_vless_key', `${CALLBACK_ACTIONS.KEYS.RAW_VLESS}_${keyId}`)]);
+	}
 
 	rows.push([
 		btn(t, 'back', CALLBACK_ACTIONS.KEYS.MENU),

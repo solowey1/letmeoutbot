@@ -5,8 +5,10 @@
       "key": "Купить VPN",
       "more": "Купить ещё VPN"
     },
-    "gift": "🎁 Получить подарок",
+    "gift": "Получить подарок",
     "claim_gift": "Получить",
+    "buy_proxy": "Купить Proxy для Telegram",
+    "connect_proxy": "Подключить",
     "my_keys": "Мои ключи",
     "referral": "Реферальная программа",
     "admin_panel": "Админка",
@@ -15,6 +17,7 @@
     "stats": "Статистика",
     "vpn_apps": "Приложения для VPN",
     "how_to_add_key": "Как добавить ключ?",
+    "how_to_add_proxy": "Как добавить прокси?",
     "support": "Поддержка",
     "contact_support": "Написать в поддержку",
     "pay": "Оплатить",
@@ -101,6 +104,11 @@
         "some": "дня",
         "many": "дней"
       },
+      "week": {
+        "one": "неделя",
+        "some": "недели",
+        "many": "недель"
+      },
       "month": {
         "one": "месяц",
         "some": "месяца",
@@ -147,6 +155,18 @@
     "vless_unlim": {
       "description": "Без ограничений по трафику",
       "invoice": "Ключ VPN — Безлимит на 1 месяц"
+    },
+    "proxy_1week": {
+      "description": "Попробовать прокси на неделю",
+      "invoice": "MTProto-прокси для Telegram — 1 неделя"
+    },
+    "proxy_1month": {
+      "description": "Оптимальный вариант на месяц",
+      "invoice": "MTProto-прокси для Telegram — 1 месяц"
+    },
+    "proxy_3months": {
+      "description": "Выгоднее на 3 месяца",
+      "invoice": "MTProto-прокси для Telegram — 3 месяца"
     }
   },
   "statuses": {

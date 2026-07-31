@@ -52,6 +52,22 @@ class MenuMessages {
 	}
 
 	/**
+	 * Как добавить прокси — инструкция
+	 */
+	static howToAddProxy(t) {
+		const steps = t('proxy.how_to_add.full.steps', { ns: 'message' });
+		const stepsList = Array.isArray(steps)
+			? steps.map((item, i) => `${i + 1}. ${item}`)
+			: [`1. ${steps}`];
+
+		return [
+			`<b>${t('proxy.how_to_add.full.title', { ns: 'message' })}</b>`,
+			'',
+			...stepsList
+		].join('\n');
+	}
+
+	/**
 	 * VLESS — выбор ОС
 	 */
 	static vlessChooseOs(t) {

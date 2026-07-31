@@ -43,6 +43,11 @@ const config = {
 		inboundIds: (process.env.XRAY_INBOUNDS || '1').split(',').map(s => parseInt(s.trim())).filter(Boolean)
 	},
 
+	mtproto: {
+		apiUrl: process.env.MTPROTO_API_URL || '',
+		apiToken: process.env.MTPROTO_API_TOKEN || ''
+	},
+
 	app: {
 		environment: process.env.NODE_ENV || 'development',
 		logLevel: process.env.LOG_LEVEL || 'info'

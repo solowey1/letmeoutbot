@@ -2,6 +2,7 @@ const KeyboardUtils = require('../../utils/keyboards');
 const { KeyMessages } = require('../../services/messages');
 const PlanService = require('../../services/PlanService');
 const ReferralService = require('../../services/ReferralService');
+const MTProtoService = require('../../services/MTProtoService');
 const config = require('../../config');
 
 class PaymentHandlers {
@@ -169,6 +170,11 @@ class PaymentHandlers {
 
 	async sendAccessKeyMessage(ctx, result) {
 		const t = ctx.i18n?.t || ((key) => key);
+
+		if (result.key?.key_type === 'mtproto') {
+			return this.sendProxyAccessMessage(ctx, result);
+		}
+
 		const keyboard = KeyboardUtils.createAppsDownloadKeyboard(t);
 		const { generateQR } = require('../../utils/qr');
 
@@ -192,6 +198,23 @@ class PaymentHandlers {
 		} catch (qrError) {
 			console.error('⚠️ Не удалось отправить QR-код:', qrError.message);
 		}
+	}
+
+	async sendProxyAccessMessage(ctx, result) {
+		const t = ctx.i18n?.t || ((key) => key);
+		const tgLink = MTProtoService.toTgLink(result.accessUrl);
+		const keyboard = KeyboardUtils.createProxyConnectKeyboard(t, tgLink);
+
+		let message = `🎉 <b>${t('payments.success_title', { ns: 'message' })}</b>\n\n`;
+		message += `✅ ${t('proxy.success', { ns: 'message' })}\n\n`;
+		message += `<code>${result.accessUrl}</code>\n\n`;
+		message += t('proxy.how_to_add.short', { ns: 'message' });
+
+		await ctx.reply(message, {
+			...keyboard,
+			parse_mode: 'HTML',
+			disable_web_page_preview: true
+		});
 	}
 
 	// Регистрация обработчиков платежей в боте

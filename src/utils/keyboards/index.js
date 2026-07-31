@@ -8,6 +8,7 @@ const settings = require('./settings');
 const admin = require('./admin');
 const broadcast = require('./broadcast');
 const referrals = require('./referrals');
+const proxy = require('./proxy');
 
 /**
  * KeyboardUtils — фасад, объединяющий все клавиатуры.
@@ -23,6 +24,7 @@ const referrals = require('./referrals');
  *   admin      — админ-панель
  *   broadcast  — рассылки
  *   referrals  — реферальная программа
+ *   proxy      — тарифы на MTProto-прокси
  */
 class KeyboardUtils {
 	// common
@@ -45,12 +47,13 @@ class KeyboardUtils {
 
 	// keys
 	static createKeysKeyboard(t, keys) { return keysKb.createKeysKeyboard(t, keys); }
-	static createKeyDetailsKeyboard(t, keyId) { return keysKb.createKeyDetailsKeyboard(t, keyId); }
+	static createKeyDetailsKeyboard(t, keyId, keyType) { return keysKb.createKeyDetailsKeyboard(t, keyId, keyType); }
 	static createKeyStatsKeyboard(t, keyId) { return keysKb.createKeyStatsKeyboard(t, keyId); }
 
 	// help
 	static createHelpKeyboard(t) { return help.createHelpKeyboard(t); }
 	static createSupportKeyboard(t) { return help.createSupportKeyboard(t); }
+	static createHowToAddProxyKeyboard(t) { return help.createHowToAddProxyKeyboard(t); }
 
 	// protocols — путь "Как добавить ключ"
 	static createHowToAddKeyKeyboard(t) { return protocols.createHowToAddKeyKeyboard(t); }
@@ -85,6 +88,10 @@ class KeyboardUtils {
 	static createReferralInviteKeyboard(t, shareText) { return referrals.createReferralInviteKeyboard(t, shareText); }
 	static createReferralBackKeyboard(t) { return referrals.createReferralBackKeyboard(t); }
 	static createWithdrawalConfirmKeyboard(t, amount) { return referrals.createWithdrawalConfirmKeyboard(t, amount); }
+
+	// proxy
+	static createProxyPlansKeyboard(t, plans) { return proxy.createProxyPlansKeyboard(t, plans); }
+	static createProxyConnectKeyboard(t, tgLink) { return proxy.createProxyConnectKeyboard(t, tgLink); }
 }
 
 module.exports = KeyboardUtils;

@@ -84,6 +84,17 @@ class MenuCallbacks {
 		});
 	}
 
+	async handleHowToAddProxy(ctx) {
+		const t = ctx.i18n.t;
+		const message = MenuMessages.howToAddProxy(t);
+		const keyboard = KeyboardUtils.createHowToAddProxyKeyboard(t);
+
+		await ctx.editMessageText(message, {
+			...keyboard,
+			parse_mode: 'HTML'
+		});
+	}
+
 	async handleVpnApps(ctx) {
 		const t = ctx.i18n.t;
 		const message = MenuMessages.vlessChooseOs(t);

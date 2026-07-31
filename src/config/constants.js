@@ -69,7 +69,7 @@ const PLANS = {
 		dataLimitGB: 10,
 		dataLimit: 10 * 1024 * 1024 * 1024,
 		duration: 30,
-		price: 100,                // ~$1.3/мес
+		price: 90,                 // ~$1.17/мес
 		emoji: '⚡'
 	},
 	VLESS_50GB: {
@@ -101,6 +101,40 @@ const PLANS = {
 		duration: 30,
 		price: 600,                // ~$7.8/мес
 		emoji: '🌌'
+	},
+
+	// ─────────────────────────────────────────
+	// PROXY — MTProto-прокси для Telegram (только срок, без объёма)
+	// ─────────────────────────────────────────
+	PROXY_1WEEK: {
+		id: 'proxy_1week',
+		name: 'Proxy 1 week',
+		type: 'mtproto',
+		dataLimitGB: 0,
+		dataLimit: 0,
+		duration: 7,
+		price: 12,
+		emoji: '📡'
+	},
+	PROXY_1MONTH: {
+		id: 'proxy_1month',
+		name: 'Proxy 1 month',
+		type: 'mtproto',
+		dataLimitGB: 0,
+		dataLimit: 0,
+		duration: 30,
+		price: 40,
+		emoji: '📡'
+	},
+	PROXY_3MONTHS: {
+		id: 'proxy_3months',
+		name: 'Proxy 3 months',
+		type: 'mtproto',
+		dataLimitGB: 0,
+		dataLimit: 0,
+		duration: 90,
+		price: 150,
+		emoji: '📡'
 	}
 };
 
@@ -112,7 +146,8 @@ const KEY_STATUS = {
 };
 
 const KEY_TYPE = {
-	VLESS: 'vless'
+	VLESS: 'vless',
+	MTPROTO: 'mtproto'
 };
 
 const LANG = {
@@ -166,6 +201,7 @@ const CALLBACK_ACTIONS = {
 		VLESS_APPS_IOS: 'vless_apps_ios',
 		VLESS_APPS_ANDROID: 'vless_apps_android',
 		HOW_TO_ADD_KEY: 'how_to_add_key',
+		HOW_TO_ADD_PROXY: 'how_to_add_proxy',
 		HOWTO_APPS: 'howto_apps',
 		HOWTO_VLESS_APPS_LINUX: 'howto_vless_apps_linux',
 		HOWTO_VLESS_APPS_WINDOWS: 'howto_vless_apps_windows',
@@ -210,6 +246,9 @@ const CALLBACK_ACTIONS = {
 	GIFT: {
 		INFO: 'gift_info',
 		CLAIM: 'gift_claim'
+	},
+	PROXY: {
+		MENU: 'proxy_menu'
 	}
 };
 
