@@ -1,9 +1,7 @@
-version: '3.8'
-
 services:
   vpnbot:
     build: .
-    container_name: vpnbot-prod
+    container_name: letmeoutbot
     restart: unless-stopped
     environment:
       - NODE_ENV=production
@@ -32,7 +30,7 @@ services:
 
   support-bot:
     build: .
-    container_name: support-bot-prod
+    container_name: letmeoutbot-support
     restart: unless-stopped
     environment:
       - NODE_ENV=production

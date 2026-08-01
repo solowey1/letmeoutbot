@@ -91,7 +91,7 @@ loopback хоста. Туннель на `127.0.0.1` из контейнера �
 Проверять доступность нужно изнутри контейнера (curl с хоста недостаточно):
 
 ```bash
-docker exec vpnbot-prod node -e \
+docker exec letmeoutbot node -e \
   "fetch('http://host.docker.internal:8081/health').then(r=>r.text()).then(console.log)"
 ```
 

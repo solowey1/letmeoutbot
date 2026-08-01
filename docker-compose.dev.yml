@@ -1,9 +1,7 @@
-version: '3.8'
-
 services:
   vpnbot:
     build: .
-    container_name: vpnbot-dev
+    container_name: letmeoutbot-dev
     restart: unless-stopped
     environment:
       - NODE_ENV=development
