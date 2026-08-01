@@ -60,12 +60,9 @@ class KeysCallbacks {
 						message += `   • ${t('common.days_left')}: ${usage.daysRemaining}\n`;
 					}
 
-					// Прокси отключается точно в срок — показываем и время
+					// Ключ отключается точно в срок — показываем дату со временем
 					const expires = new Date(sub.expires_at);
-					const expiresStr = isProxy
-						? `${expires.toLocaleDateString()}, ${expires.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-						: expires.toLocaleDateString();
-					message += `   • ${t('common.valid_until')}: ${expiresStr}\n`;
+					message += `   • ${t('common.valid_until')}: ${expires.toLocaleDateString()}, ${expires.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}\n`;
 
 					// Трафик прокси не считается — строка только для VPN
 					if (!isProxy && usage) {
