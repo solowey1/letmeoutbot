@@ -4,7 +4,7 @@ const { sendTon } = require('../../../services/TonService');
 const { Markup } = require('../../../utils/markup');
 const KeyboardUtils = require('../../../utils/keyboards');
 const { btn } = require('../../../utils/keyboards/common');
-const { AdminMessages } = require('../../../services/messages');
+const { AdminMessages, KeyMessages } = require('../../../services/messages');
 const pendingBroadcast = require('../../../utils/broadcastState');
 
 class AdminCallbacks {
@@ -286,6 +286,10 @@ class AdminCallbacks {
 
 						let msg = `<b>${ut('admin.pending_keys.activated_title', { ns: 'message' })}</b>\n\n`;
 						msg += `<b>${label}</b>\n<code>${result.accessUrl}</code>\n\n`;
+						if (isProxy) {
+							const manualValues = KeyMessages.proxyManualValues(ut, result.accessUrl);
+							if (manualValues) msg += `${manualValues}\n\n`;
+						}
 						await ctx.api.sendMessage(user.telegram_id, msg, { parse_mode: 'HTML' });
 
 						if (!isProxy) {

@@ -144,6 +144,26 @@ class KeyMessages {
 	}
 
 	/**
+	 * Блок значений прокси для ручного ввода в настройках Telegram
+	 * (Сервер / Порт / Ключ по-отдельности).
+	 * @param {Function} t - Функция перевода
+	 * @param {string} accessUrl - Ссылка вида https://t.me/proxy?server=...&port=...&secret=...
+	 * @returns {string} HTML-блок или пустая строка, если ссылку не удалось разобрать
+	 */
+	static proxyManualValues(t, accessUrl) {
+		const MTProtoService = require('../MTProtoService');
+		const parsed = MTProtoService.parseLink(accessUrl);
+		if (!parsed) return '';
+
+		return [
+			`⚙️ <b>${t('proxy.manual_title', { ns: 'message' })}</b>`,
+			`${t('proxy.server_label', { ns: 'message' })}: <code>${parsed.server}</code>`,
+			`${t('proxy.port_label', { ns: 'message' })}: <code>${parsed.port}</code>`,
+			`${t('proxy.secret_label', { ns: 'message' })}: <code>${parsed.secret}</code>`
+		].join('\n');
+	}
+
+	/**
 	 * Форматирование байтов в читаемый вид
 	 * @param {number} bytes
 	 * @returns {string}

@@ -56,6 +56,24 @@ class MTProtoService {
 	static toTgLink(accessUrl) {
 		return accessUrl.replace('https://t.me/proxy', 'tg://proxy');
 	}
+
+	/**
+	 * Разбор ссылки вида https://t.me/proxy?server=...&port=...&secret=...
+	 * на отдельные значения для ручного ввода в настройках Telegram.
+	 * @returns {{server: string, port: string, secret: string}|null}
+	 */
+	static parseLink(accessUrl) {
+		try {
+			const url = new URL(accessUrl.replace('tg://proxy', 'https://t.me/proxy'));
+			const server = url.searchParams.get('server');
+			const port = url.searchParams.get('port');
+			const secret = url.searchParams.get('secret');
+			if (!server || !port || !secret) return null;
+			return { server, port, secret };
+		} catch {
+			return null;
+		}
+	}
 }
 
 module.exports = MTProtoService;

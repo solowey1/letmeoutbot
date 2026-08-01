@@ -233,6 +233,8 @@ class PaymentHandlers {
 			const linkChanged = result.previousAccessUrl && result.previousAccessUrl !== result.accessUrl;
 			if (linkChanged) {
 				message += `${t('renewal.proxy_new_link', { ns: 'message' })}\n<code>${key.access_url}</code>`;
+				const manualValues = KeyMessages.proxyManualValues(t, key.access_url);
+				if (manualValues) message += `\n\n${manualValues}`;
 			} else {
 				message += t('renewal.proxy_same', { ns: 'message' });
 			}
@@ -264,6 +266,8 @@ class PaymentHandlers {
 		let message = `🎉 <b>${t('payments.success_title', { ns: 'message' })}</b>\n\n`;
 		message += `✅ ${t('proxy.success', { ns: 'message' })}\n\n`;
 		message += `<code>${result.accessUrl}</code>\n\n`;
+		const manualValues = KeyMessages.proxyManualValues(t, result.accessUrl);
+		if (manualValues) message += `${manualValues}\n\n`;
 		message += t('proxy.how_to_add.short', { ns: 'message' });
 
 		await ctx.reply(message, {
