@@ -60,6 +60,18 @@ class PlanService {
 		return form5;
 	}
 
+	/**
+	 * Срок строго в днях («7 дней», «30 дней», «90 дней») —
+	 * используется для MTProto-прокси
+	 */
+	static formatDurationDays(t, days) {
+		return `${days} ${this.getPlural(days,
+			t('common.periods.day.one'),
+			t('common.periods.day.some'),
+			t('common.periods.day.many')
+		)}`;
+	}
+
 	static formatDuration(t, days) {
 		if (days >= 365) {
 			const years = Math.floor(days / 365);
@@ -99,7 +111,10 @@ class PlanService {
 	 */
 	static formatPlanForDisplay(t, plan) {
 		const dataLimitFormatted = this.formatDataLimit(t, plan.dataLimit);
-		const durationFormatted = this.formatDuration(t, plan.duration);
+		// У прокси срок всегда в днях (7/30/90 дней), у VPN — недели/месяцы
+		const durationFormatted = plan.type === 'mtproto'
+			? this.formatDurationDays(t, plan.duration)
+			: this.formatDuration(t, plan.duration);
 		const priceFormatted = this.formatPlanPrice(plan.price);
 
 		// Получаем локализованные описание и invoice

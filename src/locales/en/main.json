@@ -157,16 +157,16 @@
       "invoice": "VPN key — Unlimited for 1 month"
     },
     "proxy_1week": {
-      "description": "Try the proxy for a week",
-      "invoice": "MTProto proxy for Telegram — 1 week"
+      "description": "Try the proxy for 7 days",
+      "invoice": "MTProto proxy for Telegram — 7 days"
     },
     "proxy_1month": {
-      "description": "The best fit for a month",
-      "invoice": "MTProto proxy for Telegram — 1 month"
+      "description": "The best fit for 30 days",
+      "invoice": "MTProto proxy for Telegram — 30 days"
     },
     "proxy_3months": {
-      "description": "Better value for 3 months",
-      "invoice": "MTProto proxy for Telegram — 3 months"
+      "description": "Better value for 90 days",
+      "invoice": "MTProto proxy for Telegram — 90 days"
     }
   },
   "statuses": {

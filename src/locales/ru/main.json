@@ -157,16 +157,16 @@
       "invoice": "Ключ VPN — Безлимит на 1 месяц"
     },
     "proxy_1week": {
-      "description": "Попробовать прокси на неделю",
-      "invoice": "MTProto-прокси для Telegram — 1 неделя"
+      "description": "Попробовать прокси на 7 дней",
+      "invoice": "MTProto-прокси для Telegram — 7 дней"
     },
     "proxy_1month": {
-      "description": "Оптимальный вариант на месяц",
-      "invoice": "MTProto-прокси для Telegram — 1 месяц"
+      "description": "Оптимальный вариант на 30 дней",
+      "invoice": "MTProto-прокси для Telegram — 30 дней"
     },
     "proxy_3months": {
-      "description": "Выгоднее на 3 месяца",
-      "invoice": "MTProto-прокси для Telegram — 3 месяца"
+      "description": "Выгоднее — сразу на 90 дней",
+      "invoice": "MTProto-прокси для Telegram — 90 дней"
     }
   },
   "statuses": {
