@@ -47,20 +47,36 @@ class KeysCallbacks {
 				for (let i = 0; i < keys.length; i++) {
 					const sub = keys[i];
 					const usage = await this.keyService.getUsageStats(sub.id);
+					const isProxy = sub.key_type === 'mtproto';
+					const typeLabel = isProxy
+						? t('keys.type_proxy', { ns: 'message' })
+						: t('keys.type_vpn', { ns: 'message' });
 
-					message += `${i + 1}. ${sub.plan?.displayName || sub.plan_id}\n`;
+					message += `${i + 1}. ${typeLabel}\n`;
 					message += `   • ${t('common.status')}: ${sub.status === 'active' ? t('keys.status_active', { ns: 'message' }) : t('keys.status_inactive', { ns: 'message' })}\n`;
+					message += `   • ${t('common.plan')}: ${sub.plan?.displayName || sub.plan_id}\n`;
 
 					if (usage) {
+						message += `   • ${t('common.days_left')}: ${usage.daysRemaining}\n`;
+					}
+
+					// Прокси отключается точно в срок — показываем и время
+					const expires = new Date(sub.expires_at);
+					const expiresStr = isProxy
+						? `${expires.toLocaleDateString()}, ${expires.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+						: expires.toLocaleDateString();
+					message += `   • ${t('common.valid_until')}: ${expiresStr}\n`;
+
+					// Трафик прокси не считается — строка только для VPN
+					if (!isProxy && usage) {
 						if (usage.limit > 0) {
 							message += `   • ${t('common.used')}: ${usage.formattedUsed} ${t('common.of')} ${usage.formattedLimit} (${usage.usagePercentage}%)\n`;
 						} else {
 							message += `   • ${t('common.used')}: ${usage.formattedUsed}\n`;
 						}
-						message += `   • ${t('common.days_left')}: ${usage.daysRemaining}\n`;
 					}
 
-					message += `   • ${t('common.valid_until')}: ${new Date(sub.expires_at).toLocaleDateString()}\n\n`;
+					message += '\n';
 				}
 			}
 
@@ -69,7 +85,10 @@ class KeysCallbacks {
 
 				for (const pk of pendingKeys) {
 					const planName = pk.plan?.displayName || pk.plan_id;
-					message += `• ${planName} — ${t('keys.pending_status', { ns: 'message' })}\n`;
+					const typeLabel = pk.key_type === 'mtproto'
+						? t('keys.type_proxy', { ns: 'message' })
+						: t('keys.type_vpn', { ns: 'message' });
+					message += `• ${typeLabel} (${planName}) — ${t('keys.pending_status', { ns: 'message' })}\n`;
 				}
 				message += '\n';
 			}

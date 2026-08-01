@@ -323,6 +323,8 @@
   "keys": {
     "no_active": "У вас пока нет активных ключей.\n\nВыберите тарифный план для покупки доступа к VPN.",
     "active_list": "Ваши активные ключи:",
+    "type_proxy": "MTProto",
+    "type_vpn": "VPN",
     "pending_list": "Ожидают активации:",
     "pending_status": "⏳ ожидает активации",
     "status_active": "🟢 Активен",
