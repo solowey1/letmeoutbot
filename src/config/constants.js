@@ -100,7 +100,7 @@ const PLANS = {
 	// ─────────────────────────────────────────
 	PROXY_1WEEK: {
 		id: 'proxy_1week',
-		name: 'Proxy 1 week',
+		name: 'Proxy 7 days',
 		type: 'mtproto',
 		dataLimitGB: 0,
 		dataLimit: 0,
@@ -109,7 +109,7 @@ const PLANS = {
 	},
 	PROXY_1MONTH: {
 		id: 'proxy_1month',
-		name: 'Proxy 1 month',
+		name: 'Proxy 30 days',
 		type: 'mtproto',
 		dataLimitGB: 0,
 		dataLimit: 0,
@@ -118,7 +118,7 @@ const PLANS = {
 	},
 	PROXY_3MONTHS: {
 		id: 'proxy_3months',
-		name: 'Proxy 3 months',
+		name: 'Proxy 90 days',
 		type: 'mtproto',
 		dataLimitGB: 0,
 		dataLimit: 0,

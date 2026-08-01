@@ -319,7 +319,12 @@ class KeysService {
 				await this.mtprotoService.deleteUser(key.external_client_id);
 			}
 
-			await this.db.updateKey(keyId, { status: KEY_STATUS.SUSPENDED });
+			// Прокси после удаления секрета восстановить нельзя — помечаем EXPIRED;
+			// VLESS приостанавливается (SUSPENDED) и может быть продлён
+			const newStatus = key.key_type === KEY_TYPE.MTPROTO
+				? KEY_STATUS.EXPIRED
+				: KEY_STATUS.SUSPENDED;
+			await this.db.updateKey(keyId, { status: newStatus });
 
 			if (this.sendNotificationToUser) {
 				const user = await this.db.getUserById(key.user_id);
