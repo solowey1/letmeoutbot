@@ -35,6 +35,7 @@ const BUTTON_PRESETS = {
 	buy_more:        { text: 'buttons.buy.more',                    action: CALLBACK_ACTIONS.KEYS.BUY,               style: 'primary',   icon: '5427168083074628963' },
 	buy_proxy:       { text: 'buttons.buy.proxy',                   action: CALLBACK_ACTIONS.PROXY.MENU,             style: null,   		 icon: '6030445631921721471' },
 	pay:             { text: 'buttons.pay',                         action: null,                                    style: 'primary',   icon: '5895708410447401643' },
+	renew:           { text: 'buttons.renew',                       action: null,                                    style: 'primary',   icon: '5769406891289481208' },
 	confirm:         { text: 'buttons.confirm',            					action: null,                                    style: 'success',   icon: '5774022692642492953' },
 	cancel:          { text: 'buttons.cancel',                      action: null,                                    style: 'danger',    icon: '5774077015388852135' },
 

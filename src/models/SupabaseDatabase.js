@@ -454,6 +454,15 @@ class SupabaseDatabase {
 		return data || [];
 	}
 
+	async clearKeyNotifications(keyId) {
+		const { error } = await this.supabase
+			.from('notifications')
+			.delete()
+			.eq('key_id', keyId);
+
+		if (error) throw error;
+	}
+
 	async checkNotificationSent(keyId, notificationType, thresholdValue) {
 		const { data, error } = await this.supabase
 			.from('notifications')

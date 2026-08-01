@@ -505,6 +505,18 @@ class Database {
 		});
 	}
 
+	async clearKeyNotifications(keyId) {
+		return new Promise((resolve, reject) => {
+			this.db.run('DELETE FROM notifications WHERE key_id = ?', [keyId], function(err) {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(this.changes);
+				}
+			});
+		});
+	}
+
 	async checkNotificationSent(keyId, notificationType, thresholdValue) {
 		return new Promise((resolve, reject) => {
 			const query = `

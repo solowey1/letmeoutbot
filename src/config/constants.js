@@ -206,7 +206,9 @@ const CALLBACK_ACTIONS = {
 		DETAILS: 'key_details',
 		STATS: 'key_stats',
 		CHECKOUT: 'checkout',
-		RAW_VLESS: 'key_raw_vless'
+		RAW_VLESS: 'key_raw_vless',
+		RENEW: 'renew',              // renew_<keyId> — выбор тарифа продления
+		RENEW_PLAN: 'renewplan'      // renewplan_<keyId>_<planId> — инвойс продления
 	},
 	PAYMENT: {
 		CONFIRM: 'payment_confirm',

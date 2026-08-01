@@ -41,6 +41,7 @@ class KeyboardUtils {
 
 	// payments
 	static createPlansKeyboard(t, plans) { return payments.createPlansKeyboard(t, plans); }
+	static createRenewPlansKeyboard(t, plans, keyId) { return payments.createRenewPlansKeyboard(t, plans, keyId); }
 	static createPlanDetailsKeyboard(t, planId) { return payments.createPlanDetailsKeyboard(t, planId); }
 	static createPaymentConfirmationKeyboard(t, planId) { return payments.createPaymentConfirmationKeyboard(t, planId); }
 	static createAppsDownloadKeyboard(t) { return payments.createAppsDownloadKeyboard(t); }

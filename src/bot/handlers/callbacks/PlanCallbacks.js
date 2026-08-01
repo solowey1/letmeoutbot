@@ -149,7 +149,52 @@ class PlanCallbacks {
 		return this.handleShowPlanDetails(ctx, planId);
 	}
 
-	async handleCreateInvoice(ctx, planId) {
+	// ============== ПРОДЛЕНИЕ КЛЮЧА ==============
+
+	/**
+	 * Проверить, что ключ существует и принадлежит пользователю.
+	 * @returns {object|null} ключ или null (с сообщением об ошибке)
+	 */
+	async _getOwnedKey(ctx, keyId) {
+		const t = ctx.i18n.t;
+		const key = await this.db.getKey(keyId);
+		const user = await this.db.getUserByTelegramId(ctx.from.id);
+
+		if (!key || !user || key.user_id !== user.id) {
+			await ctx.editMessageText(
+				t('keys.renew_not_found', { ns: 'error' }),
+				KeyboardUtils.createBackToMenuKeyboard(t)
+			);
+			return null;
+		}
+		return key;
+	}
+
+	async handleShowRenewPlans(ctx, keyId) {
+		const t = ctx.i18n.t;
+		const key = await this._getOwnedKey(ctx, keyId);
+		if (!key) return;
+
+		const plans = key.key_type === 'mtproto'
+			? PlanService.getProxyPlans()
+			: PlanService.getPlans();
+
+		const keyboard = KeyboardUtils.createRenewPlansKeyboard(t, plans, keyId);
+
+		await ctx.editMessageText(
+			`<b>${t('renewal.choose_plan', { ns: 'message' })}</b>`,
+			{ ...keyboard, parse_mode: 'HTML' }
+		);
+	}
+
+	async handleCreateRenewInvoice(ctx, keyId, planId) {
+		const key = await this._getOwnedKey(ctx, keyId);
+		if (!key) return;
+
+		return this.handleCreateInvoice(ctx, planId, keyId);
+	}
+
+	async handleCreateInvoice(ctx, planId, renewKeyId = null) {
 		const t = ctx.i18n.t;
 
 		if (config.maintenanceMode) {
@@ -172,7 +217,7 @@ class PlanCallbacks {
 				user = await this.db.getUserByTelegramId(ctx.from.id);
 			}
 
-			const { paymentId, invoice } = await this.paymentService.createInvoice(user.id, localizedPlan);
+			const { paymentId, invoice } = await this.paymentService.createInvoice(user.id, localizedPlan, renewKeyId);
 
 			const invoiceMessage = await ctx.replyWithInvoice(
 				invoice.title,

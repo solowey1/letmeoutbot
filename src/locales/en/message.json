@@ -517,5 +517,13 @@
       "reply_failed": "Failed to send reply. Try again.",
       "default_name": "User"
     }
+  },
+  "renewal": {
+    "choose_plan": "Choose a plan to extend:",
+    "success_title": "Key renewed!",
+    "success_until": "Valid until: {{date}}",
+    "vless_same_key": "Your subscription and key stay the same — no changes needed in the app.",
+    "proxy_same": "The proxy keeps working, the link is unchanged.",
+    "proxy_new_link": "The proxy was disabled after expiry, so here is your new link:"
   }
 }

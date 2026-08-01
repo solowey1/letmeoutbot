@@ -80,7 +80,8 @@
     "pagination": {
       "prev": "Prev",
       "next": "Next"
-    }
+    },
+    "renew": "Renew"
   },
   "common": {
     "not_specified": "Not specified",

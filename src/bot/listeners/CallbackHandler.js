@@ -53,6 +53,15 @@ class CallbackHandler {
 			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.KEYS.CHECKOUT}_`)) {
 				const planId = callbackData.split('_').slice(1).join('_');
 				await this.planCallbacks.handleDirectCheckout(ctx, planId);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.KEYS.RENEW_PLAN}_`)) {
+				// renewplan_<keyId>_<planId>
+				const parts = callbackData.split('_');
+				const keyId = parseInt(parts[1]);
+				const planId = parts.slice(2).join('_');
+				await this.planCallbacks.handleCreateRenewInvoice(ctx, keyId, planId);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.KEYS.RENEW}_`)) {
+				const keyId = parseInt(callbackData.split('_')[1]);
+				await this.planCallbacks.handleShowRenewPlans(ctx, keyId);
 			} else if (callbackData === CALLBACK_ACTIONS.KEYS.MENU) {
 				await this.KeysCallbacks.handleMyKeys(ctx);
 			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.KEYS.DETAILS}_`) || callbackData.startsWith('sub_details_')) {

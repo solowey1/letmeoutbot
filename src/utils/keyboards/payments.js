@@ -1,5 +1,6 @@
 const { Markup } = require('../markup');
 const { CALLBACK_ACTIONS } = require('../../config/constants');
+const PlanService = require('../../services/PlanService');
 const { btn } = require('./common');
 
 function createPlansKeyboard(t, plans) {
@@ -8,6 +9,24 @@ function createPlansKeyboard(t, plans) {
 		const button = Markup.button.callback(
 			`${plan.price} — ${limit}`,
 			`${CALLBACK_ACTIONS.KEYS.CHECKOUT}_${plan.id}`
+		);
+		button.icon_custom_emoji_id = '5920433463428650761';
+		return [button];
+	});
+
+	buttons.push([btn(t, 'home')]);
+
+	return Markup.inlineKeyboard(buttons);
+}
+
+function createRenewPlansKeyboard(t, plans, keyId) {
+	const buttons = plans.map(plan => {
+		const label = plan.type === 'mtproto'
+			? PlanService.formatPlanForDisplay(t, plan).displayDuration
+			: (plan.dataLimitGB > 0 ? `${plan.dataLimitGB} ${t('common.memory.gb')}` : t('plans.unlimited'));
+		const button = Markup.button.callback(
+			`${plan.price} — ${label}`,
+			`${CALLBACK_ACTIONS.KEYS.RENEW_PLAN}_${keyId}_${plan.id}`
 		);
 		button.icon_custom_emoji_id = '5920433463428650761';
 		return [button];
@@ -44,6 +63,7 @@ function createAppsDownloadKeyboard(t) {
 
 module.exports = {
 	createPlansKeyboard,
+	createRenewPlansKeyboard,
 	createPlanDetailsKeyboard,
 	createPaymentConfirmationKeyboard,
 	createAppsDownloadKeyboard

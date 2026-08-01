@@ -264,6 +264,10 @@ class PostgresDatabase {
 		return result.rows[0].id;
 	}
 
+	async clearKeyNotifications(keyId) {
+		await this.pool.query('DELETE FROM notifications WHERE key_id = $1', [keyId]);
+	}
+
 	async checkNotificationSent(keyId, notificationType, thresholdValue) {
 		const query = `
             SELECT COUNT(*) as count FROM notifications

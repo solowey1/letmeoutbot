@@ -33,6 +33,7 @@ function createKeysKeyboard(t, keys) {
 
 function createKeyDetailsKeyboard(t, keyId, keyType) {
 	const rows = [
+		[btn(t, 'renew', `${CALLBACK_ACTIONS.KEYS.RENEW}_${keyId}`)],
 		[btn(t, 'stats', `${CALLBACK_ACTIONS.KEYS.STATS}_${keyId}`)]
 	];
 
