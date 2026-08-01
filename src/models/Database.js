@@ -181,13 +181,13 @@ class Database {
 	}
 
 	// Методы для работы с ключами
-	async createKey(userId, planId, dataLimit, expiresAt) {
+	async createKey(userId, planId, dataLimit, expiresAt, keyType = null) {
 		return new Promise((resolve, reject) => {
 			const query = `
-                INSERT INTO keys (user_id, plan_id, data_limit, expires_at)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO keys (user_id, plan_id, data_limit, expires_at, key_type)
+                VALUES (?, ?, ?, ?, ?)
             `;
-			this.db.run(query, [userId, planId, dataLimit, expiresAt], function(err) {
+			this.db.run(query, [userId, planId, dataLimit, expiresAt, keyType], function(err) {
 				if (err) {
 					reject(err);
 				} else {

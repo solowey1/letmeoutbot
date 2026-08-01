@@ -23,7 +23,10 @@ class XRayService {
 			headers: {
 				'Authorization': `Bearer ${this.apiToken}`,
 				'Content-Type': 'application/json'
-			}
+			},
+			// Бот обрабатывает апдейты последовательно: без таймаута зависший
+			// запрос к недоступной панели блокирует все команды до рестарта
+			timeout: 20000
 		};
 		if (data) config.data = data;
 
