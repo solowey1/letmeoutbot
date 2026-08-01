@@ -324,12 +324,10 @@ create_postgres_docker_compose() {
     log_info "Creating docker-compose with local PostgreSQL..."
 
     cat > docker-compose.prod.yml << 'EOF'
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: vpnbot-postgres
+    container_name: letmeoutbot-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -347,7 +345,7 @@ services:
 
   vpnbot:
     build: .
-    container_name: vpnbot-prod
+    container_name: letmeoutbot
     restart: unless-stopped
     environment:
       - NODE_ENV=production
@@ -395,12 +393,10 @@ create_basic_docker_compose() {
     log_info "Creating docker-compose configuration..."
 
     cat > docker-compose.prod.yml << 'EOF'
-version: '3.8'
-
 services:
   vpnbot:
     build: .
-    container_name: vpnbot-prod
+    container_name: letmeoutbot
     restart: unless-stopped
     environment:
       - NODE_ENV=production

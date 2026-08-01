@@ -5,7 +5,7 @@
 
 set -e
 
-PROJECT_NAME="vpnbot-prod"
+PROJECT_NAME="letmeoutbot"
 
 # Определяем compose-файл
 if [ -f "docker-compose.prod.yml" ]; then
