@@ -1,4 +1,7 @@
 const { InputFile } = require('grammy');
+const moment = require('moment');
+const { Markup } = require('../../utils/markup');
+const { btn } = require('../../utils/keyboards/common');
 const KeyboardUtils = require('../../utils/keyboards');
 const { KeyMessages } = require('../../services/messages');
 const PlanService = require('../../services/PlanService');
@@ -85,20 +88,37 @@ class PaymentHandlers {
 				}
 			}
 
-			console.log('📝 Создаем и активируем ключ с retry-логикой...');
+			// Продление: у таких платежей key_id проставлен ещё при создании
+			// инвойса; у обычной покупки key_id появляется только после
+			// создания ключа, т.е. здесь он ещё пуст
+			const renewalTarget = completedPayment.key_id
+				? await this.db.getKey(completedPayment.key_id)
+				: null;
+			const isRenewal = !!renewalTarget && renewalTarget.status !== 'pending';
 
-			const result = await this.keysService.createAndActivateKeyWithRetry(
-				completedPayment.user_id,
-				completedPayment.plan_id,
-				paymentId,
-				ctx.from.id,
-				5 // максимум 5 попыток с прогрессивной задержкой
-			);
-
-			console.log('✅ Ключ создан:', result);
-			console.log('📤 Отправляем сообщение пользователю...');
-
-			await this.sendAccessKeyMessage(ctx, result);
+			let result;
+			if (isRenewal) {
+				console.log(`📝 Продлеваем ключ ${renewalTarget.id} с retry-логикой...`);
+				result = await this.keysService.renewKeyWithRetry(
+					renewalTarget.id,
+					completedPayment.plan_id,
+					5
+				);
+				console.log('✅ Ключ продлён:', result.keyId);
+				await this.sendRenewalSuccessMessage(ctx, result);
+			} else {
+				console.log('📝 Создаем и активируем ключ с retry-логикой...');
+				result = await this.keysService.createAndActivateKeyWithRetry(
+					completedPayment.user_id,
+					completedPayment.plan_id,
+					paymentId,
+					ctx.from.id,
+					5 // максимум 5 попыток с прогрессивной задержкой
+				);
+				console.log('✅ Ключ создан:', result);
+				console.log('📤 Отправляем сообщение пользователю...');
+				await this.sendAccessKeyMessage(ctx, result);
+			}
 
 			// Начисляем реферальный бонус, если есть реферер
 			try {
@@ -199,6 +219,41 @@ class PaymentHandlers {
 		} catch (qrError) {
 			console.error('⚠️ Не удалось отправить QR-код:', qrError.message);
 		}
+	}
+
+	async sendRenewalSuccessMessage(ctx, result) {
+		const t = ctx.i18n?.t || ((key) => key);
+		const key = result.key;
+		const dateStr = moment(key.expires_at).format('DD.MM.YYYY');
+
+		let message = `🎉 <b>${t('renewal.success_title', { ns: 'message' })}</b>\n\n`;
+		message += `${t('renewal.success_until', { ns: 'message', date: dateStr })}\n\n`;
+
+		if (key.key_type === 'mtproto') {
+			const linkChanged = result.previousAccessUrl && result.previousAccessUrl !== result.accessUrl;
+			if (linkChanged) {
+				message += `${t('renewal.proxy_new_link', { ns: 'message' })}\n<code>${key.access_url}</code>`;
+			} else {
+				message += t('renewal.proxy_same', { ns: 'message' });
+			}
+
+			const tgLink = MTProtoService.toTgLink(key.access_url);
+			const keyboard = KeyboardUtils.createProxyConnectKeyboard(t, tgLink);
+			await ctx.reply(message, {
+				...keyboard,
+				parse_mode: 'HTML',
+				disable_web_page_preview: true
+			});
+			return;
+		}
+
+		message += t('renewal.vless_same_key', { ns: 'message' });
+
+		await ctx.reply(message, {
+			...Markup.inlineKeyboard([[btn(t, 'my_keys')]]),
+			parse_mode: 'HTML',
+			disable_web_page_preview: true
+		});
 	}
 
 	async sendProxyAccessMessage(ctx, result) {

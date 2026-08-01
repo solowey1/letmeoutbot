@@ -80,7 +80,8 @@
     "pagination": {
       "prev": "Назад",
       "next": "Вперёд"
-    }
+    },
+    "renew": "Продлить"
   },
   "common": {
     "not_specified": "Не указано",

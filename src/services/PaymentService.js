@@ -5,11 +5,21 @@ class PaymentService {
 		this.db = database;
 	}
 
-	async createInvoice(userId, plan) {
+	/**
+	 * @param {number|null} renewKeyId - если задан, платёж — продление этого ключа:
+	 * key_id проставляется сразу, и обработчик оплаты продлит ключ
+	 * вместо создания нового (у обычной покупки key_id появляется
+	 * только после создания ключа)
+	 */
+	async createInvoice(userId, plan, renewKeyId = null) {
 		try {
 			// Создаем запись о платеже
 			const paymentId = await this.db.createPayment(userId, plan.id, plan.price);
-            
+
+			if (renewKeyId) {
+				await this.db.updatePayment(paymentId, { key_id: renewKeyId });
+			}
+
 			// Формируем invoice для Telegram Stars
 			const invoice = {
 				title: plan.name,
