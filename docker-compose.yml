@@ -30,7 +30,7 @@ services:
 
   support-bot:
     build: .
-    container_name: letmeoutbot-support
+    container_name: letmeoutsupportbot
     restart: unless-stopped
     environment:
       - NODE_ENV=production
