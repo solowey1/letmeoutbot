@@ -31,11 +31,17 @@ function createKeysKeyboard(t, keys) {
 	return Markup.inlineKeyboard(buttons);
 }
 
-function createKeyDetailsKeyboard(t, keyId, keyType) {
-	const rows = [
+function createKeyDetailsKeyboard(t, keyId, keyType, proxyTgLink = null) {
+	const rows = [];
+
+	if (proxyTgLink) {
+		rows.push([btn(t, 'connect_proxy', proxyTgLink)]);
+	}
+
+	rows.push(
 		[btn(t, 'renew', `${CALLBACK_ACTIONS.KEYS.RENEW}_${keyId}`)],
 		[btn(t, 'stats', `${CALLBACK_ACTIONS.KEYS.STATS}_${keyId}`)]
-	];
+	);
 
 	if (keyType !== 'mtproto') {
 		rows.push([btn(t, 'refresh_key', `${CALLBACK_ACTIONS.KEYS.REFRESH}_${keyId}`)]);

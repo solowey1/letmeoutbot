@@ -1,5 +1,6 @@
 const { KeyMessages } = require('../../../services/messages');
 const KeyboardUtils = require('../../../utils/keyboards');
+const MTProtoService = require('../../../services/MTProtoService');
 const { ADMIN_IDS } = require('../../../config/constants');
 
 class KeysCallbacks {
@@ -120,8 +121,7 @@ class KeysCallbacks {
 
 			if (key.access_url) {
 				if (key.key_type === 'mtproto') {
-					message += `🔗 <b>${t('proxy.link_label', { ns: 'message' })}</b>\n`;
-					message += `<code>${key.access_url}</code>\n\n`;
+					message += `🔗 <a href="${key.access_url}">${t('proxy.open_link', { ns: 'message' })}</a>\n\n`;
 					const manualValues = KeyMessages.proxyManualValues(t, key.access_url);
 					if (manualValues) message += `${manualValues}\n\n`;
 					message += t('proxy.how_to_add.short', { ns: 'message' });
@@ -149,11 +149,16 @@ class KeysCallbacks {
 				}
 			}
 
-			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId, key.key_type);
+			// Для прокси — кнопка «Подключить» с tg://-ссылкой (один тап без браузера)
+			const proxyTgLink = key.key_type === 'mtproto' && key.access_url
+				? MTProtoService.toTgLink(key.access_url)
+				: null;
+			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId, key.key_type, proxyTgLink);
 
 			await ctx.editMessageText(message, {
 				...keyboard,
-				parse_mode: 'HTML'
+				parse_mode: 'HTML',
+				disable_web_page_preview: true
 			});
 		} catch (error) {
 			console.error('Ошибка получения деталей ключа:', error);
