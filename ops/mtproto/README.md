@@ -66,7 +66,7 @@ After=network-online.target
 
 [Service]
 ExecStart=/usr/bin/ssh -N -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 \
-  -i /root/.ssh/id_vpnnode -L 127.0.0.1:8081:127.0.0.1:8081 root@83.217.222.151
+  -i /root/.ssh/id_vpnnode -L 0.0.0.0:8081:127.0.0.1:8081 root@83.217.222.151
 Restart=always
 RestartSec=10
 
@@ -75,10 +75,25 @@ WantedBy=multi-user.target
 EOF
 systemctl daemon-reload && systemctl enable --now mtproto-tunnel
 curl -s localhost:8081/health
+
+# Докер-сетям — доступ к туннелю; снаружи 8081 остаётся под default deny
+ufw allow from 172.16.0.0/12 to any port 8081 proto tcp comment 'bot -> mtproto tunnel'
 ```
 
 Тогда для бота адрес — `http://host.docker.internal:8081`, ключ от ноды
 остаётся на хосте и в контейнер бота не попадает.
+
+Бинд именно `0.0.0.0`, не `127.0.0.1`: из контейнера `host.docker.internal`
+резолвится в IP docker-шлюза (host-gateway, обычно `172.17.0.1`), а не в
+loopback хоста. Туннель на `127.0.0.1` из контейнера недостижим — ufw молча
+дропает пакеты, и бот получает timeout.
+
+Проверять доступность нужно изнутри контейнера (curl с хоста недостаточно):
+
+```bash
+docker exec vpnbot-prod node -e \
+  "fetch('http://host.docker.internal:8081/health').then(r=>r.text()).then(console.log)"
+```
 
 **Или открыть порт для IP панели.** Проще, но API оказывается в интернете:
 
