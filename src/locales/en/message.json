@@ -318,6 +318,8 @@
   "keys": {
     "no_active": "You don't have any active keys yet.\n\nChoose a plan to purchase VPN access.",
     "active_list": "Your active keys:",
+    "type_proxy": "MTProto",
+    "type_vpn": "VPN",
     "pending_list": "Awaiting activation:",
     "pending_status": "⏳ awaiting activation",
     "status_active": "🟢 Active",

@@ -11,9 +11,12 @@ function createKeysKeyboard(t, keys) {
 			const plan = PlanService.getPlanById(key.plan_id);
 			if (plan) {
 				const formatted = PlanService.formatPlanForDisplay(t, plan);
+				const typeLabel = key.key_type === 'mtproto'
+					? t('keys.type_proxy', { ns: 'message' })
+					: t('keys.type_vpn', { ns: 'message' });
 				const style = key.status === 'active' ? 'success' : 'danger';
 				const button = Markup.button.callback(
-					formatted.displayName,
+					`${typeLabel} — ${formatted.displayName}`,
 					`${CALLBACK_ACTIONS.KEYS.DETAILS}_${key.id}`
 				);
 				button.style = style;
