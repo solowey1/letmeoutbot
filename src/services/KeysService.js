@@ -22,8 +22,7 @@ class KeysService {
 		if (!plan) throw new Error('План не найден');
 
 		const expiresAt = PlanService.calculateExpiryDate(plan);
-		const keyId = await this.db.createKey(userId, planId, plan.dataLimit, expiresAt);
-		await this.db.updateKey(keyId, { key_type: plan.type });
+		const keyId = await this.db.createKey(userId, planId, plan.dataLimit, expiresAt, plan.type);
 		await this.db.updatePayment(paymentId, { key_id: keyId });
 
 		let lastError;
@@ -591,8 +590,7 @@ class KeysService {
 		const plan = PLANS.GIFT_VLESS_500MB;
 
 		const expiresAt = PlanService.calculateExpiryDate(plan);
-		const keyId = await this.db.createKey(userId, plan.id, plan.dataLimit, expiresAt);
-		await this.db.updateKey(keyId, { key_type: KEY_TYPE.VLESS });
+		const keyId = await this.db.createKey(userId, plan.id, plan.dataLimit, expiresAt, KEY_TYPE.VLESS);
 
 		const result = await this.activateKeyOnVpnServer(keyId, plan, telegramId, expiresAt);
 

@@ -87,13 +87,13 @@ class PostgresDatabase {
 	}
 
 	// === KEYS ===
-	async createKey(userId, planId, dataLimit, expiresAt) {
+	async createKey(userId, planId, dataLimit, expiresAt, keyType = null) {
 		const query = `
-            INSERT INTO keys (user_id, plan_id, data_limit, expires_at)
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO keys (user_id, plan_id, data_limit, expires_at, key_type)
+            VALUES ($1, $2, $3, $4, $5)
             RETURNING id
         `;
-		const result = await this.pool.query(query, [userId, planId, dataLimit, expiresAt]);
+		const result = await this.pool.query(query, [userId, planId, dataLimit, expiresAt, keyType]);
 		return result.rows[0].id;
 	}
 

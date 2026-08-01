@@ -162,7 +162,7 @@ class SupabaseDatabase {
 
 	// ============== KEYS ==============
 
-	async createKey(userId, planId, dataLimit, expiresAt) {
+	async createKey(userId, planId, dataLimit, expiresAt, keyType = null) {
 		const { data, error } = await this.supabase
 			.from('keys')
 			.insert([{
@@ -170,7 +170,8 @@ class SupabaseDatabase {
 				plan_id: planId,
 				data_limit: dataLimit,
 				expires_at: expiresAt,
-				status: 'pending'
+				status: 'pending',
+				key_type: keyType
 			}])
 			.select('id')
 			.single();
