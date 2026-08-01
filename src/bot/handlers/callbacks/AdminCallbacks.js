@@ -3,6 +3,7 @@ const { ADMIN_IDS, CALLBACK_ACTIONS } = require('../../../config/constants');
 const { sendTon } = require('../../../services/TonService');
 const { Markup } = require('../../../utils/markup');
 const KeyboardUtils = require('../../../utils/keyboards');
+const MTProtoService = require('../../../services/MTProtoService');
 const { btn } = require('../../../utils/keyboards/common');
 const { AdminMessages, KeyMessages } = require('../../../services/messages');
 const pendingBroadcast = require('../../../utils/broadcastState');
@@ -281,17 +282,21 @@ class AdminCallbacks {
 						const ut = ctx.i18n.t;
 
 						const isProxy = result.key.key_type === 'mtproto';
-						const label = isProxy
-							? ut('proxy.link_label', { ns: 'message' })
-							: ut('admin.pending_keys.vless_label', { ns: 'message' });
 
 						let msg = `<b>${ut('admin.pending_keys.activated_title', { ns: 'message' })}</b>\n\n`;
-						msg += `<b>${label}</b>\n<code>${result.accessUrl}</code>\n\n`;
+						const sendOptions = { parse_mode: 'HTML', disable_web_page_preview: true };
 						if (isProxy) {
+							msg += `🔗 <a href="${result.accessUrl}">${ut('proxy.open_link', { ns: 'message' })}</a>\n\n`;
 							const manualValues = KeyMessages.proxyManualValues(ut, result.accessUrl);
 							if (manualValues) msg += `${manualValues}\n\n`;
+							msg += ut('proxy.how_to_add.short', { ns: 'message' });
+
+							const tgLink = MTProtoService.toTgLink(result.accessUrl);
+							Object.assign(sendOptions, KeyboardUtils.createProxyConnectKeyboard(ut, tgLink));
+						} else {
+							msg += `<b>${ut('admin.pending_keys.vless_label', { ns: 'message' })}</b>\n<code>${result.accessUrl}</code>\n\n`;
 						}
-						await ctx.api.sendMessage(user.telegram_id, msg, { parse_mode: 'HTML' });
+						await ctx.api.sendMessage(user.telegram_id, msg, sendOptions);
 
 						if (!isProxy) {
 							try {

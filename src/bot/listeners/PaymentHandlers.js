@@ -232,7 +232,7 @@ class PaymentHandlers {
 		if (key.key_type === 'mtproto') {
 			const linkChanged = result.previousAccessUrl && result.previousAccessUrl !== result.accessUrl;
 			if (linkChanged) {
-				message += `${t('renewal.proxy_new_link', { ns: 'message' })}\n<code>${key.access_url}</code>`;
+				message += `${t('renewal.proxy_new_link', { ns: 'message' })}\n🔗 <a href="${key.access_url}">${t('proxy.open_link', { ns: 'message' })}</a>`;
 				const manualValues = KeyMessages.proxyManualValues(t, key.access_url);
 				if (manualValues) message += `\n\n${manualValues}`;
 			} else {
@@ -265,7 +265,7 @@ class PaymentHandlers {
 
 		let message = `🎉 <b>${t('payments.success_title', { ns: 'message' })}</b>\n\n`;
 		message += `✅ ${t('proxy.success', { ns: 'message' })}\n\n`;
-		message += `<code>${result.accessUrl}</code>\n\n`;
+		message += `🔗 <a href="${result.accessUrl}">${t('proxy.open_link', { ns: 'message' })}</a>\n\n`;
 		const manualValues = KeyMessages.proxyManualValues(t, result.accessUrl);
 		if (manualValues) message += `${manualValues}\n\n`;
 		message += t('proxy.how_to_add.short', { ns: 'message' });
