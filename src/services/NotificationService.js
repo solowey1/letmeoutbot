@@ -73,11 +73,21 @@ class NotificationService {
 					message = `📢 ${t('notifications.default', { ns: 'message' })}`;
 			}
 
-			// Добавляем кнопки для всех типов уведомлений
-			keyboard = Markup.inlineKeyboard([
-				[Markup.button.callback(t('buttons.buy.key'), CALLBACK_ACTIONS.KEYS.BUY)],
-				[Markup.button.callback(t('buttons.my_keys'), CALLBACK_ACTIONS.KEYS.MENU)]
-			]);
+			// Добавляем кнопки для всех типов уведомлений;
+			// если известен ключ — первой идёт кнопка продления
+			const rows = [];
+			if (notification.data?.keyId) {
+				const renewBtn = Markup.button.callback(
+					t('buttons.renew'),
+					`${CALLBACK_ACTIONS.KEYS.RENEW}_${notification.data.keyId}`
+				);
+				renewBtn.style = 'primary';
+				renewBtn.icon_custom_emoji_id = '5769406891289481208';
+				rows.push([renewBtn]);
+			}
+			rows.push([Markup.button.callback(t('buttons.buy.key'), CALLBACK_ACTIONS.KEYS.BUY)]);
+			rows.push([Markup.button.callback(t('buttons.my_keys'), CALLBACK_ACTIONS.KEYS.MENU)]);
+			keyboard = Markup.inlineKeyboard(rows);
 
 			await this.bot.api.sendMessage(telegramId, message, {
 				parse_mode: 'HTML',
