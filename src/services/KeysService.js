@@ -137,6 +137,102 @@ class KeysService {
 		return { total: pending.length, success, failed };
 	}
 
+	// ============== ПРОДЛЕНИЕ КЛЮЧЕЙ ==============
+
+	/**
+	 * Продлить существующий ключ по оплаченному плану.
+	 * Ключ, ссылки и подписка остаются прежними; срок отсчитывается
+	 * от текущей даты истечения, если она в будущем, иначе от «сейчас».
+	 *
+	 * VLESS: клиент пересоздаётся на панели с теми же uuid/subId
+	 * (обнуляет счётчик трафика), лимит и срок — из нового плана.
+	 * MTProto: секрет пересоздаётся идемпотентно; если прокси был удалён
+	 * после истечения, ссылка будет новой.
+	 */
+	async renewKey(keyId, planId) {
+		const key = await this.db.getKey(keyId);
+		if (!key) throw new Error('Ключ не найден');
+
+		const plan = PlanService.getPlanById(planId);
+		if (!plan) throw new Error('План не найден');
+		if (plan.type !== key.key_type) throw new Error('Тип плана не совпадает с типом ключа');
+
+		const user = await this.db.getUserById(key.user_id);
+
+		const base = moment(key.expires_at).isAfter(moment())
+			? moment(key.expires_at)
+			: moment();
+		const expiresAt = base.add(plan.duration, 'days').toDate();
+
+		if (key.key_type === KEY_TYPE.MTPROTO) {
+			if (!this.mtprotoService) throw new Error('MTProtoService не инициализирован');
+
+			const proxyUser = await this.mtprotoService.createUser(key.external_client_id);
+
+			await this.db.updateKey(keyId, {
+				plan_id: plan.id,
+				expires_at: expiresAt.toISOString(),
+				status: KEY_STATUS.ACTIVE,
+				external_key_id: proxyUser.secret,
+				access_url: proxyUser.accessUrl
+			});
+		} else {
+			if (!this.xrayService) throw new Error('XRayService не инициализирован');
+
+			await this.xrayService.renewRealityClient(
+				key.external_client_id,
+				key.external_key_id,
+				key.external_sub_id,
+				plan.dataLimitGB || 0,
+				expiresAt.getTime(),
+				user?.telegram_id
+			);
+
+			await this.db.updateKey(keyId, {
+				plan_id: plan.id,
+				expires_at: expiresAt.toISOString(),
+				data_limit: plan.dataLimit,
+				data_used: 0,
+				status: KEY_STATUS.ACTIVE
+			});
+		}
+
+		// Новый оплаченный период — прошлые уведомления о лимитах/сроке
+		// не должны блокировать новые
+		await this.db.clearKeyNotifications(keyId);
+
+		const updatedKey = await this.db.getKey(keyId);
+		return {
+			keyId,
+			accessUrl: updatedKey.access_url,
+			previousAccessUrl: key.access_url,
+			key: updatedKey
+		};
+	}
+
+	async renewKeyWithRetry(keyId, planId, maxRetries = 5) {
+		const RETRY_DELAYS = [0, 100, 1000, 5000, 10000];
+
+		let lastError;
+		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+			try {
+				const delay = RETRY_DELAYS[attempt - 1] || 10000;
+				if (delay > 0) {
+					await new Promise(resolve => setTimeout(resolve, delay));
+				}
+				console.log(`🔄 Попытка ${attempt}/${maxRetries} продления ключа ${keyId}...`);
+				const result = await this.renewKey(keyId, planId);
+				console.log(`✅ Ключ ${keyId} продлён с попытки ${attempt}`);
+				return result;
+			} catch (error) {
+				lastError = error;
+				console.error(`❌ Попытка ${attempt}/${maxRetries} не удалась:`, error.message);
+			}
+		}
+
+		throw new Error(`Не удалось продлить ключ после ${maxRetries} попыток: ${lastError.message}`);
+	}
+
 	/**
 	 * Перевыпустить ключ старого формата (key_type, отличный от 'vless' —
 	 * наследие удалённого Outline) через xray, не давая боту упасть.
@@ -336,7 +432,7 @@ class KeysService {
 					: 0;
 				await this.sendNotificationToUser(user.telegram_id, {
 					type: notificationType,
-					data: { usagePercentage, daysRemaining: 0 }
+					data: { keyId: key.id, usagePercentage, daysRemaining: 0 }
 				});
 			}
 
@@ -439,6 +535,7 @@ class KeysService {
 					type: check.type,
 					threshold: check.threshold,
 					data: {
+						keyId: key.id,
 						daysRemaining,
 						usagePercentage: Math.round(usagePercentage),
 						remainingPercentage: Math.round(remainingPercentage)

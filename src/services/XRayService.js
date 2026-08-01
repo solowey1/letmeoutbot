@@ -86,6 +86,35 @@ class XRayService {
 		return this.deleteClient(email);
 	}
 
+	/**
+	 * Продлить клиента: пересоздать с теми же uuid/subId, но новыми лимитами.
+	 * Счётчик трафика на панели обнуляется, а vless-ссылка и ссылка
+	 * на подписку остаются прежними — пользователю ничего менять не нужно.
+	 */
+	async renewRealityClient(email, uuid, subId, totalGB = 0, expiryTime = 0, tgId = '') {
+		try {
+			await this.deleteClient(email);
+		} catch {
+			// клиента могло уже не быть на панели — не мешаем пересозданию
+		}
+
+		await this.addClient({
+			uuid,
+			email,
+			enable: true,
+			flow: '',
+			limitIp: 0,
+			totalGB: totalGB > 0 ? Math.round(totalGB * 1024 * 1024 * 1024) : 0,
+			expiryTime,
+			reset: 0,
+			subId,
+			tgId: parseInt(tgId) || 0,
+			comment: 'LetMeOut Bot'
+		});
+
+		return { uuid, subId, accessUrl: this._buildSubUrl(subId), email, type: 'reality' };
+	}
+
 	async getClientDataUsage(email) {
 		try {
 			const stats = await this.getClientStats(email);
