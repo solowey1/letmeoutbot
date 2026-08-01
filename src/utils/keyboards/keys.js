@@ -38,6 +38,7 @@ function createKeyDetailsKeyboard(t, keyId, keyType) {
 	];
 
 	if (keyType !== 'mtproto') {
+		rows.push([btn(t, 'refresh_key', `${CALLBACK_ACTIONS.KEYS.REFRESH}_${keyId}`)]);
 		rows.push([btn(t, 'raw_vless_key', `${CALLBACK_ACTIONS.KEYS.RAW_VLESS}_${keyId}`)]);
 	}
 

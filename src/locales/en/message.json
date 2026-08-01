@@ -348,7 +348,10 @@
       "The app will automatically load everything you need"
     ],
     "raw_vless_title": "Individual keys",
-    "raw_vless_hint": "Use these for clients without subscription support. Hiddify, Nekobox and FoXray also work with both formats."
+    "raw_vless_hint": "Use these for clients without subscription support. Hiddify, Nekobox and FoXray also work with both formats.",
+    "refreshing": "Refreshing your key, recreating the subscription…",
+    "refresh_success_title": "Key refreshed!",
+    "refresh_hint": "The old link no longer works. Remove the previous subscription from your app and add the new one."
   },
   "plans": {
     "choose": "Choose a plan:",

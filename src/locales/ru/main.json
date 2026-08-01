@@ -76,6 +76,7 @@
       "russian": "Русский",
       "english": "English"
     },
+    "refresh_key": "Обновить ключ",
     "raw_vless_key": "Получить ключи по отдельности",
     "pagination": {
       "prev": "Назад",

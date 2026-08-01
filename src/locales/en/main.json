@@ -76,6 +76,7 @@
       "russian": "Русский",
       "english": "English"
     },
+    "refresh_key": "Refresh Key",
     "raw_vless_key": "Get Individual Keys",
     "pagination": {
       "prev": "Prev",

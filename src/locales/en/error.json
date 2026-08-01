@@ -15,7 +15,8 @@
     "not_found": "❌ Key not found",
     "no_keys": "❌ You don't have any active keys",
     "plan_not_found": "❌ Plan not found",
-    "renew_not_found": "Key not found or belongs to another user"
+    "renew_not_found": "Key not found or belongs to another user",
+    "refresh_failed": "❌ Failed to refresh the key. Try again later or contact support."
   },
   "payments": {
     "failed": "❌ Payment error. Please try again later."
