@@ -207,6 +207,7 @@ const CALLBACK_ACTIONS = {
 		STATS: 'key_stats',
 		CHECKOUT: 'checkout',
 		RAW_VLESS: 'key_raw_vless',
+		REFRESH: 'key_refresh',      // key_refresh_<keyId> — пересоздание подписки на панели
 		RENEW: 'renew',              // renew_<keyId> — выбор тарифа продления
 		RENEW_PLAN: 'renewplan'      // renewplan_<keyId>_<planId> — инвойс продления
 	},

@@ -217,6 +217,41 @@ class KeysCallbacks {
 		}
 	}
 
+	async handleRefreshKey(ctx, keyId) {
+		const t = ctx.i18n.t;
+
+		try {
+			const user = await this.db.getUserByTelegramId(ctx.from.id);
+			const key = await this.db.getKey(keyId);
+			if (!user || !key || key.user_id !== user.id) {
+				await ctx.editMessageText(
+					t('keys.not_found', { ns: 'error' }),
+					KeyboardUtils.createBackToMenuKeyboard(t)
+				);
+				return;
+			}
+
+			await ctx.editMessageText(`⏳ ${t('keys.refreshing', { ns: 'message' })}`, { parse_mode: 'HTML' });
+
+			const result = await this.keyService.refreshKey(keyId);
+
+			let message = `✅ <b>${t('keys.refresh_success_title', { ns: 'message' })}</b>\n\n`;
+			message += `🔗 <b>${t('keys.subscription_title', { ns: 'message' })}</b>\n`;
+			message += `<code>${result.accessUrl}</code>\n\n`;
+			message += `💡 ${t('keys.refresh_hint', { ns: 'message' })}`;
+
+			// клавиатура с кнопками «Назад» (к деталям ключа) и «Домой»
+			const keyboard = KeyboardUtils.createKeyStatsKeyboard(t, keyId);
+			await ctx.editMessageText(message, { ...keyboard, parse_mode: 'HTML' });
+		} catch (error) {
+			console.error('Ошибка обновления ключа:', error);
+			await ctx.editMessageText(
+				t('keys.refresh_failed', { ns: 'error' }),
+				KeyboardUtils.createBackToMenuKeyboard(t)
+			);
+		}
+	}
+
 	async handleRawVlessKey(ctx, keyId) {
 		const t = ctx.i18n.t;
 

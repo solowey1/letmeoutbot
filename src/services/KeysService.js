@@ -234,6 +234,39 @@ class KeysService {
 	}
 
 	/**
+	 * Обновить ключ по запросу пользователя (например, после переезда сервера):
+	 * клиент пересоздаётся на текущей панели с новыми uuid/subId, пользователь
+	 * получает новую ссылку. Срок и лимит трафика берутся из записи ключа.
+	 */
+	async refreshKey(keyId) {
+		const key = await this.db.getKey(keyId);
+		if (!key) throw new Error('Ключ не найден');
+		if (key.status !== KEY_STATUS.ACTIVE) throw new Error(`Ключ имеет статус "${key.status}", обновить можно только активный`);
+
+		const plan = PlanService.getPlanById(key.plan_id);
+		const fallbackPlan = {
+			id: key.plan_id,
+			type: key.key_type,
+			dataLimitGB: key.data_limit ? key.data_limit / (1024 * 1024 * 1024) : 0
+		};
+		const user = await this.db.getUserById(key.user_id);
+		const expiresAt = new Date(key.expires_at);
+
+		// Старый клиент мог сохраниться на панели (или это повторное обновление) —
+		// удаляем его, чтобы пересоздание не упёрлось в дубликат email
+		const type = plan?.type || key.key_type;
+		if (type !== KEY_TYPE.MTPROTO && this.xrayService && key.external_client_id) {
+			try {
+				await this.xrayService.deleteClient(key.external_client_id);
+			} catch {
+				// клиента на новой панели и не должно быть
+			}
+		}
+
+		return this.activateKeyOnVpnServer(keyId, plan || fallbackPlan, user?.telegram_id, expiresAt);
+	}
+
+	/**
 	 * Перевыпустить ключ старого формата (key_type, отличный от 'vless' —
 	 * наследие удалённого Outline) через xray, не давая боту упасть.
 	 */

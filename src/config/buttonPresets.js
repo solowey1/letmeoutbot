@@ -41,6 +41,7 @@ const BUTTON_PRESETS = {
 
 	// ── Ключи ───────────────────────────────────────────────────────
 	stats:           { text: 'buttons.stats',                       action: null,                                    style: null,        icon: '5936143551854285132' },
+	refresh_key:     { text: 'buttons.refresh_key',                 action: null,                                    style: null,        icon: '5850346984501680054' },
 	raw_vless_key:   { text: 'buttons.raw_vless_key',               action: null,                                    style: null,        icon: '5884491244360438851' },
 
 	// ── Помощь / Приложения ─────────────────────────────────────────

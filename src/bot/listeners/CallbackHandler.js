@@ -78,6 +78,9 @@ class CallbackHandler {
 			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.KEYS.RAW_VLESS}_`)) {
 				const keyId = parseInt(callbackData.split('_').pop());
 				await this.KeysCallbacks.handleRawVlessKey(ctx, keyId);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.KEYS.REFRESH}_`)) {
+				const keyId = parseInt(callbackData.split('_').pop());
+				await this.KeysCallbacks.handleRefreshKey(ctx, keyId);
 			} else if (callbackData === CALLBACK_ACTIONS.SETTINGS.MENU) {
 				await this.menuCallbacks.handleSettings(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.SETTINGS.TON_WALLET) {
