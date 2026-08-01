@@ -267,7 +267,8 @@ class AdminCallbacks {
 		}
 
 		try {
-			await ctx.answerCallbackQuery(t('admin.pending_keys.activating', { ns: 'message' }));
+			// На callback уже ответил роутер; повторный ответ Telegram отклоняет
+			await ctx.answerCallbackQuery(t('admin.pending_keys.activating', { ns: 'message' })).catch(() => {});
 			const result = await this.keysService.retryActivateKey(keyId);
 
 			// Уведомляем пользователя через Telegram на его языке
@@ -317,7 +318,9 @@ class AdminCallbacks {
 			await this.handleAdminPendingKeys(ctx);
 		} catch (error) {
 			console.error('❌ Ошибка активации ключа:', error);
-			await ctx.answerCallbackQuery({ text: t('admin.pending_keys.activate_error', { ns: 'message', error: error.message }), show_alert: true });
+			// answerCallbackQuery здесь бесполезен — на query уже ответили,
+			// поэтому показываем ошибку отдельным сообщением
+			await ctx.reply(t('admin.pending_keys.activate_error', { ns: 'message', error: error.message })).catch(() => {});
 		}
 	}
 

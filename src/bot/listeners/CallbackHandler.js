@@ -35,8 +35,10 @@ class CallbackHandler {
 		const t = ctx.i18n.t;
 
 		try {
-			// Отвечаем на callback запрос чтобы убрать загрузку
-			await ctx.answerCallbackQuery();
+			// Отвечаем на callback запрос чтобы убрать загрузку.
+			// Протухший или повторно доставленный query (400 query is too old)
+			// не должен срывать обработку нажатия.
+			await ctx.answerCallbackQuery().catch(() => {});
 
 			// Роутинг callback'ов к соответствующим модулям
 			if (callbackData === CALLBACK_ACTIONS.BASIC.HOME) {
