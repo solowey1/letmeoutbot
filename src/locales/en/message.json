@@ -172,6 +172,9 @@
       "px6_on": "🟢 External proxy sales are on.",
       "px6_off": "🔴 External proxy sales are off.",
       "invalid_value": "⚠️ A number is required. Try again or send /cancel.",
+      "save_failed": "⚠️ Could not save: {{reason}}",
+      "storage_missing": "⚠️ Settings are not persisted: the bot_settings table is missing. Apply migration 010_admin_settings_and_plan_limits.sql — until then the toggles reset on restart.",
+      "px6_no_key": "⚠️ External proxy sales are on, but PX6_API_KEY is not set — the proxy types stay hidden from users.",
       "edit_cancelled": "Edit cancelled.",
       "saved": "Saved"
     },

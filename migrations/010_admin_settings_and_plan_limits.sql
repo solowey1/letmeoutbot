@@ -29,7 +29,20 @@ alter table plans add column if not exists data_limit bigint;
 alter table plans add column if not exists duration   integer;
 
 -- ── RLS ──────────────────────────────────────────────────────────────────
--- Сайт (let-me-out.com) читает plans под service_role, боту тоже хватает
--- service_role. Публичного доступа не открываем.
+-- Бот ходит под service_role и RLS обходит. Но plans читает ещё и сайт
+-- (let-me-out.com); если он подключается публичным ключом, включённый RLS
+-- без политики отдаст пустой список и цены на сайте просто исчезнут —
+-- молча, без ошибки. Поэтому на чтение plans политика есть: цены и так
+-- опубликованы. bot_settings остаётся закрытым.
 alter table bot_settings enable row level security;
 alter table plans        enable row level security;
+
+do $$
+begin
+    if not exists (
+        select 1 from pg_policies
+        where schemaname = 'public' and tablename = 'plans' and policyname = 'plans_public_read'
+    ) then
+        create policy plans_public_read on plans for select using (true);
+    end if;
+end $$;
