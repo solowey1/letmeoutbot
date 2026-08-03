@@ -6,6 +6,18 @@ const PLAN_NAME_MAP = Object.values(PLANS).reduce((map, plan) => {
 }, {});
 
 /**
+ * Человекочитаемое название тарифа. У прокси, купленных у поставщика,
+ * тариф динамический — имя собирается из id, а сам id показывать незачем.
+ */
+function planLabel(planId) {
+	if (!planId) return 'Unknown';
+	if (PLAN_NAME_MAP[planId]) return PLAN_NAME_MAP[planId];
+
+	const PlanService = require('../PlanService');
+	return PlanService.getPlanById(planId)?.name || planId;
+}
+
+/**
  * Сервис для генерации сообщений админ-панели
  */
 class AdminMessages {
@@ -101,7 +113,7 @@ class AdminMessages {
 
 			message.push(`${index + 1}. ${status} ${payment.amount} ⭐`);
 			message.push(`   ${t('common.user')}: ${payment.user_id}`);
-			message.push(`   ${t('common.plan')}: ${payment.plan_id}`);
+			message.push(`   ${t('common.plan')}: ${planLabel(payment.plan_id)}`);
 			message.push(`   ${date}`);
 			message.push('');
 		});
@@ -134,7 +146,7 @@ class AdminMessages {
 
 			message.push(`${index + 1}. ${status} ID: ${key.id}`);
 			message.push(`   ${t('common.user')}: ${key.user_id}`);
-			message.push(`   ${t('common.plan')}: ${PLAN_NAME_MAP[key.plan_id] || key.plan_id || 'Unknown'}`);
+			message.push(`   ${t('common.plan')}: ${planLabel(key.plan_id)}`);
 			message.push(`   ${t('common.expires')}: ${expiryDate}`);
 			message.push('');
 		});
@@ -159,7 +171,7 @@ class AdminMessages {
 				const user = await getUserById(key.user_id);
 				message += `📋 ${t('admin.pending_keys.id', { ns: 'message' })}: ${key.id}\n`;
 				message += `👤 ${t('common.user')}: ${user?.first_name || 'Unknown'} (@${user?.username || 'нет'})\n`;
-				message += `📦 ${t('admin.pending_keys.plan', { ns: 'message' })}: ${key.plan_id}\n`;
+				message += `📦 ${t('admin.pending_keys.plan', { ns: 'message' })}: ${planLabel(key.plan_id)}\n`;
 				message += `🕐 ${t('admin.pending_keys.created', { ns: 'message' })}: ${new Date(key.created_at).toLocaleString()}\n`;
 				message += `⚠️ ${t('admin.pending_keys.status_label', { ns: 'message' })}: ${key.status}\n\n`;
 			}

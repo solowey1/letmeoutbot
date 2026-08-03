@@ -13,21 +13,15 @@ const V = require('../../services/Px6Service').VERSION;
 function createProxyMenuKeyboard(t, { ownEnabled = true, px6Enabled = true } = {}) {
 	const rows = [];
 
-	if (px6Enabled) {
-		rows.push([Markup.button.callback(
-			t('buttons.proxy.mtproto_px6'),
-			`${CALLBACK_ACTIONS.PX6.COUNTRY}_${V.MTPROTO}`
-		)]);
-	}
-
+	// Наш прокси первым — он свой, дешевле и без похода во внешний API
 	if (ownEnabled) {
 		rows.push([Markup.button.callback(t('buttons.proxy.mtproto_own'), CALLBACK_ACTIONS.PROXY.MTPROTO)]);
 	}
 
 	if (px6Enabled) {
-		for (const version of [V.IPV6, V.IPV4, V.IPV4_SHARED]) {
+		for (const version of [V.MTPROTO, V.IPV6, V.IPV4, V.IPV4_SHARED]) {
 			rows.push([Markup.button.callback(
-				Px6PricingService.versionLabel(version),
+				version === V.MTPROTO ? t('buttons.proxy.mtproto_ext') : Px6PricingService.versionLabel(version),
 				`${CALLBACK_ACTIONS.PX6.COUNTRY}_${version}`
 			)]);
 		}

@@ -164,13 +164,13 @@
       "hidden_note": "Internal plan — not shown in the purchase list.",
       "enter_price": "✏️ <b>{{name}}</b>\n\nCurrent price: <b>{{current}} ⭐</b>\n\nSend the new price in Stars (whole number).\n/cancel to abort.",
       "enter_limit": "✏️ <b>{{name}}</b>\n\nCurrent limit: <b>{{current}} GB</b>\n\nSend the new limit in GB (0 = unlimited).\n/cancel to abort.",
-      "px6_pricing_hint": "The price is calculated automatically: px6 wholesale → USD at the CBR rate (cached for an hour) → Stars. Nothing to configure, the markup is fixed.",
+      "px6_pricing_hint": "The price is calculated automatically: supplier cost → USD at the CBR rate (cached for an hour) → Stars. Nothing to configure, the markup is fixed.",
       "px6_markup_label": "Markup",
       "px6_star_usd_label": "Star in USD (STARS_USD_RATE)",
       "px6_usdrub": "USD/RUB rate: <b>{{rate}} ₽</b> ({{source}}, updated {{updated}})",
       "px6_usdrub_failed": "⚠️ Could not fetch the USD/RUB rate — prices cannot be calculated right now.",
-      "px6_on": "🟢 px6 proxy sales are on.",
-      "px6_off": "🔴 px6 proxy sales are off.",
+      "px6_on": "🟢 External proxy sales are on.",
+      "px6_off": "🔴 External proxy sales are off.",
       "invalid_value": "⚠️ A number is required. Try again or send /cancel.",
       "edit_cancelled": "Edit cancelled.",
       "saved": "Saved"
@@ -318,7 +318,7 @@
     ]
   },
   "proxy": {
-    "menu_intro": "🌐 <b>Proxy</b>\n\nA proxy routes one app’s traffic instead of the whole device, unlike a VPN. Pick the type that matches your task:\n\n• <b>MTProto</b> — for Telegram only, connects in one tap. Available on our server (Netherlands) and via our partner in other countries.\n• <b>IPv6 / IPv4 / IPv4 Shared</b> — regular HTTP(S) and SOCKS5 proxies for browsers, apps and scrapers. Not needed for Telegram — use MTProto there.\n\nThe next screen explains exactly what you are buying.",
+    "menu_intro": "🌐 <b>Proxy</b>\n\nA proxy routes one app’s traffic instead of the whole device, unlike a VPN. Pick the type that matches your task:\n\n• <b>MTProto</b> — for Telegram only, connects in one tap. MTProto (NL) runs on our own server in the Netherlands; other countries come from a partner.\n• <b>IPv6 / IPv4 / IPv4 Shared</b> — regular HTTP(S) and SOCKS5 proxies for browsers, apps and scrapers. Not needed for Telegram — use MTProto there.\n\nThe next screen explains exactly what you are buying.",
     "intro": "📡 <b>MTProto (NL)</b> — our Telegram proxy\n\nIt only affects Telegram: it routes the messenger’s own traffic rather than the whole device — so banks and marketplaces that block users on a VPN never see it, and everything else keeps working as usual. Server in the Netherlands, one-tap connection via a link.\n\nNot suitable for browsers, apps or scrapers — pick IPv4 or IPv6 for those.\n\nChoose a period:",
     "success": "Proxy activated!",
     "link_label": "Proxy link:",
