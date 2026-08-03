@@ -64,12 +64,12 @@
       "settings": "Settings",
       "sales_vpn": "VPN sales",
       "sales_proxy": "Own proxy sales",
-      "sales_px6": "px6 proxy sales",
+      "sales_px6": "External proxy sales",
       "sales_on": "on",
       "sales_off": "off",
       "plans_vpn": "💰 VPN plans",
       "plans_proxy": "💰 Proxy plans",
-      "px6_settings": "💱 px6 proxy pricing",
+      "px6_settings": "💱 External proxy pricing",
       "edit_price": "✏️ Change price",
       "edit_limit": "✏️ Change limit",
       "plan_enable": "🟢 Enable plan",
@@ -96,8 +96,8 @@
     },
     "renew": "Renew",
     "proxy": {
-      "mtproto_px6": "MTProto",
-      "mtproto_own": "MTProto (NL)"
+      "mtproto_own": "MTProto (NL)",
+      "mtproto_ext": "MTProto"
     }
   },
   "common": {

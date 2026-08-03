@@ -64,12 +64,12 @@
       "settings": "Настройки",
       "sales_vpn": "Продажа VPN",
       "sales_proxy": "Продажа своих Proxy",
-      "sales_px6": "Продажа прокси px6",
+      "sales_px6": "Продажа внешних прокси",
       "sales_on": "вкл",
       "sales_off": "выкл",
       "plans_vpn": "💰 Тарифы VPN",
       "plans_proxy": "💰 Тарифы Proxy",
-      "px6_settings": "💱 Цены прокси px6",
+      "px6_settings": "💱 Цены внешних прокси",
       "edit_price": "✏️ Изменить цену",
       "edit_limit": "✏️ Изменить лимит",
       "plan_enable": "🟢 Включить тариф",
@@ -96,8 +96,8 @@
     },
     "renew": "Продлить",
     "proxy": {
-      "mtproto_px6": "MTProto",
-      "mtproto_own": "MTProto (NL)"
+      "mtproto_own": "MTProto (NL)",
+      "mtproto_ext": "MTProto"
     }
   },
   "common": {
