@@ -11,6 +11,7 @@ class PlanService {
 		return Object.values(PLANS).filter(p =>
 			p.type === 'vless' &&
 			p.price > 0 &&
+			!p.disabled &&
 			(includeHidden || !p.hidden)
 		);
 	}
@@ -23,6 +24,7 @@ class PlanService {
 		return Object.values(PLANS).filter(p =>
 			p.type === 'mtproto' &&
 			p.price > 0 &&
+			!p.disabled &&
 			(includeHidden || !p.hidden)
 		);
 	}
@@ -35,7 +37,23 @@ class PlanService {
 	}
 
 	static getPlanById(planId) {
-		return Object.values(PLANS).find(p => p.id === planId) || null;
+		const plan = Object.values(PLANS).find(p => p.id === planId);
+		if (plan) return plan;
+
+		// Тарифы px6 динамические и в PLANS не лежат — восстанавливаем их
+		// из синтетического id (px6_<version>_<country>_<period>), чтобы
+		// обычный конвейер оплаты и выдачи ключа работал без развилок.
+		const Px6PricingService = require('./Px6PricingService');
+		const parsed = Px6PricingService.parsePlanId(planId);
+		if (parsed) {
+			return Px6PricingService.buildPlan({
+				version: parsed.version,
+				country: parsed.country,
+				period: parsed.period
+			});
+		}
+
+		return null;
 	}
 
 	static formatPlanPrice(price) {
@@ -112,7 +130,8 @@ class PlanService {
 	static formatPlanForDisplay(t, plan) {
 		const dataLimitFormatted = this.formatDataLimit(t, plan.dataLimit);
 		// У прокси срок всегда в днях (7/30/90 дней), у VPN — недели/месяцы
-		const durationFormatted = plan.type === 'mtproto'
+		const durationOnly = plan.type === 'mtproto' || plan.type === 'px6';
+		const durationFormatted = durationOnly
 			? this.formatDurationDays(t, plan.duration)
 			: this.formatDuration(t, plan.duration);
 		const priceFormatted = this.formatPlanPrice(plan.price);
@@ -140,7 +159,7 @@ class PlanService {
 		}
 
 		// У прокси нет объёма данных — в списках показываем срок, а не «Безлимит»
-		const displayName = plan.type === 'mtproto'
+		const displayName = durationOnly
 			? durationFormatted
 			: dataLimitFormatted;
 
@@ -157,19 +176,54 @@ class PlanService {
 		};
 	}
 
+	/**
+	 * Проставить лимит трафика в байтах, синхронизировав производное поле GB.
+	 * @param {object} plan
+	 * @param {number} bytes - 0 = безлимит
+	 */
+	static applyDataLimit(plan, bytes) {
+		plan.dataLimit = bytes;
+		plan.dataLimitGB = bytes > 0 ? Math.round(bytes / (1024 * 1024 * 1024)) : 0;
+	}
+
 	static async loadPrices(db) {
 		try {
 			const rows = await db.getPlanPrices();
-			for (const { id, price, enabled } of rows) {
+			for (const { id, price, enabled, data_limit, duration } of rows) {
 				const plan = Object.values(PLANS).find(p => p.id === id);
 				if (!plan) continue;
-				plan.price = price;
-				if (enabled === false) plan.hidden = true;
+				if (price !== null && price !== undefined) plan.price = price;
+				if (data_limit !== null && data_limit !== undefined) this.applyDataLimit(plan, Number(data_limit));
+				if (duration !== null && duration !== undefined) plan.duration = duration;
+				// disabled — выключение из админки; hidden — служебные тарифы
+				// (тестовый, подарочные), их видимость задана в коде.
+				plan.disabled = enabled === false;
 			}
-			console.log('✅ Цены тарифов загружены из БД');
+			console.log('✅ Тарифы загружены из БД');
 		} catch (error) {
-			console.error('⚠️ Не удалось загрузить цены из БД, используются значения по умолчанию:', error.message);
+			console.error('⚠️ Не удалось загрузить тарифы из БД, используются значения по умолчанию:', error.message);
 		}
+	}
+
+	/**
+	 * Досоздать в БД строки для тарифов, которых там ещё нет, чтобы админка
+	 * и сайт видели полный список. Существующие цены не перезаписываются.
+	 */
+	static async syncPlansToDb(db) {
+		if (typeof db.upsertMissingPlans !== 'function') return;
+		try {
+			await db.upsertMissingPlans(Object.values(PLANS));
+		} catch (error) {
+			console.error('⚠️ Не удалось синхронизировать тарифы в БД:', error.message);
+		}
+	}
+
+	/**
+	 * Все тарифы продукта для админки — включая выключенные и служебные.
+	 * @param {string} type - 'vless' | 'mtproto'
+	 */
+	static getPlansForAdmin(type) {
+		return Object.values(PLANS).filter(p => p.type === type);
 	}
 
 	static validatePlanData(planData) {

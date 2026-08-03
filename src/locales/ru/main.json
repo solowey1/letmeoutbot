@@ -4,7 +4,7 @@
       "first": "Купить VPN",
       "key": "Купить VPN",
       "more": "Купить ещё VPN",
-      "proxy": "Купить Proxy для Telegram"
+      "proxy": "Proxy"
     },
     "gift": "Получить подарок",
     "claim_gift": "Получить",
@@ -61,7 +61,19 @@
       "broadcast_new": "Новая рассылка",
       "broadcast_history": "История",
       "broadcast_schedule": "Отложить",
-      "settings": "Настройки"
+      "settings": "Настройки",
+      "sales_vpn": "Продажа VPN",
+      "sales_proxy": "Продажа своих Proxy",
+      "sales_px6": "Продажа прокси px6",
+      "sales_on": "вкл",
+      "sales_off": "выкл",
+      "plans_vpn": "💰 Тарифы VPN",
+      "plans_proxy": "💰 Тарифы Proxy",
+      "px6_settings": "💱 Цены прокси px6",
+      "edit_price": "✏️ Изменить цену",
+      "edit_limit": "✏️ Изменить лимит",
+      "plan_enable": "🟢 Включить тариф",
+      "plan_disable": "🔴 Выключить тариф"
     },
     "apps": {
       "android": "Android",
@@ -82,7 +94,11 @@
       "prev": "Назад",
       "next": "Вперёд"
     },
-    "renew": "Продлить"
+    "renew": "Продлить",
+    "proxy": {
+      "mtproto_px6": "MTProto",
+      "mtproto_own": "MTProto (NL)"
+    }
   },
   "common": {
     "not_specified": "Не указано",

@@ -251,6 +251,43 @@ class AdminMessages {
 
 		return message.join('\n');
 	}
+
+	/**
+	 * Карточка тарифа в админке
+	 * @param {Function} t - Функция перевода
+	 * @param {Object} plan - тариф из PLANS
+	 * @returns {string}
+	 */
+	static planDetails(t, plan) {
+		const limit = plan.dataLimitGB > 0
+			? `${plan.dataLimitGB} ${t('common.memory.gb')}`
+			: t('plans.unlimited');
+
+		const message = [
+			`💰 <b>${plan.name}</b>`,
+			'',
+			`${t('admin.settings.field_price', { ns: 'message' })}: <b>${plan.price} ⭐</b>`
+		];
+
+		// У MTProto-прокси объёма трафика нет — тариф только по сроку
+		if (plan.type !== 'mtproto') {
+			message.push(`${t('admin.settings.field_limit', { ns: 'message' })}: <b>${limit}</b>`);
+		}
+
+		message.push(`${t('admin.settings.field_duration', { ns: 'message' })}: <b>${plan.duration}</b>`);
+		message.push(`${t('admin.settings.field_status', { ns: 'message' })}: <b>${
+			plan.disabled
+				? `🔴 ${t('admin.settings.status_disabled', { ns: 'message' })}`
+				: `🟢 ${t('admin.settings.status_enabled', { ns: 'message' })}`
+		}</b>`);
+
+		if (plan.hidden) {
+			message.push('');
+			message.push(`<i>${t('admin.settings.hidden_note', { ns: 'message' })}</i>`);
+		}
+
+		return message.join('\n');
+	}
 }
 
 module.exports = AdminMessages;

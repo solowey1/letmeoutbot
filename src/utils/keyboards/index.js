@@ -9,6 +9,7 @@ const admin = require('./admin');
 const broadcast = require('./broadcast');
 const referrals = require('./referrals');
 const proxy = require('./proxy');
+const px6 = require('./px6');
 
 /**
  * KeyboardUtils — фасад, объединяющий все клавиатуры.
@@ -74,6 +75,11 @@ class KeyboardUtils {
 	static createWithdrawalAdminKeyboard(t, withdrawalId) { return admin.createWithdrawalAdminKeyboard(t, withdrawalId); }
 	static createWithdrawalManualConfirmKeyboard(t, withdrawalId) { return admin.createWithdrawalManualConfirmKeyboard(t, withdrawalId); }
 	static createWithdrawalListKeyboard(t, withdrawals) { return admin.createWithdrawalListKeyboard(t, withdrawals); }
+	static createAdminSettingsKeyboard(t, state) { return admin.createAdminSettingsKeyboard(t, state); }
+	static createAdminPlanListKeyboard(t, plans) { return admin.createAdminPlanListKeyboard(t, plans); }
+	static createAdminPlanKeyboard(t, plan) { return admin.createAdminPlanKeyboard(t, plan); }
+	static createAdminPlanCancelKeyboard(t, planId) { return admin.createAdminPlanCancelKeyboard(t, planId); }
+	static createAdminPx6Keyboard(t) { return admin.createAdminPx6Keyboard(t); }
 
 	// broadcast
 	static createBroadcastAudienceKeyboard(t) { return broadcast.createBroadcastAudienceKeyboard(t); }
@@ -91,7 +97,12 @@ class KeyboardUtils {
 	static createWithdrawalConfirmKeyboard(t, amount) { return referrals.createWithdrawalConfirmKeyboard(t, amount); }
 
 	// proxy
+	static createProxyMenuKeyboard(t, state) { return proxy.createProxyMenuKeyboard(t, state); }
 	static createProxyPlansKeyboard(t, plans) { return proxy.createProxyPlansKeyboard(t, plans); }
+
+	// px6
+	static createPx6CountryKeyboard(t, version, countries) { return px6.createPx6CountryKeyboard(t, version, countries); }
+	static createPx6PeriodKeyboard(t, version, country, quotes) { return px6.createPx6PeriodKeyboard(t, version, country, quotes); }
 	static createProxyConnectKeyboard(t, tgLink) { return proxy.createProxyConnectKeyboard(t, tgLink); }
 }
 

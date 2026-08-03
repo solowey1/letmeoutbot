@@ -10,9 +10,10 @@ const AdminCallbacks = require('../handlers/callbacks/AdminCallbacks');
 const ReferralCallbacks = require('../handlers/callbacks/ReferralCallbacks');
 const GiftCallbacks = require('../handlers/callbacks/GiftCallbacks');
 const ProxyCallbacks = require('../handlers/callbacks/ProxyCallbacks');
+const Px6Callbacks = require('../handlers/callbacks/Px6Callbacks');
 
 class CallbackHandler {
-	constructor(database, paymentService, keysService, bot, broadcastCallbacks = null) {
+	constructor(database, paymentService, keysService, bot, broadcastCallbacks = null, settingsService = null, px6Service = null, pricingService = null, currencyService = null) {
 		this.db = database;
 		this.paymentService = paymentService;
 		this.keysService = keysService;
@@ -20,14 +21,15 @@ class CallbackHandler {
 
 		// Инициализируем модульные обработчики
 		this.menuCallbacks = new MenuCallbacks(database, paymentService, keysService);
-		this.planCallbacks = new PlanCallbacks(database, paymentService, keysService);
+		this.planCallbacks = new PlanCallbacks(database, paymentService, keysService, settingsService, pricingService);
 		this.KeysCallbacks = new KeysCallbacks(database, paymentService, keysService);
 		this.languageCallbacks = new LanguageCallbacks(database, paymentService, keysService);
 		this.broadcastCallbacks = broadcastCallbacks;
-		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService, broadcastCallbacks);
+		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService, broadcastCallbacks, settingsService, currencyService);
 		this.referralCallbacks = new ReferralCallbacks(database, bot);
 		this.giftCallbacks = new GiftCallbacks(database, keysService);
-		this.proxyCallbacks = new ProxyCallbacks(database, paymentService, keysService);
+		this.proxyCallbacks = new ProxyCallbacks(database, paymentService, keysService, settingsService);
+		this.px6Callbacks = new Px6Callbacks(database, px6Service, pricingService, settingsService);
 	}
 
 	async handleCallback(ctx) {
@@ -176,6 +178,30 @@ class CallbackHandler {
 				await this.broadcastCallbacks.handleCancel(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.SETTINGS) {
 				await this.adminCallbacks.handleAdminSettings(ctx);
+			// ── Настройки: продажи и тарифы ──
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.SALES.TOGGLE_VPN) {
+				await this.adminCallbacks.handleToggleSales(ctx, 'vpn_sales_enabled');
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.SALES.TOGGLE_PROXY) {
+				await this.adminCallbacks.handleToggleSales(ctx, 'proxy_sales_enabled');
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.SALES.TOGGLE_PX6) {
+				await this.adminCallbacks.handleToggleSales(ctx, 'px6_sales_enabled');
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.PX6.MENU) {
+				await this.adminCallbacks.handleAdminPx6(ctx);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.PLANS.LIST}_`)) {
+				const type = callbackData.slice(CALLBACK_ACTIONS.ADMIN.PLANS.LIST.length + 1);
+				await this.adminCallbacks.handleAdminPlanList(ctx, type);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.PLANS.EDIT_PRICE}_`)) {
+				const planId = callbackData.slice(CALLBACK_ACTIONS.ADMIN.PLANS.EDIT_PRICE.length + 1);
+				await this.adminCallbacks.handleAdminPlanEdit(ctx, planId, 'price');
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.PLANS.EDIT_LIMIT}_`)) {
+				const planId = callbackData.slice(CALLBACK_ACTIONS.ADMIN.PLANS.EDIT_LIMIT.length + 1);
+				await this.adminCallbacks.handleAdminPlanEdit(ctx, planId, 'limit');
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.PLANS.TOGGLE}_`)) {
+				const planId = callbackData.slice(CALLBACK_ACTIONS.ADMIN.PLANS.TOGGLE.length + 1);
+				await this.adminCallbacks.handleAdminPlanToggle(ctx, planId);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.PLANS.VIEW}_`)) {
+				const planId = callbackData.slice(CALLBACK_ACTIONS.ADMIN.PLANS.VIEW.length + 1);
+				await this.adminCallbacks.handleAdminPlanView(ctx, planId);
 			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.MENU) {
 				await this.referralCallbacks.handleReferralMenu(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.INVITE) {
@@ -198,6 +224,15 @@ class CallbackHandler {
 				await this.giftCallbacks.handleGiftClaim(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.KEYS.BUY) {
 				await this.planCallbacks.handleShowPlans(ctx);
+			// ── Прокси: тип → (px6) страна → срок ──
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.PX6.COUNTRY}_`)) {
+				const version = Number(callbackData.slice(CALLBACK_ACTIONS.PX6.COUNTRY.length + 1));
+				await this.px6Callbacks.handleChooseCountry(ctx, version);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.PX6.PERIOD}_`)) {
+				const [version, country] = callbackData.slice(CALLBACK_ACTIONS.PX6.PERIOD.length + 1).split('_');
+				await this.px6Callbacks.handleChoosePeriod(ctx, Number(version), country);
+			} else if (callbackData === CALLBACK_ACTIONS.PROXY.MTPROTO) {
+				await this.proxyCallbacks.handleMtprotoPlans(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.PROXY.MENU) {
 				await this.proxyCallbacks.handleProxyMenu(ctx);
 			} else {

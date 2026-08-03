@@ -5,10 +5,12 @@ const config = require('../../../config');
 const STAR_CUSTOM_EMOJI_ID = '5920433463428650761';
 
 class PlanCallbacks {
-	constructor(database, paymentService, keysService) {
+	constructor(database, paymentService, keysService, settingsService = null, pricingService = null) {
 		this.db = database;
 		this.paymentService = paymentService;
 		this.keysService = keysService;
+		this.settingsService = settingsService;
+		this.pricingService = pricingService;
 	}
 
 	// ============== ШАГ 1: список тарифов ==============
@@ -17,6 +19,15 @@ class PlanCallbacks {
 		const t = ctx.i18n.t;
 		const { ADMIN_IDS } = require('../../../config/constants');
 		const isAdmin = ADMIN_IDS.includes(ctx.from.id);
+
+		if (this.settingsService && !this.settingsService.isSalesEnabled('vless')) {
+			await ctx.editMessageText(
+				t('payments.sales_disabled', { ns: 'message' }),
+				{ ...KeyboardUtils.createBackToMenuKeyboard(t), parse_mode: 'HTML' }
+			);
+			return;
+		}
+
 		const plans = PlanService.getPlans(isAdmin);
 
 		const keyboard = KeyboardUtils.createPlansKeyboard(t, plans);
@@ -175,9 +186,24 @@ class PlanCallbacks {
 		const key = await this._getOwnedKey(ctx, keyId);
 		if (!key) return;
 
-		const plans = key.key_type === 'mtproto'
-			? PlanService.getProxyPlans()
-			: PlanService.getPlans();
+		// px6: цена динамическая, поэтому сроки считаем на лету — и только
+		// для той страны и версии, которые уже куплены: продлевается тот же
+		// прокси, сменить страну продлением нельзя.
+		const plans = key.key_type === 'px6'
+			? await this._px6RenewPlans(ctx, key)
+			: key.key_type === 'mtproto'
+				? PlanService.getProxyPlans()
+				: PlanService.getPlans();
+
+		if (!plans) return;
+
+		if (!plans.length) {
+			await ctx.editMessageText(
+				t('px6.unavailable', { ns: 'message' }),
+				{ ...KeyboardUtils.createBackToMenuKeyboard(t), parse_mode: 'HTML' }
+			);
+			return;
+		}
 
 		const keyboard = KeyboardUtils.createRenewPlansKeyboard(t, plans, keyId);
 
@@ -185,6 +211,42 @@ class PlanCallbacks {
 			`<b>${t('renewal.choose_plan', { ns: 'message' })}</b>`,
 			{ ...keyboard, parse_mode: 'HTML' }
 		);
+	}
+
+	/**
+	 * Сроки продления px6 с актуальными ценами.
+	 * @returns {Promise<Array|null>} null — экран уже показан (ошибка/продажи выключены)
+	 */
+	async _px6RenewPlans(ctx, key) {
+		const t = ctx.i18n.t;
+		const Px6PricingService = require('../../../services/Px6PricingService');
+		const parsed = Px6PricingService.parsePlanId(key.plan_id);
+
+		if (!parsed || !this.pricingService || !this.settingsService?.isSalesEnabled('px6')) {
+			await ctx.editMessageText(
+				t('payments.sales_disabled', { ns: 'message' }),
+				{ ...KeyboardUtils.createBackToMenuKeyboard(t), parse_mode: 'HTML' }
+			);
+			return null;
+		}
+
+		try {
+			const quotes = await this.pricingService.quoteAllPeriods({ version: parsed.version });
+			return quotes.map(q => Px6PricingService.buildPlan({
+				version: parsed.version,
+				country: parsed.country,
+				period: q.period,
+				stars: q.stars,
+				t
+			}));
+		} catch (error) {
+			console.error('❌ px6: не удалось посчитать продление:', error.message);
+			await ctx.editMessageText(
+				t('px6.unavailable', { ns: 'message' }),
+				{ ...KeyboardUtils.createBackToMenuKeyboard(t), parse_mode: 'HTML' }
+			);
+			return null;
+		}
 	}
 
 	async handleCreateRenewInvoice(ctx, keyId, planId) {
@@ -209,7 +271,43 @@ class PlanCallbacks {
 			const plan = PlanService.getPlanById(planId);
 			if (!plan) throw new Error(t('keys.plan_not_found', { ns: 'error' }));
 
-			const localizedPlan = PlanService.formatPlanForDisplay(t, plan);
+			// Единственная точка выставления счёта — и для покупки, и для
+			// продления, поэтому выключатель продаж проверяется здесь.
+			if (this.settingsService && !this.settingsService.isSalesEnabled(plan.type)) {
+				await ctx.editMessageText(
+					t('payments.sales_disabled', { ns: 'message' }),
+					KeyboardUtils.createBackToMenuKeyboard(t)
+				);
+				return;
+			}
+
+			if (plan.disabled) {
+				await ctx.editMessageText(
+					t('payments.plan_unavailable', { ns: 'message' }),
+					KeyboardUtils.createBackToMenuKeyboard(t)
+				);
+				return;
+			}
+
+			// У px6 цена динамическая — считаем её прямо сейчас, чтобы в счёт
+			// попала актуальная закупка с наценкой, а не ноль из шаблона плана.
+			let localizedPlan;
+			if (plan.type === 'px6') {
+				const Px6PricingService = require('../../../services/Px6PricingService');
+				const { stars } = await this.pricingService.quote({
+					version: plan.version,
+					period: plan.duration
+				});
+				localizedPlan = Px6PricingService.buildPlan({
+					version: plan.version,
+					country: plan.country,
+					period: plan.duration,
+					stars,
+					t
+				});
+			} else {
+				localizedPlan = PlanService.formatPlanForDisplay(t, plan);
+			}
 
 			let user = await this.db.getUserByTelegramId(ctx.from.id);
 			if (!user) {

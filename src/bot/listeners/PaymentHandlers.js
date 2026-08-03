@@ -10,11 +10,12 @@ const MTProtoService = require('../../services/MTProtoService');
 const config = require('../../config');
 
 class PaymentHandlers {
-	constructor(paymentService, keysService, database, adminNotificationService = null) {
+	constructor(paymentService, keysService, database, adminNotificationService = null, settingsService = null) {
 		this.paymentService = paymentService;
 		this.keysService = keysService;
 		this.db = database;
 		this.adminNotificationService = adminNotificationService;
+		this.settingsService = settingsService;
 		this.referralService = new ReferralService(database);
 	}
 
@@ -25,6 +26,19 @@ class PaymentHandlers {
 			if (config.maintenanceMode) {
 				await ctx.answerPreCheckoutQuery(false, t('payments.maintenance', { ns: 'message' }));
 				return;
+			}
+
+			// Счёт мог быть выставлен до того, как продажи выключили в админке:
+			// это последний рубеж перед списанием Stars.
+			if (this.settingsService) {
+				const paymentId = this.paymentService.extractPaymentIdFromPayload(ctx.preCheckoutQuery.invoice_payload);
+				const payment = paymentId ? await this.paymentService.getPayment(paymentId) : null;
+				const plan = payment ? PlanService.getPlanById(payment.plan_id) : null;
+
+				if (plan && (!this.settingsService.isSalesEnabled(plan.type) || plan.disabled)) {
+					await ctx.answerPreCheckoutQuery(false, t('payments.sales_disabled', { ns: 'message' }));
+					return;
+				}
 			}
 
 			// Отвечаем сразу — Telegram требует ответ в течение 10 секунд.
@@ -120,12 +134,16 @@ class PaymentHandlers {
 				await this.sendAccessKeyMessage(ctx, result);
 			}
 
-			// Начисляем реферальный бонус, если есть реферер
+			// Начисляем реферальный бонус, если есть реферер.
+			// Считаем от фактически уплаченной суммы: у px6 цена динамическая
+			// и в шаблоне тарифа её нет, а у остальных она могла измениться
+			// в админке уже после выставления счёта.
 			try {
 				const plan = PlanService.getPlanById(completedPayment.plan_id);
+				const paidAmount = Number(completedPayment.amount) || plan?.price || 0;
 				const bonusResult = await this.referralService.processReferralBonus(
 					completedPayment.user_id,
-					plan.price
+					paidAmount
 				);
 
 				if (bonusResult) {
@@ -196,6 +214,10 @@ class PaymentHandlers {
 			return this.sendProxyAccessMessage(ctx, result);
 		}
 
+		if (result.key?.key_type === 'px6') {
+			return this.sendPx6AccessMessage(ctx, result);
+		}
+
 		const keyboard = KeyboardUtils.createAppsDownloadKeyboard(t);
 		const { generateQR } = require('../../utils/qr');
 
@@ -249,7 +271,10 @@ class PaymentHandlers {
 			return;
 		}
 
-		message += t('renewal.vless_same_key', { ns: 'message' });
+		// px6 продлевает тот же прокси — реквизиты не меняются
+		message += key.key_type === 'px6'
+			? t('renewal.px6_same', { ns: 'message' })
+			: t('renewal.vless_same_key', { ns: 'message' });
 
 		await ctx.reply(message, {
 			...Markup.inlineKeyboard([[btn(t, 'my_keys')]]),
@@ -272,6 +297,34 @@ class PaymentHandlers {
 
 		await ctx.reply(message, {
 			...keyboard,
+			parse_mode: 'HTML',
+			disable_web_page_preview: true
+		});
+	}
+
+	/** Выдача купленного у px6 прокси: реквизиты + как подключить */
+	async sendPx6AccessMessage(ctx, result) {
+		const t = ctx.i18n?.t || ((key) => key);
+		const p = result.proxy || {};
+
+		// MTProto-прокси px6 выдаётся ссылкой t.me/proxy — показываем его так же,
+		// как наш собственный: ссылка, значения для ручного ввода и кнопка
+		if (String(result.accessUrl).startsWith('https://t.me/proxy')) {
+			return this.sendProxyAccessMessage(ctx, result);
+		}
+
+		let message = `🎉 <b>${t('payments.success_title', { ns: 'message' })}</b>\n\n`;
+		message += `✅ ${t('px6.success', { ns: 'message' })}\n\n`;
+		message += `<b>${t('px6.field_host', { ns: 'message' })}:</b> <code>${p.host || ''}</code>\n`;
+		message += `<b>${t('px6.field_port', { ns: 'message' })}:</b> <code>${p.port || ''}</code>\n`;
+		if (p.user) message += `<b>${t('px6.field_user', { ns: 'message' })}:</b> <code>${p.user}</code>\n`;
+		if (p.pass) message += `<b>${t('px6.field_pass', { ns: 'message' })}:</b> <code>${p.pass}</code>\n`;
+		if (p.date_end) message += `<b>${t('px6.field_until', { ns: 'message' })}:</b> ${p.date_end}\n`;
+		message += `\n<b>${t('px6.field_one_line', { ns: 'message' })}:</b>\n<code>${result.accessUrl}</code>\n\n`;
+		message += t('px6.how_to_add.short', { ns: 'message' });
+
+		await ctx.reply(message, {
+			...KeyboardUtils.createBackToMenuKeyboard(t),
 			parse_mode: 'HTML',
 			disable_web_page_preview: true
 		});

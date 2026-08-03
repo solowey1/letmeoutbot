@@ -148,7 +148,32 @@
     },
     "settings": {
       "title": "Bot Settings",
-      "description": "Configuration is managed via environment variables (.env)."
+      "description": "Configuration is managed via environment variables (.env).",
+      "sales_hint": "Manage sales and plans. Disabling sales hides the plans from users and blocks payment.",
+      "plans_hint": "Pick a plan to change its price, limit, or take it off sale.",
+      "sales_enabled": "✅ Sales enabled",
+      "sales_disabled": "🔴 Sales disabled",
+      "plan_enabled": "✅ Plan enabled",
+      "plan_disabled": "🔴 Plan disabled",
+      "field_price": "Price",
+      "field_limit": "Data limit",
+      "field_duration": "Duration, days",
+      "field_status": "Status",
+      "status_enabled": "on sale",
+      "status_disabled": "off sale",
+      "hidden_note": "Internal plan — not shown in the purchase list.",
+      "enter_price": "✏️ <b>{{name}}</b>\n\nCurrent price: <b>{{current}} ⭐</b>\n\nSend the new price in Stars (whole number).\n/cancel to abort.",
+      "enter_limit": "✏️ <b>{{name}}</b>\n\nCurrent limit: <b>{{current}} GB</b>\n\nSend the new limit in GB (0 = unlimited).\n/cancel to abort.",
+      "px6_pricing_hint": "The price is calculated automatically: px6 wholesale → USD at the CBR rate (cached for an hour) → Stars. Nothing to configure, the markup is fixed.",
+      "px6_markup_label": "Markup",
+      "px6_star_usd_label": "Star in USD (STARS_USD_RATE)",
+      "px6_usdrub": "USD/RUB rate: <b>{{rate}} ₽</b> ({{source}}, updated {{updated}})",
+      "px6_usdrub_failed": "⚠️ Could not fetch the USD/RUB rate — prices cannot be calculated right now.",
+      "px6_on": "🟢 px6 proxy sales are on.",
+      "px6_off": "🔴 px6 proxy sales are off.",
+      "invalid_value": "⚠️ A number is required. Try again or send /cancel.",
+      "edit_cancelled": "Edit cancelled.",
+      "saved": "Saved"
     },
     "notifications": {
       "new_purchase": {
@@ -293,7 +318,8 @@
     ]
   },
   "proxy": {
-    "intro": "📡 <b>MTProto Proxy for Telegram</b>\n\nMTProto is Telegram's own proxy protocol. Unlike a VPN it wraps only Telegram's own traffic, not your whole device — so banks and marketplaces that block users with an active VPN never see the proxy, and everything else keeps working as usual.\n\nChoose a duration:",
+    "menu_intro": "🌐 <b>Proxy</b>\n\nA proxy routes one app’s traffic instead of the whole device, unlike a VPN. Pick the type that matches your task:\n\n• <b>MTProto</b> — for Telegram only, connects in one tap. Available on our server (Netherlands) and via our partner in other countries.\n• <b>IPv6 / IPv4 / IPv4 Shared</b> — regular HTTP(S) and SOCKS5 proxies for browsers, apps and scrapers. Not needed for Telegram — use MTProto there.\n\nThe next screen explains exactly what you are buying.",
+    "intro": "📡 <b>MTProto (NL)</b> — our Telegram proxy\n\nIt only affects Telegram: it routes the messenger’s own traffic rather than the whole device — so banks and marketplaces that block users on a VPN never see it, and everything else keeps working as usual. Server in the Netherlands, one-tap connection via a link.\n\nNot suitable for browsers, apps or scrapers — pick IPv4 or IPv6 for those.\n\nChoose a period:",
     "success": "Proxy activated!",
     "link_label": "Proxy link:",
     "open_link": "Connect proxy",
@@ -315,10 +341,36 @@
       }
     }
   },
+  "px6": {
+    "choose_country": "Pick a country — this is where your IP address will be located.",
+    "choose_period": "🌍 <b>{{type}} · {{country}}</b>\n\nPick a rental period. The price is per proxy.",
+    "days": "days",
+    "invoice": "{{label}} proxy {{country}} — {{days}} days",
+    "no_countries": "😔 No countries are available for this proxy type right now. Try another type or check back later.",
+    "out_of_stock": "😔 This country is sold out. Pick another country or check back later.",
+    "unavailable": "⚠️ The proxy service is temporarily unavailable. Please try again later.",
+    "success": "Your proxy is ready!",
+    "field_host": "Host",
+    "field_port": "Port",
+    "field_user": "Login",
+    "field_pass": "Password",
+    "field_until": "Valid until",
+    "field_one_line": "One line",
+    "how_to_add": {
+      "short": "💡 The proxy supports HTTP(S) and SOCKS5. Enter the host, port, login and password in your browser, extension or app settings — or paste the line above wherever the <code>host:port:login:password</code> format is accepted."
+    },
+    "note": {
+      "v3": "The same IPv4, but the address is shared with other users (each gets its own port). Cheaper than a dedicated one. Fine for undemanding tasks; if the service counts requests per IP, a dedicated IPv4 is the safer choice.",
+      "v4": "A dedicated IPv4 address, yours alone. The universal choice: browsers, extensions, scrapers, any app that supports HTTP(S) or SOCKS5 — anywhere IPv6 will not do. For a one-tap Telegram proxy you need MTProto, not this type.",
+      "v5": "A Telegram proxy in the country you choose. It only affects Telegram — every other app and site goes out directly, as usual. Connects with one tap via a link. Not suitable for browsers or other software: pick IPv4 or IPv6 for those.",
+      "v6": "The cheapest option. It only works where the service supports IPv6 — and many sites, shops and Telegram do not. Pick it if you know your service speaks IPv6; if in doubt, take IPv4."
+    }
+  },
   "keys": {
     "no_active": "You don't have any active keys yet.\n\nChoose a plan to purchase VPN access.",
     "active_list": "Your active keys:",
     "type_proxy": "MTProto",
+    "type_px6": "Proxy",
     "type_vpn": "VPN",
     "pending_list": "Awaiting activation:",
     "pending_status": "⏳ awaiting activation",
@@ -404,7 +456,9 @@
       "details": "Order details:",
       "vpn_key": "VPN key:",
       "thanks": "Thank you for your purchase! 🎉"
-    }
+    },
+    "sales_disabled": "🔴 Sales are temporarily paused. Please check back later.",
+    "plan_unavailable": "🔴 This plan is currently unavailable. Please pick another one."
   },
   "referral": {
     "title": "🎁 Referral Program",
@@ -534,6 +588,7 @@
     "success_until": "Valid until: {{date}}",
     "vless_same_key": "Your subscription and key stay the same — no changes needed in the app.",
     "proxy_same": "The proxy keeps working, the link is unchanged.",
-    "proxy_new_link": "The proxy was disabled after expiry, so here is your new link:"
+    "proxy_new_link": "The proxy was disabled after expiry, so here is your new link:",
+    "px6_same": "The proxy, login and password stay the same — nothing to change in your settings."
   }
 }

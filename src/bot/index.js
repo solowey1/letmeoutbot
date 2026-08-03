@@ -28,6 +28,10 @@ const I18nMiddleware = require('../middleware/i18nMiddleware');
 // Импорты конфигурации
 const config = require('../config');
 const PlanService = require('../services/PlanService');
+const SettingsService = require('../services/SettingsService');
+const Px6Service = require('../services/Px6Service');
+const Px6PricingService = require('../services/Px6PricingService');
+const CurrencyService = require('../services/CurrencyService');
 
 class TelegramBot {
 	constructor() {
@@ -52,7 +56,11 @@ class TelegramBot {
 		this.xrayService = new XRayService(config.xray.panelUrl, config.xray.apiKey, config.xray.subBaseUrl, config.xray.inboundIds);
 		this.mtprotoService = new MTProtoService(config.mtproto.apiUrl, config.mtproto.apiToken);
 		this.paymentService = new PaymentService(this.db);
-		this.keysService = new KeysService(this.db, this.xrayService, this.mtprotoService);
+		this.settingsService = new SettingsService(this.db);
+		this.px6Service = new Px6Service(config.px6.apiKey);
+		this.currencyService = new CurrencyService();
+		this.px6PricingService = new Px6PricingService(this.px6Service, this.currencyService);
+		this.keysService = new KeysService(this.db, this.xrayService, this.mtprotoService, this.px6Service);
 		this.notificationService = new NotificationService(this.bot, this.i18nService, this.db);
 		this.adminNotificationService = new AdminNotificationService(this.bot, this.db, this.i18nService);
 		this.broadcastService = new BroadcastService(this.bot, this.db);
@@ -68,15 +76,16 @@ class TelegramBot {
 		this.broadcastCallbacks = new BroadcastCallbacks(this.db, this.broadcastService);
 
 		// Инициализируем обработчики
-		this.CallbackHandler = new CallbackHandler(this.db, this.paymentService, this.keysService, this.bot, this.broadcastCallbacks);
+		this.CallbackHandler = new CallbackHandler(this.db, this.paymentService, this.keysService, this.bot, this.broadcastCallbacks, this.settingsService, this.px6Service, this.px6PricingService, this.currencyService);
 		this.commandHandlers = new CommandHandlers(this.db);
 		this.paymentHandlers = new PaymentHandlers(
 			this.paymentService,
 			this.keysService,
 			this.db,
-			this.adminNotificationService
+			this.adminNotificationService,
+			this.settingsService
 		);
-		this.messageHandlers = new MessageHandlers(this.db, this.bot, this.broadcastCallbacks);
+		this.messageHandlers = new MessageHandlers(this.db, this.bot, this.broadcastCallbacks, this.CallbackHandler.adminCallbacks);
 
 		// Подключаем i18n middleware
 		const i18nMiddleware = new I18nMiddleware(this.i18nService, this.db);
@@ -120,7 +129,11 @@ class TelegramBot {
 	async start() {
 		try {
 			console.log('🤖 VPN Bot запускается...');
+			// Порядок важен: сначала досоздаём недостающие тарифы, потом
+			// читаем — иначе новый тариф не попадёт в админку до рестарта.
+			await PlanService.syncPlansToDb(this.db);
 			await PlanService.loadPrices(this.db);
+			await this.settingsService.load();
 
 			// Устанавливаем команды бота
 			// await this.bot.api.setMyCommands([

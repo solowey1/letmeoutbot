@@ -164,6 +164,29 @@ class KeyMessages {
 	}
 
 	/**
+	 * Реквизиты купленного у px6 прокси из строки host:port[:user:pass]
+	 * @param {Function} t
+	 * @param {string} accessUrl
+	 * @returns {string}
+	 */
+	static px6Details(t, accessUrl) {
+		const Px6Service = require('../Px6Service');
+		const parsed = Px6Service.parseProxyLine(accessUrl);
+		if (!parsed) return `<code>${accessUrl}</code>`;
+
+		const { host, port, user, pass } = parsed;
+		const lines = [
+			`<b>${t('px6.field_host', { ns: 'message' })}:</b> <code>${host}</code>`,
+			`<b>${t('px6.field_port', { ns: 'message' })}:</b> <code>${port}</code>`
+		];
+		if (user) lines.push(`<b>${t('px6.field_user', { ns: 'message' })}:</b> <code>${user}</code>`);
+		if (pass) lines.push(`<b>${t('px6.field_pass', { ns: 'message' })}:</b> <code>${pass}</code>`);
+		lines.push('', `<b>${t('px6.field_one_line', { ns: 'message' })}:</b>`, `<code>${accessUrl}</code>`);
+
+		return lines.join('\n');
+	}
+
+	/**
 	 * Форматирование байтов в читаемый вид
 	 * @param {number} bytes
 	 * @returns {string}
