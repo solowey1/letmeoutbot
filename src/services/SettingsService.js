@@ -23,6 +23,9 @@ class SettingsService {
 	constructor(database) {
 		this.db = database;
 		this.cache = { ...SettingsService.DEFAULTS };
+		// false — значения живут только в памяти и переключатели в админке
+		// не сохранятся: нет методов в БД либо не принята миграция 010
+		this.isPersistent = false;
 	}
 
 	static parse(key, raw) {
@@ -38,6 +41,7 @@ class SettingsService {
 		}
 		try {
 			const rows = await this.db.getSettings();
+			this.isPersistent = true;
 			for (const { key, value } of rows) {
 				if (!(key in this.cache)) continue;
 				const parsed = SettingsService.parse(key, value);
@@ -48,6 +52,7 @@ class SettingsService {
 			console.log('✅ Настройки бота загружены из БД');
 		} catch (error) {
 			console.error('⚠️ Не удалось загрузить настройки, используются значения по умолчанию:', error.message);
+			console.error('   Проверьте, применена ли миграция 010_admin_settings_and_plan_limits.sql — без таблицы bot_settings переключатели продаж не сохраняются.');
 		}
 	}
 

@@ -394,11 +394,23 @@ class AdminCallbacks {
 
 		adminEditState.delete(ctx.from.id);
 
-		const message = [
+		const lines = [
 			`⚙️ <b>${t('admin.settings.title', { ns: 'message' })}</b>`,
 			'',
 			t('admin.settings.sales_hint', { ns: 'message' })
-		].join('\n');
+		];
+
+		// Переключатели пишутся в БД — без таблицы они молча не сохранятся.
+		// Лучше сказать об этом до нажатия, чем показывать ошибку после.
+		if (!this.settingsService.isPersistent) {
+			lines.push('', t('admin.settings.storage_missing', { ns: 'message' }));
+		}
+
+		if (this.settingsService.get('px6_sales_enabled') && !require('../../../config').px6.apiKey) {
+			lines.push('', t('admin.settings.px6_no_key', { ns: 'message' }));
+		}
+
+		const message = lines.join('\n');
 
 		const keyboard = KeyboardUtils.createAdminSettingsKeyboard(t, {
 			vpnSales: this.settingsService.get('vpn_sales_enabled'),
@@ -427,8 +439,13 @@ class AdminCallbacks {
 				t(next ? 'admin.settings.sales_enabled' : 'admin.settings.sales_disabled', { ns: 'message' })
 			);
 		} catch (error) {
+			// Экран админский — показываем настоящую причину, а не «ошибка».
+			// Чаще всего это непринятая миграция: без неё нет bot_settings.
 			console.error('Ошибка переключения продаж:', error.message);
-			await ctx.answerCallbackQuery(t('admin.loading_error', { ns: 'message' }), { show_alert: true });
+			await ctx.answerCallbackQuery(
+				t('admin.settings.save_failed', { ns: 'message', reason: error.message || '—' }),
+				{ show_alert: true }
+			);
 			return;
 		}
 

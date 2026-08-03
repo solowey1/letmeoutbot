@@ -1,5 +1,6 @@
 const KeyboardUtils = require('../../../utils/keyboards');
 const PlanService = require('../../../services/PlanService');
+const config = require('../../../config');
 
 class ProxyCallbacks {
 	constructor(database, paymentService, keysService, settingsService = null) {
@@ -17,7 +18,10 @@ class ProxyCallbacks {
 		const t = ctx.i18n.t;
 
 		const ownEnabled = !this.settingsService || this.settingsService.isSalesEnabled('mtproto');
-		const px6Enabled = !this.settingsService || this.settingsService.isSalesEnabled('px6');
+		// Без ключа поставщика тарифы не посчитать — не показываем типы,
+		// по которым покупка всё равно упрётся в заглушку
+		const px6Enabled = Boolean(config.px6.apiKey)
+			&& (!this.settingsService || this.settingsService.isSalesEnabled('px6'));
 
 		if (!ownEnabled && !px6Enabled) {
 			await ctx.editMessageText(
