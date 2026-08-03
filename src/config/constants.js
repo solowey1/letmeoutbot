@@ -259,10 +259,10 @@ const CALLBACK_ACTIONS = {
 		CLAIM: 'gift_claim'
 	},
 	PROXY: {
-		MENU: 'proxy_menu'
+		MENU: 'proxy_menu',      // общий экран выбора типа прокси
+		MTPROTO: 'proxy_mt'      // наш MTProto-прокси (NL)
 	},
 	PX6: {
-		MENU: 'px6_menu',        // выбор версии
 		COUNTRY: 'px6c',         // px6c_<version>
 		PERIOD: 'px6p'           // px6p_<version>_<country>
 	}

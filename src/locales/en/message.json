@@ -318,7 +318,8 @@
     ]
   },
   "proxy": {
-    "intro": "📡 <b>MTProto Proxy for Telegram</b>\n\nMTProto is Telegram's own proxy protocol. Unlike a VPN it wraps only Telegram's own traffic, not your whole device — so banks and marketplaces that block users with an active VPN never see the proxy, and everything else keeps working as usual.\n\nChoose a duration:",
+    "menu_intro": "🌐 <b>Proxy</b>\n\nA proxy routes one app’s traffic instead of the whole device, unlike a VPN. Pick the type that matches your task:\n\n• <b>MTProto</b> — for Telegram only, connects in one tap. Available on our server (Netherlands) and via our partner in other countries.\n• <b>IPv6 / IPv4 / IPv4 Shared</b> — regular HTTP(S) and SOCKS5 proxies for browsers, apps and scrapers. Not needed for Telegram — use MTProto there.\n\nThe next screen explains exactly what you are buying.",
+    "intro": "📡 <b>MTProto (NL)</b> — our Telegram proxy\n\nIt only affects Telegram: it routes the messenger’s own traffic rather than the whole device — so banks and marketplaces that block users on a VPN never see it, and everything else keeps working as usual. Server in the Netherlands, one-tap connection via a link.\n\nNot suitable for browsers, apps or scrapers — pick IPv4 or IPv6 for those.\n\nChoose a period:",
     "success": "Proxy activated!",
     "link_label": "Proxy link:",
     "open_link": "Connect proxy",
@@ -341,8 +342,7 @@
     }
   },
   "px6": {
-    "intro": "🌍 <b>Personal proxies</b>\n\nA dedicated IP address in the country you choose, used by you alone. Works with browsers, messengers and any app that supports proxies: traffic goes straight out of that IP, with no shared load and no data caps.\n\nIPv6 is the cheapest option, IPv4 is for services that do not support IPv6, IPv4 Shared is a cheaper shared address, and MTProto is a Telegram proxy in the country you pick.\n\nPick a proxy type:",
-    "choose_country": "🌍 <b>{{type}}</b>\n\nPick a country — this is where your IP address will be located.",
+    "choose_country": "Pick a country — this is where your IP address will be located.",
     "choose_period": "🌍 <b>{{type}} · {{country}}</b>\n\nPick a rental period. The price is per proxy.",
     "days": "days",
     "invoice": "{{label}} proxy {{country}} — {{days}} days",
@@ -358,6 +358,12 @@
     "field_one_line": "One line",
     "how_to_add": {
       "short": "💡 The proxy supports HTTP(S) and SOCKS5. Enter the host, port, login and password in your browser, extension or app settings — or paste the line above wherever the <code>host:port:login:password</code> format is accepted."
+    },
+    "note": {
+      "v3": "The same IPv4, but the address is shared with other users (each gets its own port). Cheaper than a dedicated one. Fine for undemanding tasks; if the service counts requests per IP, a dedicated IPv4 is the safer choice.",
+      "v4": "A dedicated IPv4 address, yours alone. The universal choice: browsers, extensions, scrapers, any app that supports HTTP(S) or SOCKS5 — anywhere IPv6 will not do. For a one-tap Telegram proxy you need MTProto, not this type.",
+      "v5": "A Telegram proxy in the country you choose. It only affects Telegram — every other app and site goes out directly, as usual. Connects with one tap via a link. Not suitable for browsers or other software: pick IPv4 or IPv6 for those.",
+      "v6": "The cheapest option. It only works where the service supports IPv6 — and many sites, shops and Telegram do not. Pick it if you know your service speaks IPv6; if in doubt, take IPv4."
     }
   },
   "keys": {

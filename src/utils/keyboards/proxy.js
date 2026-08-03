@@ -1,7 +1,41 @@
 const { Markup } = require('../markup');
 const { CALLBACK_ACTIONS } = require('../../config/constants');
 const PlanService = require('../../services/PlanService');
+const Px6PricingService = require('../../services/Px6PricingService');
 const { btn } = require('./common');
+
+const V = require('../../services/Px6Service').VERSION;
+
+/**
+ * Выбор типа прокси. Наш MTProto и перепродажа px6 включаются отдельно,
+ * поэтому недоступный продукт просто не показываем.
+ */
+function createProxyMenuKeyboard(t, { ownEnabled = true, px6Enabled = true } = {}) {
+	const rows = [];
+
+	if (px6Enabled) {
+		rows.push([Markup.button.callback(
+			t('buttons.proxy.mtproto_px6'),
+			`${CALLBACK_ACTIONS.PX6.COUNTRY}_${V.MTPROTO}`
+		)]);
+	}
+
+	if (ownEnabled) {
+		rows.push([Markup.button.callback(t('buttons.proxy.mtproto_own'), CALLBACK_ACTIONS.PROXY.MTPROTO)]);
+	}
+
+	if (px6Enabled) {
+		for (const version of [V.IPV6, V.IPV4, V.IPV4_SHARED]) {
+			rows.push([Markup.button.callback(
+				Px6PricingService.versionLabel(version),
+				`${CALLBACK_ACTIONS.PX6.COUNTRY}_${version}`
+			)]);
+		}
+	}
+
+	rows.push([btn(t, 'home')]);
+	return Markup.inlineKeyboard(rows);
+}
 
 function createProxyPlansKeyboard(t, plans) {
 	const buttons = plans.map(plan => {
@@ -14,7 +48,10 @@ function createProxyPlansKeyboard(t, plans) {
 		return [button];
 	});
 
-	buttons.push([btn(t, 'home')]);
+	buttons.push([
+		btn(t, 'back', CALLBACK_ACTIONS.PROXY.MENU),
+		btn(t, 'home')
+	]);
 
 	return Markup.inlineKeyboard(buttons);
 }
@@ -27,6 +64,7 @@ function createProxyConnectKeyboard(t, tgLink) {
 }
 
 module.exports = {
+	createProxyMenuKeyboard,
 	createProxyPlansKeyboard,
 	createProxyConnectKeyboard
 };

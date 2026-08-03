@@ -97,10 +97,10 @@ class KeyboardUtils {
 	static createWithdrawalConfirmKeyboard(t, amount) { return referrals.createWithdrawalConfirmKeyboard(t, amount); }
 
 	// proxy
+	static createProxyMenuKeyboard(t, state) { return proxy.createProxyMenuKeyboard(t, state); }
 	static createProxyPlansKeyboard(t, plans) { return proxy.createProxyPlansKeyboard(t, plans); }
 
 	// px6
-	static createPx6VersionKeyboard(t) { return px6.createPx6VersionKeyboard(t); }
 	static createPx6CountryKeyboard(t, version, countries) { return px6.createPx6CountryKeyboard(t, version, countries); }
 	static createPx6PeriodKeyboard(t, version, country, quotes) { return px6.createPx6PeriodKeyboard(t, version, country, quotes); }
 	static createProxyConnectKeyboard(t, tgLink) { return proxy.createProxyConnectKeyboard(t, tgLink); }

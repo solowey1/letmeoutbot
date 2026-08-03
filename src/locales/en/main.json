@@ -4,8 +4,7 @@
       "first": "Buy VPN",
       "key": "Buy VPN",
       "more": "Buy more VPN",
-      "proxy": "Buy Telegram Proxy",
-      "px6": "Buy proxies"
+      "proxy": "Proxy"
     },
     "gift": "Get Free Trial",
     "claim_gift": "Claim",
@@ -95,7 +94,11 @@
       "prev": "Prev",
       "next": "Next"
     },
-    "renew": "Renew"
+    "renew": "Renew",
+    "proxy": {
+      "mtproto_px6": "MTProto",
+      "mtproto_own": "MTProto (NL)"
+    }
   },
   "common": {
     "not_specified": "Not specified",

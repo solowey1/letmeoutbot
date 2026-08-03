@@ -224,15 +224,15 @@ class CallbackHandler {
 				await this.giftCallbacks.handleGiftClaim(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.KEYS.BUY) {
 				await this.planCallbacks.handleShowPlans(ctx);
-			// ── Прокси px6: версия → страна → срок ──
-			} else if (callbackData === CALLBACK_ACTIONS.PX6.MENU) {
-				await this.px6Callbacks.handleMenu(ctx);
+			// ── Прокси: тип → (px6) страна → срок ──
 			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.PX6.COUNTRY}_`)) {
 				const version = Number(callbackData.slice(CALLBACK_ACTIONS.PX6.COUNTRY.length + 1));
 				await this.px6Callbacks.handleChooseCountry(ctx, version);
 			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.PX6.PERIOD}_`)) {
 				const [version, country] = callbackData.slice(CALLBACK_ACTIONS.PX6.PERIOD.length + 1).split('_');
 				await this.px6Callbacks.handleChoosePeriod(ctx, Number(version), country);
+			} else if (callbackData === CALLBACK_ACTIONS.PROXY.MTPROTO) {
+				await this.proxyCallbacks.handleMtprotoPlans(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.PROXY.MENU) {
 				await this.proxyCallbacks.handleProxyMenu(ctx);
 			} else {

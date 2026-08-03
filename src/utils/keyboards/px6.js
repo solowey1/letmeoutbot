@@ -5,16 +5,7 @@ const { btn } = require('./common');
 
 const P = CALLBACK_ACTIONS.PX6;
 
-/** Шаг 1 — версия прокси */
-function createPx6VersionKeyboard(t) {
-	const rows = Px6PricingService.SALE_VERSIONS.map(version => [
-		Markup.button.callback(Px6PricingService.versionLabel(version), `${P.COUNTRY}_${version}`)
-	]);
-	rows.push([btn(t, 'home')]);
-	return Markup.inlineKeyboard(rows);
-}
-
-/** Шаг 2 — страна. Флаг собираем из iso2 через regional indicator symbols */
+/** Шаг 1 — страна. Флаг собираем из iso2 через regional indicator symbols */
 function createPx6CountryKeyboard(t, version, countries) {
 	const rows = [];
 	for (let i = 0; i < countries.length; i += 3) {
@@ -26,13 +17,13 @@ function createPx6CountryKeyboard(t, version, countries) {
 		));
 	}
 	rows.push([
-		btn(t, 'back', P.MENU),
+		btn(t, 'back', CALLBACK_ACTIONS.PROXY.MENU),
 		btn(t, 'home')
 	]);
 	return Markup.inlineKeyboard(rows);
 }
 
-/** Шаг 3 — срок с посчитанной ценой в звёздах */
+/** Шаг 2 — срок с посчитанной ценой в звёздах */
 function createPx6PeriodKeyboard(t, version, country, quotes) {
 	const rows = quotes.map(q => [
 		Markup.button.callback(
@@ -55,7 +46,6 @@ function countryFlag(iso2) {
 }
 
 module.exports = {
-	createPx6VersionKeyboard,
 	createPx6CountryKeyboard,
 	createPx6PeriodKeyboard,
 	countryFlag

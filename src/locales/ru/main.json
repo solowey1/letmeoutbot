@@ -4,8 +4,7 @@
       "first": "Купить VPN",
       "key": "Купить VPN",
       "more": "Купить ещё VPN",
-      "proxy": "Купить Proxy для Telegram",
-      "px6": "Купить прокси"
+      "proxy": "Proxy"
     },
     "gift": "Получить подарок",
     "claim_gift": "Получить",
@@ -95,7 +94,11 @@
       "prev": "Назад",
       "next": "Вперёд"
     },
-    "renew": "Продлить"
+    "renew": "Продлить",
+    "proxy": {
+      "mtproto_px6": "MTProto",
+      "mtproto_own": "MTProto (NL)"
+    }
   },
   "common": {
     "not_specified": "Не указано",

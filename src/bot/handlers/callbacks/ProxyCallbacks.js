@@ -9,7 +9,32 @@ class ProxyCallbacks {
 		this.settingsService = settingsService;
 	}
 
+	/**
+	 * Выбор типа прокси. Продукты разные и назначение у них разное —
+	 * поясняем прямо здесь, чтобы не купили IPv4 «для Telegram».
+	 */
 	async handleProxyMenu(ctx) {
+		const t = ctx.i18n.t;
+
+		const ownEnabled = !this.settingsService || this.settingsService.isSalesEnabled('mtproto');
+		const px6Enabled = !this.settingsService || this.settingsService.isSalesEnabled('px6');
+
+		if (!ownEnabled && !px6Enabled) {
+			await ctx.editMessageText(
+				t('payments.sales_disabled', { ns: 'message' }),
+				{ ...KeyboardUtils.createBackToMenuKeyboard(t), parse_mode: 'HTML' }
+			);
+			return;
+		}
+
+		await ctx.editMessageText(t('proxy.menu_intro', { ns: 'message' }), {
+			...KeyboardUtils.createProxyMenuKeyboard(t, { ownEnabled, px6Enabled }),
+			parse_mode: 'HTML'
+		});
+	}
+
+	/** Наш MTProto-прокси (NL): пояснение + сроки */
+	async handleMtprotoPlans(ctx) {
 		const t = ctx.i18n.t;
 		const { ADMIN_IDS } = require('../../../config/constants');
 		const isAdmin = ADMIN_IDS.includes(ctx.from.id);
@@ -24,11 +49,8 @@ class ProxyCallbacks {
 
 		const plans = PlanService.getProxyPlans(isAdmin);
 
-		const message = t('proxy.intro', { ns: 'message' });
-		const keyboard = KeyboardUtils.createProxyPlansKeyboard(t, plans);
-
-		await ctx.editMessageText(message, {
-			...keyboard,
+		await ctx.editMessageText(t('proxy.intro', { ns: 'message' }), {
+			...KeyboardUtils.createProxyPlansKeyboard(t, plans),
 			parse_mode: 'HTML'
 		});
 	}

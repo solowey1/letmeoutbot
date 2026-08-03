@@ -2,7 +2,7 @@ const KeyboardUtils = require('../../../utils/keyboards');
 const Px6PricingService = require('../../../services/Px6PricingService');
 
 /**
- * Покупка прокси px6: версия → страна → срок → счёт.
+ * Покупка прокси px6: тип (в меню Proxy) → страна → срок → счёт.
  * Цена динамическая, поэтому считается на последнем шаге и «зашивается»
  * в счёт; после оплаты параметры заказа восстанавливаются из id тарифа.
  */
@@ -37,18 +37,7 @@ class Px6Callbacks {
 		);
 	}
 
-	/** Шаг 1 — что такое px6-прокси и выбор версии */
-	async handleMenu(ctx) {
-		const t = ctx.i18n.t;
-		if (!await this._guard(ctx)) return;
-
-		await ctx.editMessageText(t('px6.intro', { ns: 'message' }), {
-			...KeyboardUtils.createPx6VersionKeyboard(t),
-			parse_mode: 'HTML'
-		});
-	}
-
-	/** Шаг 2 — страны, доступные для выбранной версии */
+	/** Шаг 1 — страны, доступные для выбранной версии */
 	async handleChooseCountry(ctx, version) {
 		const t = ctx.i18n.t;
 		if (!await this._guard(ctx)) return;
@@ -63,8 +52,18 @@ class Px6Callbacks {
 				return;
 			}
 
+			// Заметка о назначении типа — чтобы не купили IPv6 туда,
+			// где он не работает, или IPv4 вместо MTProto для Telegram
+			const message = [
+				`<b>${Px6PricingService.versionLabel(version)}</b>`,
+				'',
+				t(`px6.note.v${version}`, { ns: 'message' }),
+				'',
+				t('px6.choose_country', { ns: 'message' })
+			].join('\n');
+
 			await ctx.editMessageText(
-				t('px6.choose_country', { ns: 'message', type: Px6PricingService.versionLabel(version) }),
+				message,
 				{ ...KeyboardUtils.createPx6CountryKeyboard(t, version, countries), parse_mode: 'HTML' }
 			);
 		} catch (error) {
@@ -72,7 +71,7 @@ class Px6Callbacks {
 		}
 	}
 
-	/** Шаг 3 — сроки с ценами */
+	/** Шаг 2 — сроки с ценами */
 	async handleChoosePeriod(ctx, version, country) {
 		const t = ctx.i18n.t;
 		if (!await this._guard(ctx)) return;
