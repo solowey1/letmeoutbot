@@ -3,10 +3,11 @@ const PlanService = require('./PlanService');
 const moment = require('moment');
 
 class KeysService {
-	constructor(database, xrayService = null, mtprotoService = null) {
+	constructor(database, xrayService = null, mtprotoService = null, px6Service = null) {
 		this.db = database;
 		this.xrayService = xrayService;
 		this.mtprotoService = mtprotoService;
+		this.px6Service = px6Service;
 		this.sendNotificationToUser = null; // устанавливается извне
 	}
 
@@ -55,6 +56,50 @@ class KeysService {
 	 */
 	async activateKeyOnVpnServer(keyId, plan, userTID, expiresAt) {
 		const clientId = `LetMeOut_${keyId}_${plan.id}`;
+
+		if (plan.type === KEY_TYPE.PX6) {
+			if (!this.px6Service) throw new Error('Px6Service не инициализирован');
+
+			// descr ограничен 50 символами и служит ключом поиска в getproxy
+			const descr = `lmo_${keyId}`.slice(0, 50);
+			const { proxies, orderId } = await this.px6Service.buy({
+				count: 1,
+				period: plan.duration,
+				country: plan.country,
+				version: plan.version,
+				descr
+			});
+
+			const proxy = proxies[0];
+			if (!proxy) throw new Error('px6 не вернул прокси в ответе на buy');
+
+			const Px6Service = require('./Px6Service');
+			const accessUrl = Px6Service.formatProxy(proxy);
+
+			// Срок ведёт px6 — берём его дату, а не расчётную, иначе наши
+			// уведомления об окончании разъедутся с реальным доступом.
+			const realExpiry = proxy.unixtime_end
+				? new Date(Number(proxy.unixtime_end) * 1000)
+				: expiresAt;
+
+			await this.db.updateKey(keyId, {
+				external_key_id: String(proxy.id),
+				external_client_id: descr,
+				access_url: accessUrl,
+				key_type: KEY_TYPE.PX6,
+				status: KEY_STATUS.ACTIVE,
+				expires_at: realExpiry
+			});
+
+			console.log(`✅ px6: заказ ${orderId}, прокси ${proxy.id} для key=${keyId}`);
+
+			return {
+				keyId,
+				accessUrl,
+				proxy,
+				key: await this.db.getKey(keyId)
+			};
+		}
 
 		if (plan.type === KEY_TYPE.MTPROTO) {
 			if (!this.mtprotoService) throw new Error('MTProtoService не инициализирован');
@@ -163,7 +208,27 @@ class KeysService {
 			: moment();
 		const expiresAt = base.add(plan.duration, 'days').toDate();
 
-		if (key.key_type === KEY_TYPE.MTPROTO) {
+		if (key.key_type === KEY_TYPE.PX6) {
+			if (!this.px6Service) throw new Error('Px6Service не инициализирован');
+
+			// Продлеваем тот же прокси — у пользователя не меняются ни IP,
+			// ни логин с паролем, поэтому переотправлять реквизиты не нужно.
+			const { proxies } = await this.px6Service.prolong({
+				period: plan.duration,
+				ids: key.external_key_id
+			});
+
+			const prolonged = proxies.find(p => String(p.id) === String(key.external_key_id)) || proxies[0];
+			const realExpiry = prolonged?.unixtime_end
+				? new Date(Number(prolonged.unixtime_end) * 1000)
+				: expiresAt;
+
+			await this.db.updateKey(keyId, {
+				plan_id: plan.id,
+				expires_at: realExpiry.toISOString(),
+				status: KEY_STATUS.ACTIVE
+			});
+		} else if (key.key_type === KEY_TYPE.MTPROTO) {
 			if (!this.mtprotoService) throw new Error('MTProtoService не инициализирован');
 
 			const proxyUser = await this.mtprotoService.createUser(key.external_client_id);
@@ -313,7 +378,9 @@ class KeysService {
 		let key = await this.db.getKey(keyId);
 		if (!key) throw new Error('Ключ не найден');
 
-		const isKnownType = key.key_type === KEY_TYPE.VLESS || key.key_type === KEY_TYPE.MTPROTO;
+		const isKnownType = key.key_type === KEY_TYPE.VLESS
+			|| key.key_type === KEY_TYPE.MTPROTO
+			|| key.key_type === KEY_TYPE.PX6;
 		if (key.status === KEY_STATUS.ACTIVE && key.key_type && !isKnownType) {
 			key = await this.reissueLegacyKey(key);
 		}

@@ -34,6 +34,7 @@ const BUTTON_PRESETS = {
 	buy_first:       { text: 'buttons.buy.first',                   action: CALLBACK_ACTIONS.KEYS.BUY,               style: 'primary',   icon: '5427168083074628963' },
 	buy_more:        { text: 'buttons.buy.more',                    action: CALLBACK_ACTIONS.KEYS.BUY,               style: 'primary',   icon: '5427168083074628963' },
 	buy_proxy:       { text: 'buttons.buy.proxy',                   action: CALLBACK_ACTIONS.PROXY.MENU,             style: null,   		 icon: '6030445631921721471' },
+	buy_px6:         { text: 'buttons.buy.px6',                     action: CALLBACK_ACTIONS.PX6.MENU,               style: null,   		 icon: '6030445631921721471' },
 	pay:             { text: 'buttons.pay',                         action: null,                                    style: 'primary',   icon: '5895708410447401643' },
 	renew:           { text: 'buttons.renew',                       action: null,                                    style: 'primary',   icon: '5775896410780079073' },
 	confirm:         { text: 'buttons.confirm',            					action: null,                                    style: 'success',   icon: '5774022692642492953' },

@@ -136,7 +136,10 @@ class KeysCallbacks {
 			}
 
 			if (key.access_url) {
-				if (key.key_type === 'mtproto') {
+				if (key.key_type === 'px6') {
+					message += `${KeyMessages.px6Details(t, key.access_url)}\n\n`;
+					message += t('px6.how_to_add.short', { ns: 'message' });
+				} else if (key.key_type === 'mtproto') {
 					message += `🔗 <a href="${key.access_url}">${t('proxy.open_link', { ns: 'message' })}</a>\n\n`;
 					const manualValues = KeyMessages.proxyManualValues(t, key.access_url);
 					if (manualValues) message += `${manualValues}\n\n`;

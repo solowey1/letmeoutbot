@@ -4,7 +4,8 @@
       "first": "Buy VPN",
       "key": "Buy VPN",
       "more": "Buy more VPN",
-      "proxy": "Buy Telegram Proxy"
+      "proxy": "Buy Telegram Proxy",
+      "px6": "Buy proxies"
     },
     "gift": "Get Free Trial",
     "claim_gift": "Claim",
@@ -64,12 +65,16 @@
       "settings": "Settings",
       "sales_vpn": "VPN sales",
       "sales_proxy": "Proxy sales",
+      "sales_px6": "px6 proxy sales",
       "sales_on": "on",
       "sales_off": "off",
       "plans_vpn": "💰 VPN plans",
       "plans_proxy": "💰 Proxy plans",
+      "px6_settings": "🌍 px6 proxies",
       "edit_price": "✏️ Change price",
       "edit_limit": "✏️ Change limit",
+      "px6_markup": "✏️ Change markup",
+      "px6_rate": "✏️ Change Star rate",
       "plan_enable": "🟢 Enable plan",
       "plan_disable": "🔴 Disable plan"
     },

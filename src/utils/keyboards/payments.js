@@ -21,7 +21,7 @@ function createPlansKeyboard(t, plans) {
 
 function createRenewPlansKeyboard(t, plans, keyId) {
 	const buttons = plans.map(plan => {
-		const label = plan.type === 'mtproto'
+		const label = plan.type === 'mtproto' || plan.type === 'px6'
 			? PlanService.formatPlanForDisplay(t, plan).displayDuration
 			: (plan.dataLimitGB > 0 ? `${plan.dataLimitGB} ${t('common.memory.gb')}` : t('plans.unlimited'));
 		const button = Markup.button.callback(

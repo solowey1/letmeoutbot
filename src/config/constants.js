@@ -136,7 +136,8 @@ const KEY_STATUS = {
 
 const KEY_TYPE = {
 	VLESS: 'vless',
-	MTPROTO: 'mtproto'
+	MTPROTO: 'mtproto',
+	PX6: 'px6'
 };
 
 const LANG = {
@@ -184,7 +185,13 @@ const CALLBACK_ACTIONS = {
 		// admprice_/admlimit_ при общем корне.
 		SALES: {
 			TOGGLE_VPN: 'admsales_vpn',
-			TOGGLE_PROXY: 'admsales_proxy'
+			TOGGLE_PROXY: 'admsales_proxy',
+			TOGGLE_PX6: 'admsales_px6'
+		},
+		PX6: {
+			MENU: 'admpx6',
+			EDIT_MARKUP: 'admpx6markup',
+			EDIT_RATE: 'admpx6rate'
 		},
 		PLANS: {
 			LIST: 'admplans',        // admplans_<vless|mtproto>
@@ -255,6 +262,11 @@ const CALLBACK_ACTIONS = {
 	},
 	PROXY: {
 		MENU: 'proxy_menu'
+	},
+	PX6: {
+		MENU: 'px6_menu',        // выбор версии
+		COUNTRY: 'px6c',         // px6c_<version>
+		PERIOD: 'px6p'           // px6p_<version>_<country>
 	}
 };
 

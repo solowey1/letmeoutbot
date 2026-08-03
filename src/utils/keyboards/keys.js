@@ -13,7 +13,9 @@ function createKeysKeyboard(t, keys) {
 				const formatted = PlanService.formatPlanForDisplay(t, plan);
 				const typeLabel = key.key_type === 'mtproto'
 					? t('keys.type_proxy', { ns: 'message' })
-					: t('keys.type_vpn', { ns: 'message' });
+					: key.key_type === 'px6'
+						? t('keys.type_px6', { ns: 'message' })
+						: t('keys.type_vpn', { ns: 'message' });
 				const style = key.status === 'active' ? 'success' : 'danger';
 				const button = Markup.button.callback(
 					`${typeLabel} — ${formatted.displayName}`,
@@ -46,7 +48,9 @@ function createKeyDetailsKeyboard(t, keyId, keyType, proxyTgLink = null) {
 		[btn(t, 'stats', `${CALLBACK_ACTIONS.KEYS.STATS}_${keyId}`)]
 	);
 
-	if (keyType !== 'mtproto') {
+	// Обновление подписки и «сырой» ключ есть только у VLESS —
+	// у прокси (наш MTProto и купленный у px6) обновлять нечего.
+	if (keyType !== 'mtproto' && keyType !== 'px6') {
 		rows.push([btn(t, 'refresh_key', `${CALLBACK_ACTIONS.KEYS.REFRESH}_${keyId}`)]);
 		rows.push([btn(t, 'raw_vless_key', `${CALLBACK_ACTIONS.KEYS.RAW_VLESS}_${keyId}`)]);
 	}

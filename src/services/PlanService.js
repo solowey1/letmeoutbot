@@ -37,7 +37,23 @@ class PlanService {
 	}
 
 	static getPlanById(planId) {
-		return Object.values(PLANS).find(p => p.id === planId) || null;
+		const plan = Object.values(PLANS).find(p => p.id === planId);
+		if (plan) return plan;
+
+		// Тарифы px6 динамические и в PLANS не лежат — восстанавливаем их
+		// из синтетического id (px6_<version>_<country>_<period>), чтобы
+		// обычный конвейер оплаты и выдачи ключа работал без развилок.
+		const Px6PricingService = require('./Px6PricingService');
+		const parsed = Px6PricingService.parsePlanId(planId);
+		if (parsed) {
+			return Px6PricingService.buildPlan({
+				version: parsed.version,
+				country: parsed.country,
+				period: parsed.period
+			});
+		}
+
+		return null;
 	}
 
 	static formatPlanPrice(price) {
@@ -114,7 +130,8 @@ class PlanService {
 	static formatPlanForDisplay(t, plan) {
 		const dataLimitFormatted = this.formatDataLimit(t, plan.dataLimit);
 		// У прокси срок всегда в днях (7/30/90 дней), у VPN — недели/месяцы
-		const durationFormatted = plan.type === 'mtproto'
+		const durationOnly = plan.type === 'mtproto' || plan.type === 'px6';
+		const durationFormatted = durationOnly
 			? this.formatDurationDays(t, plan.duration)
 			: this.formatDuration(t, plan.duration);
 		const priceFormatted = this.formatPlanPrice(plan.price);
@@ -142,7 +159,7 @@ class PlanService {
 		}
 
 		// У прокси нет объёма данных — в списках показываем срок, а не «Безлимит»
-		const displayName = plan.type === 'mtproto'
+		const displayName = durationOnly
 			? durationFormatted
 			: dataLimitFormatted;
 

@@ -9,6 +9,7 @@ const admin = require('./admin');
 const broadcast = require('./broadcast');
 const referrals = require('./referrals');
 const proxy = require('./proxy');
+const px6 = require('./px6');
 
 /**
  * KeyboardUtils — фасад, объединяющий все клавиатуры.
@@ -78,6 +79,8 @@ class KeyboardUtils {
 	static createAdminPlanListKeyboard(t, plans) { return admin.createAdminPlanListKeyboard(t, plans); }
 	static createAdminPlanKeyboard(t, plan) { return admin.createAdminPlanKeyboard(t, plan); }
 	static createAdminPlanCancelKeyboard(t, planId) { return admin.createAdminPlanCancelKeyboard(t, planId); }
+	static createAdminPx6Keyboard(t, state) { return admin.createAdminPx6Keyboard(t, state); }
+	static createAdminPx6CancelKeyboard(t) { return admin.createAdminPx6CancelKeyboard(t); }
 
 	// broadcast
 	static createBroadcastAudienceKeyboard(t) { return broadcast.createBroadcastAudienceKeyboard(t); }
@@ -96,6 +99,11 @@ class KeyboardUtils {
 
 	// proxy
 	static createProxyPlansKeyboard(t, plans) { return proxy.createProxyPlansKeyboard(t, plans); }
+
+	// px6
+	static createPx6VersionKeyboard(t) { return px6.createPx6VersionKeyboard(t); }
+	static createPx6CountryKeyboard(t, version, countries) { return px6.createPx6CountryKeyboard(t, version, countries); }
+	static createPx6PeriodKeyboard(t, version, country, quotes) { return px6.createPx6PeriodKeyboard(t, version, country, quotes); }
 	static createProxyConnectKeyboard(t, tgLink) { return proxy.createProxyConnectKeyboard(t, tgLink); }
 }
 

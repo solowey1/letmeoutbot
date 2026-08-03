@@ -43,6 +43,11 @@ const config = {
 		inboundIds: (process.env.XRAY_INBOUNDS || '1').split(',').map(s => parseInt(s.trim())).filter(Boolean)
 	},
 
+	px6: {
+		// Ключ из личного кабинета px6.net. Пустой = продажа px6 недоступна.
+		apiKey: process.env.PX6_API_KEY || ''
+	},
+
 	mtproto: {
 		apiUrl: process.env.MTPROTO_API_URL || '',
 		apiToken: process.env.MTPROTO_API_TOKEN || ''

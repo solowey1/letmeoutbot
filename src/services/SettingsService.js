@@ -10,14 +10,27 @@
  * откатывается на значения по умолчанию, а не роняет бота.
  */
 class SettingsService {
+	// Тип значения выводится из типа значения по умолчанию (boolean/number)
 	static DEFAULTS = {
 		vpn_sales_enabled: true,
-		proxy_sales_enabled: true
+		proxy_sales_enabled: true,
+		// px6 выключен по умолчанию: пока админ не задал курс звезды и
+		// наценку, цена посчиталась бы неверно и прокси продавались бы
+		// себе в убыток.
+		px6_sales_enabled: false,
+		px6_markup_percent: 100,
+		px6_star_rate: 0
 	};
 
 	constructor(database) {
 		this.db = database;
 		this.cache = { ...SettingsService.DEFAULTS };
+	}
+
+	static parse(key, raw) {
+		return typeof SettingsService.DEFAULTS[key] === 'boolean'
+			? raw === 'true'
+			: Number(raw);
 	}
 
 	async load() {
@@ -28,7 +41,11 @@ class SettingsService {
 		try {
 			const rows = await this.db.getSettings();
 			for (const { key, value } of rows) {
-				if (key in this.cache) this.cache[key] = value === 'true';
+				if (!(key in this.cache)) continue;
+				const parsed = SettingsService.parse(key, value);
+				// Битое значение в БД не должно затирать разумный дефолт
+				if (typeof parsed === 'number' && !Number.isFinite(parsed)) continue;
+				this.cache[key] = parsed;
 			}
 			console.log('✅ Настройки бота загружены из БД');
 		} catch (error) {
@@ -47,6 +64,13 @@ class SettingsService {
 		this.cache[key] = value;
 	}
 
+	/** Готов ли px6 к продаже: включён и курс со наценкой заданы */
+	isPx6Ready() {
+		return this.get('px6_sales_enabled')
+			&& Number(this.get('px6_star_rate')) > 0
+			&& Number(this.get('px6_markup_percent')) >= 0;
+	}
+
 	async toggle(key) {
 		const next = !this.get(key);
 		await this.set(key, next);
@@ -58,9 +82,9 @@ class SettingsService {
 	 * @param {string} planType - 'vless' | 'mtproto'
 	 */
 	isSalesEnabled(planType) {
-		return planType === 'mtproto'
-			? this.get('proxy_sales_enabled')
-			: this.get('vpn_sales_enabled');
+		if (planType === 'mtproto') return this.get('proxy_sales_enabled');
+		if (planType === 'px6') return this.isPx6Ready();
+		return this.get('vpn_sales_enabled');
 	}
 }
 

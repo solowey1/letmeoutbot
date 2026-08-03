@@ -10,9 +10,10 @@ const AdminCallbacks = require('../handlers/callbacks/AdminCallbacks');
 const ReferralCallbacks = require('../handlers/callbacks/ReferralCallbacks');
 const GiftCallbacks = require('../handlers/callbacks/GiftCallbacks');
 const ProxyCallbacks = require('../handlers/callbacks/ProxyCallbacks');
+const Px6Callbacks = require('../handlers/callbacks/Px6Callbacks');
 
 class CallbackHandler {
-	constructor(database, paymentService, keysService, bot, broadcastCallbacks = null, settingsService = null) {
+	constructor(database, paymentService, keysService, bot, broadcastCallbacks = null, settingsService = null, px6Service = null, pricingService = null) {
 		this.db = database;
 		this.paymentService = paymentService;
 		this.keysService = keysService;
@@ -20,14 +21,15 @@ class CallbackHandler {
 
 		// Инициализируем модульные обработчики
 		this.menuCallbacks = new MenuCallbacks(database, paymentService, keysService);
-		this.planCallbacks = new PlanCallbacks(database, paymentService, keysService);
+		this.planCallbacks = new PlanCallbacks(database, paymentService, keysService, settingsService, pricingService);
 		this.KeysCallbacks = new KeysCallbacks(database, paymentService, keysService);
 		this.languageCallbacks = new LanguageCallbacks(database, paymentService, keysService);
 		this.broadcastCallbacks = broadcastCallbacks;
 		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService, broadcastCallbacks, settingsService);
 		this.referralCallbacks = new ReferralCallbacks(database, bot);
 		this.giftCallbacks = new GiftCallbacks(database, keysService);
-		this.proxyCallbacks = new ProxyCallbacks(database, paymentService, keysService);
+		this.proxyCallbacks = new ProxyCallbacks(database, paymentService, keysService, settingsService);
+		this.px6Callbacks = new Px6Callbacks(database, px6Service, pricingService, settingsService);
 	}
 
 	async handleCallback(ctx) {
@@ -181,6 +183,14 @@ class CallbackHandler {
 				await this.adminCallbacks.handleToggleSales(ctx, 'vpn_sales_enabled');
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.SALES.TOGGLE_PROXY) {
 				await this.adminCallbacks.handleToggleSales(ctx, 'proxy_sales_enabled');
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.SALES.TOGGLE_PX6) {
+				await this.adminCallbacks.handleToggleSales(ctx, 'px6_sales_enabled', 'px6');
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.PX6.EDIT_MARKUP) {
+				await this.adminCallbacks.handleAdminPx6Edit(ctx, 'px6_markup_percent');
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.PX6.EDIT_RATE) {
+				await this.adminCallbacks.handleAdminPx6Edit(ctx, 'px6_star_rate');
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.PX6.MENU) {
+				await this.adminCallbacks.handleAdminPx6(ctx);
 			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.PLANS.LIST}_`)) {
 				const type = callbackData.slice(CALLBACK_ACTIONS.ADMIN.PLANS.LIST.length + 1);
 				await this.adminCallbacks.handleAdminPlanList(ctx, type);
@@ -218,6 +228,15 @@ class CallbackHandler {
 				await this.giftCallbacks.handleGiftClaim(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.KEYS.BUY) {
 				await this.planCallbacks.handleShowPlans(ctx);
+			// ── Прокси px6: версия → страна → срок ──
+			} else if (callbackData === CALLBACK_ACTIONS.PX6.MENU) {
+				await this.px6Callbacks.handleMenu(ctx);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.PX6.COUNTRY}_`)) {
+				const version = Number(callbackData.slice(CALLBACK_ACTIONS.PX6.COUNTRY.length + 1));
+				await this.px6Callbacks.handleChooseCountry(ctx, version);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.PX6.PERIOD}_`)) {
+				const [version, country] = callbackData.slice(CALLBACK_ACTIONS.PX6.PERIOD.length + 1).split('_');
+				await this.px6Callbacks.handleChoosePeriod(ctx, Number(version), country);
 			} else if (callbackData === CALLBACK_ACTIONS.PROXY.MENU) {
 				await this.proxyCallbacks.handleProxyMenu(ctx);
 			} else {

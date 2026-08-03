@@ -4,7 +4,8 @@
       "first": "Купить VPN",
       "key": "Купить VPN",
       "more": "Купить ещё VPN",
-      "proxy": "Купить Proxy для Telegram"
+      "proxy": "Купить Proxy для Telegram",
+      "px6": "Купить прокси"
     },
     "gift": "Получить подарок",
     "claim_gift": "Получить",
@@ -64,12 +65,16 @@
       "settings": "Настройки",
       "sales_vpn": "Продажа VPN",
       "sales_proxy": "Продажа Proxy",
+      "sales_px6": "Продажа прокси px6",
       "sales_on": "вкл",
       "sales_off": "выкл",
       "plans_vpn": "💰 Тарифы VPN",
       "plans_proxy": "💰 Тарифы Proxy",
+      "px6_settings": "🌍 Прокси px6",
       "edit_price": "✏️ Изменить цену",
       "edit_limit": "✏️ Изменить лимит",
+      "px6_markup": "✏️ Изменить наценку",
+      "px6_rate": "✏️ Изменить курс звезды",
       "plan_enable": "🟢 Включить тариф",
       "plan_disable": "🔴 Выключить тариф"
     },

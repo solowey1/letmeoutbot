@@ -86,6 +86,7 @@ function createAdminSettingsKeyboard(t, { vpnSales, proxySales }) {
 		)],
 		[Markup.button.callback(t('buttons.admin.plans_vpn'), `${A.PLANS.LIST}_vless`)],
 		[Markup.button.callback(t('buttons.admin.plans_proxy'), `${A.PLANS.LIST}_mtproto`)],
+		[Markup.button.callback(t('buttons.admin.px6_settings'), A.PX6.MENU)],
 		[btn(t, 'back', A.MENU)]
 	]);
 }
@@ -120,6 +121,24 @@ function createAdminPlanKeyboard(t, plan) {
 	return Markup.inlineKeyboard(rows);
 }
 
+function createAdminPx6Keyboard(t, { enabled }) {
+	return Markup.inlineKeyboard([
+		[Markup.button.callback(
+			`${enabled ? '🟢' : '🔴'} ${t('buttons.admin.sales_px6')}: ${t(enabled ? 'buttons.admin.sales_on' : 'buttons.admin.sales_off')}`,
+			A.SALES.TOGGLE_PX6
+		)],
+		[Markup.button.callback(t('buttons.admin.px6_markup'), A.PX6.EDIT_MARKUP)],
+		[Markup.button.callback(t('buttons.admin.px6_rate'), A.PX6.EDIT_RATE)],
+		[btn(t, 'back', A.SETTINGS)]
+	]);
+}
+
+function createAdminPx6CancelKeyboard(t) {
+	return Markup.inlineKeyboard([
+		[Markup.button.callback(t('buttons.cancel'), A.PX6.MENU)]
+	]);
+}
+
 function createAdminPlanCancelKeyboard(t, planId) {
 	return Markup.inlineKeyboard([
 		[Markup.button.callback(t('buttons.cancel'), `${A.PLANS.VIEW}_${planId}`)]
@@ -135,4 +154,6 @@ module.exports = {
 	createAdminPlanListKeyboard,
 	createAdminPlanKeyboard,
 	createAdminPlanCancelKeyboard,
+	createAdminPx6Keyboard,
+	createAdminPx6CancelKeyboard,
 };

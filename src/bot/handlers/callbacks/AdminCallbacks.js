@@ -410,7 +410,7 @@ class AdminCallbacks {
 		}
 	}
 
-	async handleToggleSales(ctx, key) {
+	async handleToggleSales(ctx, key, backTo = 'settings') {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
@@ -429,7 +429,11 @@ class AdminCallbacks {
 			return;
 		}
 
-		await this.handleAdminSettings(ctx);
+		if (backTo === 'px6') {
+			await this.handleAdminPx6(ctx);
+		} else {
+			await this.handleAdminSettings(ctx);
+		}
 	}
 
 	async handleAdminPlanList(ctx, type) {
@@ -538,6 +542,77 @@ class AdminCallbacks {
 		}
 
 		await this.handleAdminPlanView(ctx, planId);
+	}
+
+	// ── px6: наценка и курс звезды ──────────────────────────────────────
+
+	async handleAdminPx6(ctx) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		adminEditState.delete(ctx.from.id);
+
+		const enabled = this.settingsService.get('px6_sales_enabled');
+		const markup = this.settingsService.get('px6_markup_percent');
+		const rate = this.settingsService.get('px6_star_rate');
+		const ready = this.settingsService.isPx6Ready();
+
+		const message = [
+			`<b>${t('buttons.admin.px6_settings')}</b>`,
+			'',
+			`${t('admin.settings.px6_markup_label', { ns: 'message' })}: <b>${markup}%</b>`,
+			`${t('admin.settings.px6_rate_label', { ns: 'message' })}: <b>${rate || '—'}</b>`,
+			'',
+			ready
+				? t('admin.settings.px6_ready', { ns: 'message' })
+				: t('admin.settings.px6_not_ready', { ns: 'message' })
+		].join('\n');
+
+		try {
+			await this._edit(ctx, message, KeyboardUtils.createAdminPx6Keyboard(t, { enabled }));
+		} catch (error) {
+			console.error('Ошибка настроек px6:', error.message);
+		}
+	}
+
+	async handleAdminPx6Edit(ctx, setting) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		adminEditState.set(ctx.from.id, { setting, field: 'setting' });
+
+		const current = this.settingsService.get(setting);
+		const prompt = setting === 'px6_markup_percent'
+			? t('admin.settings.enter_px6_markup', { ns: 'message', current })
+			: t('admin.settings.enter_px6_rate', { ns: 'message', current: current || '—' });
+
+		try {
+			await this._edit(ctx, prompt, KeyboardUtils.createAdminPx6CancelKeyboard(t));
+		} catch (error) {
+			console.error('Ошибка запроса значения px6:', error.message);
+		}
+	}
+
+	/**
+	 * Применить введённое админом числовое значение настройки px6.
+	 * @returns {{ok: boolean, error?: string}}
+	 */
+	async applySettingEdit(setting, rawValue) {
+		const value = Number(String(rawValue).trim().replace(',', '.'));
+		if (!Number.isFinite(value) || value < 0) return { ok: false, error: 'invalid' };
+		// Курс должен быть строго больше нуля — иначе деление на ноль в расчёте
+		if (setting === 'px6_star_rate' && value <= 0) return { ok: false, error: 'invalid' };
+
+		await this.settingsService.set(setting, value);
+		return { ok: true };
 	}
 
 	/**
