@@ -1,16 +1,13 @@
 const Px6Service = require('./Px6Service');
+const config = require('../config');
 
 /**
- * Тарифы px6 динамические: цена берётся из getprice, умножается на наценку
- * и конвертируется в Telegram Stars.
+ * Тарифы px6 динамические: цена берётся из getprice и переводится в звёзды.
  *
- * Настройки (админка → Настройки → Proxy px6):
- *   px6_markup_percent — наценка в процентах поверх закупки;
- *   px6_star_rate      — сколько единиц валюты аккаунта px6 стоит 1 звезда.
- *
- * Курс задаётся вручную, а не тянется извне: у px6 аккаунт может быть в RUB
- * или USD, и привязываться к внешнему источнику курса ради одного числа
- * дороже, чем раз в месяц поправить его в админке.
+ * Цепочка пересчёта: закупка (у аккаунта px6 валюта RUB или USD) → доллары
+ * по курсу ЦБ (кэш на час) → звёзды по STARS_USD_RATE → +10% наценки.
+ * Наценка фиксированная: она часть цены продукта, а не настройка, которую
+ * стоит забыть обновить.
  *
  * Синтетический id тарифа: px6_<version>_<country>_<period>, например
  * px6_6_ru_30. По нему покупка восстанавливается после оплаты, не таская
@@ -20,24 +17,29 @@ const Px6Service = require('./Px6Service');
 // Сроки, которые показываем пользователю (дни). Соответствуют сеткам px6.
 const PERIODS = [7, 30, 90];
 
-// Версии, доступные к продаже. MTproto (5) намеренно нет: у бота есть
-// собственный MTProto-прокси, покупать его на стороне незачем.
+// Наценка поверх конечной стоимости px6, проценты
+const MARKUP_PERCENT = 10;
+
+// Все версии, которые продаёт px6, включая MTProto: это их прокси в их
+// странах, к нашему собственному MTProto-прокси отношения не имеет.
 const SALE_VERSIONS = [
 	Px6Service.VERSION.IPV6,
 	Px6Service.VERSION.IPV4,
-	Px6Service.VERSION.IPV4_SHARED
+	Px6Service.VERSION.IPV4_SHARED,
+	Px6Service.VERSION.MTPROTO
 ];
 
 const PLAN_ID_RE = /^px6_(\d+)_([a-z]{2})_(\d+)$/;
 
 class Px6PricingService {
-	constructor(px6Service, settingsService) {
+	constructor(px6Service, currencyService) {
 		this.px6 = px6Service;
-		this.settings = settingsService;
+		this.currency = currencyService;
 	}
 
 	static get PERIODS() { return PERIODS; }
 	static get SALE_VERSIONS() { return SALE_VERSIONS; }
+	static get MARKUP_PERCENT() { return MARKUP_PERCENT; }
 
 	static buildPlanId(version, country, period) {
 		return `px6_${version}_${country}_${period}`;
@@ -57,16 +59,21 @@ class Px6PricingService {
 	/**
 	 * Закупочная цена -> цена в звёздах.
 	 * Округляем вверх: продать дешевле закупки хуже, чем на звезду дороже.
+	 * @param {number} cost - стоимость у px6
+	 * @param {string} currency - валюта аккаунта px6: RUB или USD
 	 */
-	toStars(costInAccountCurrency) {
-		const markup = Number(this.settings.get('px6_markup_percent'));
-		const rate = Number(this.settings.get('px6_star_rate'));
+	async toStars(cost, currency) {
+		const starsUsdRate = Number(config.stars.usdRate);
+		if (!Number.isFinite(starsUsdRate) || starsUsdRate <= 0) {
+			throw new Error('STARS_USD_RATE не задан');
+		}
 
-		if (!Number.isFinite(rate) || rate <= 0) throw new Error('px6_star_rate не задан');
-		if (!Number.isFinite(markup) || markup < 0) throw new Error('px6_markup_percent не задан');
+		const usd = String(currency).toUpperCase() === 'USD'
+			? cost
+			: cost / await this.currency.getUsdRub();
 
-		const withMarkup = costInAccountCurrency * (1 + markup / 100);
-		return Math.max(1, Math.ceil(withMarkup / rate));
+		const withMarkup = usd * (1 + MARKUP_PERCENT / 100);
+		return Math.max(1, Math.ceil(withMarkup / starsUsdRate));
 	}
 
 	/**
@@ -75,7 +82,7 @@ class Px6PricingService {
 	 */
 	async quote({ version, period, count = 1 }) {
 		const { price, currency } = await this.px6.getPrice({ count, period, version });
-		return { stars: this.toStars(price), cost: price, currency };
+		return { stars: await this.toStars(price, currency), cost: price, currency };
 	}
 
 	/** Цены сразу на все сроки — для экрана выбора срока */

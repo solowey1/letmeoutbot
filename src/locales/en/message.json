@@ -164,12 +164,13 @@
       "hidden_note": "Internal plan — not shown in the purchase list.",
       "enter_price": "✏️ <b>{{name}}</b>\n\nCurrent price: <b>{{current}} ⭐</b>\n\nSend the new price in Stars (whole number).\n/cancel to abort.",
       "enter_limit": "✏️ <b>{{name}}</b>\n\nCurrent limit: <b>{{current}} GB</b>\n\nSend the new limit in GB (0 = unlimited).\n/cancel to abort.",
+      "px6_pricing_hint": "The price is calculated automatically: px6 wholesale → USD at the CBR rate (cached for an hour) → Stars. Nothing to configure, the markup is fixed.",
       "px6_markup_label": "Markup",
-      "px6_rate_label": "Rate: px6 currency units per 1 ⭐",
-      "px6_ready": "✅ Configured — proxies can be sold.",
-      "px6_not_ready": "⚠️ Set the Star rate and turn sales on, otherwise the plans stay hidden from users.",
-      "enter_px6_markup": "✏️ <b>px6 markup</b>\n\nCurrent value: <b>{{current}}%</b>\n\nSend the new markup in percent on top of the wholesale price (e.g. 100 = twice the wholesale price).\n/cancel to abort.",
-      "enter_px6_rate": "✏️ <b>Star rate</b>\n\nCurrent value: <b>{{current}}</b>\n\nSend how many units of your px6 account currency (₽ or $) one ⭐ is worth. For example, with a rouble balance and 1 ⭐ ≈ 1.3 ₽, send 1.3.\n/cancel to abort.",
+      "px6_star_usd_label": "Star in USD (STARS_USD_RATE)",
+      "px6_usdrub": "USD/RUB rate: <b>{{rate}} ₽</b> ({{source}}, updated {{updated}})",
+      "px6_usdrub_failed": "⚠️ Could not fetch the USD/RUB rate — prices cannot be calculated right now.",
+      "px6_on": "🟢 px6 proxy sales are on.",
+      "px6_off": "🔴 px6 proxy sales are off.",
       "invalid_value": "⚠️ A number is required. Try again or send /cancel.",
       "edit_cancelled": "Edit cancelled.",
       "saved": "Saved"
@@ -340,7 +341,7 @@
     }
   },
   "px6": {
-    "intro": "🌍 <b>Personal proxies</b>\n\nA dedicated IP address in the country you choose, used by you alone. Works with browsers, messengers and any app that supports proxies: traffic goes straight out of that IP, with no shared load and no data caps.\n\nPick a proxy type:",
+    "intro": "🌍 <b>Personal proxies</b>\n\nA dedicated IP address in the country you choose, used by you alone. Works with browsers, messengers and any app that supports proxies: traffic goes straight out of that IP, with no shared load and no data caps.\n\nIPv6 is the cheapest option, IPv4 is for services that do not support IPv6, IPv4 Shared is a cheaper shared address, and MTProto is a Telegram proxy in the country you pick.\n\nPick a proxy type:",
     "choose_country": "🌍 <b>{{type}}</b>\n\nPick a country — this is where your IP address will be located.",
     "choose_period": "🌍 <b>{{type}} · {{country}}</b>\n\nPick a rental period. The price is per proxy.",
     "days": "days",

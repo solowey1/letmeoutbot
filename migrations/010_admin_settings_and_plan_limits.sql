@@ -11,9 +11,11 @@ create table if not exists bot_settings (
 );
 
 -- Продажи включены по умолчанию — поведение до этой миграции не меняется.
+-- Прокси px6 выключены: нужен PX6_API_KEY, включается вручную из админки.
 insert into bot_settings (key, value) values
     ('vpn_sales_enabled', 'true'),
-    ('proxy_sales_enabled', 'true')
+    ('proxy_sales_enabled', 'true'),
+    ('px6_sales_enabled', 'false')
 on conflict (key) do nothing;
 
 -- ── Тарифы: лимит трафика и срок редактируются из админки ────────────────

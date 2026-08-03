@@ -222,7 +222,7 @@ class PlanCallbacks {
 		const Px6PricingService = require('../../../services/Px6PricingService');
 		const parsed = Px6PricingService.parsePlanId(key.plan_id);
 
-		if (!parsed || !this.pricingService || !this.settingsService?.isPx6Ready()) {
+		if (!parsed || !this.pricingService || !this.settingsService?.isSalesEnabled('px6')) {
 			await ctx.editMessageText(
 				t('payments.sales_disabled', { ns: 'message' }),
 				{ ...KeyboardUtils.createBackToMenuKeyboard(t), parse_mode: 'HTML' }

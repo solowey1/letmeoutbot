@@ -1,4 +1,5 @@
 const { InputFile } = require('grammy');
+const moment = require('moment');
 const { ADMIN_IDS, CALLBACK_ACTIONS } = require('../../../config/constants');
 const { sendTon } = require('../../../services/TonService');
 const { Markup } = require('../../../utils/markup');
@@ -11,12 +12,13 @@ const adminEditState = require('../../../utils/adminEditState');
 const PlanService = require('../../../services/PlanService');
 
 class AdminCallbacks {
-	constructor(database, paymentService, keysService, broadcastCallbacks = null, settingsService = null) {
+	constructor(database, paymentService, keysService, broadcastCallbacks = null, settingsService = null, currencyService = null) {
 		this.db = database;
 		this.paymentService = paymentService;
 		this.keysService = keysService;
 		this.broadcastCallbacks = broadcastCallbacks;
 		this.settingsService = settingsService;
+		this.currencyService = currencyService;
 	}
 
 	async handleAdminPanel(ctx) {
@@ -400,7 +402,8 @@ class AdminCallbacks {
 
 		const keyboard = KeyboardUtils.createAdminSettingsKeyboard(t, {
 			vpnSales: this.settingsService.get('vpn_sales_enabled'),
-			proxySales: this.settingsService.get('proxy_sales_enabled')
+			proxySales: this.settingsService.get('proxy_sales_enabled'),
+			px6Sales: this.settingsService.get('px6_sales_enabled')
 		});
 
 		try {
@@ -410,7 +413,7 @@ class AdminCallbacks {
 		}
 	}
 
-	async handleToggleSales(ctx, key, backTo = 'settings') {
+	async handleToggleSales(ctx, key) {
 		const t = ctx.i18n.t;
 
 		if (!ADMIN_IDS.includes(ctx.from.id)) {
@@ -429,11 +432,7 @@ class AdminCallbacks {
 			return;
 		}
 
-		if (backTo === 'px6') {
-			await this.handleAdminPx6(ctx);
-		} else {
-			await this.handleAdminSettings(ctx);
-		}
+		await this.handleAdminSettings(ctx);
 	}
 
 	async handleAdminPlanList(ctx, type) {
@@ -544,8 +543,13 @@ class AdminCallbacks {
 		await this.handleAdminPlanView(ctx, planId);
 	}
 
-	// ── px6: наценка и курс звезды ──────────────────────────────────────
+	// ── px6: как считается цена ─────────────────────────────────────────
 
+	/**
+	 * Справка по ценообразованию px6. Настраивать здесь нечего: наценка
+	 * фиксированная, курс звезды берётся из окружения, курс доллара — из
+	 * ЦБ. Экран нужен, чтобы видеть, по какому курсу продаётся прямо сейчас.
+	 */
 	async handleAdminPx6(ctx) {
 		const t = ctx.i18n.t;
 
@@ -556,63 +560,44 @@ class AdminCallbacks {
 
 		adminEditState.delete(ctx.from.id);
 
-		const enabled = this.settingsService.get('px6_sales_enabled');
-		const markup = this.settingsService.get('px6_markup_percent');
-		const rate = this.settingsService.get('px6_star_rate');
-		const ready = this.settingsService.isPx6Ready();
+		const Px6PricingService = require('../../../services/Px6PricingService');
+		const config = require('../../../config');
+
+		let rateLine;
+		try {
+			const rate = await this.currencyService.getUsdRub();
+			const cached = this.currencyService.cached;
+			const updated = cached ? moment(cached.fetchedAt).format('DD.MM.YYYY HH:mm') : '—';
+			rateLine = t('admin.settings.px6_usdrub', {
+				ns: 'message',
+				rate: rate.toFixed(2),
+				source: cached?.source || '—',
+				updated
+			});
+		} catch (error) {
+			console.error('Ошибка получения курса USD/RUB:', error.message);
+			rateLine = t('admin.settings.px6_usdrub_failed', { ns: 'message' });
+		}
 
 		const message = [
 			`<b>${t('buttons.admin.px6_settings')}</b>`,
 			'',
-			`${t('admin.settings.px6_markup_label', { ns: 'message' })}: <b>${markup}%</b>`,
-			`${t('admin.settings.px6_rate_label', { ns: 'message' })}: <b>${rate || '—'}</b>`,
+			t('admin.settings.px6_pricing_hint', { ns: 'message' }),
 			'',
-			ready
-				? t('admin.settings.px6_ready', { ns: 'message' })
-				: t('admin.settings.px6_not_ready', { ns: 'message' })
+			`${t('admin.settings.px6_markup_label', { ns: 'message' })}: <b>${Px6PricingService.MARKUP_PERCENT}%</b>`,
+			`${t('admin.settings.px6_star_usd_label', { ns: 'message' })}: <b>$${config.stars.usdRate}</b>`,
+			rateLine,
+			'',
+			this.settingsService.get('px6_sales_enabled')
+				? t('admin.settings.px6_on', { ns: 'message' })
+				: t('admin.settings.px6_off', { ns: 'message' })
 		].join('\n');
 
 		try {
-			await this._edit(ctx, message, KeyboardUtils.createAdminPx6Keyboard(t, { enabled }));
+			await this._edit(ctx, message, KeyboardUtils.createAdminPx6Keyboard(t));
 		} catch (error) {
-			console.error('Ошибка настроек px6:', error.message);
+			console.error('Ошибка справки px6:', error.message);
 		}
-	}
-
-	async handleAdminPx6Edit(ctx, setting) {
-		const t = ctx.i18n.t;
-
-		if (!ADMIN_IDS.includes(ctx.from.id)) {
-			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
-			return;
-		}
-
-		adminEditState.set(ctx.from.id, { setting, field: 'setting' });
-
-		const current = this.settingsService.get(setting);
-		const prompt = setting === 'px6_markup_percent'
-			? t('admin.settings.enter_px6_markup', { ns: 'message', current })
-			: t('admin.settings.enter_px6_rate', { ns: 'message', current: current || '—' });
-
-		try {
-			await this._edit(ctx, prompt, KeyboardUtils.createAdminPx6CancelKeyboard(t));
-		} catch (error) {
-			console.error('Ошибка запроса значения px6:', error.message);
-		}
-	}
-
-	/**
-	 * Применить введённое админом числовое значение настройки px6.
-	 * @returns {{ok: boolean, error?: string}}
-	 */
-	async applySettingEdit(setting, rawValue) {
-		const value = Number(String(rawValue).trim().replace(',', '.'));
-		if (!Number.isFinite(value) || value < 0) return { ok: false, error: 'invalid' };
-		// Курс должен быть строго больше нуля — иначе деление на ноль в расчёте
-		if (setting === 'px6_star_rate' && value <= 0) return { ok: false, error: 'invalid' };
-
-		await this.settingsService.set(setting, value);
-		return { ok: true };
 	}
 
 	/**

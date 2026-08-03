@@ -3,6 +3,13 @@ const KeyboardUtils = require('../../../utils/keyboards');
 const MTProtoService = require('../../../services/MTProtoService');
 const { ADMIN_IDS } = require('../../../config/constants');
 
+/** Подпись типа ключа в списках: VPN, наш прокси или прокси px6 */
+function keyTypeLabel(t, keyType) {
+	if (keyType === 'mtproto') return t('keys.type_proxy', { ns: 'message' });
+	if (keyType === 'px6') return t('keys.type_px6', { ns: 'message' });
+	return t('keys.type_vpn', { ns: 'message' });
+}
+
 class KeysCallbacks {
 	constructor(database, paymentService, keyService) {
 		this.db = database;
@@ -47,10 +54,8 @@ class KeysCallbacks {
 				for (let i = 0; i < keys.length; i++) {
 					const sub = keys[i];
 					const usage = await this.keyService.getUsageStats(sub.id);
-					const isProxy = sub.key_type === 'mtproto';
-					const typeLabel = isProxy
-						? t('keys.type_proxy', { ns: 'message' })
-						: t('keys.type_vpn', { ns: 'message' });
+					const isProxy = sub.key_type === 'mtproto' || sub.key_type === 'px6';
+					const typeLabel = keyTypeLabel(t, sub.key_type);
 
 					message += `${i + 1}. ${typeLabel}\n`;
 					message += `   • ${t('common.status')}: ${sub.status === 'active' ? t('keys.status_active', { ns: 'message' }) : t('keys.status_inactive', { ns: 'message' })}\n`;
@@ -82,9 +87,7 @@ class KeysCallbacks {
 
 				for (const pk of pendingKeys) {
 					const planName = pk.plan?.displayName || pk.plan_id;
-					const typeLabel = pk.key_type === 'mtproto'
-						? t('keys.type_proxy', { ns: 'message' })
-						: t('keys.type_vpn', { ns: 'message' });
+					const typeLabel = keyTypeLabel(t, pk.key_type);
 					message += `• ${typeLabel} (${planName}) — ${t('keys.pending_status', { ns: 'message' })}\n`;
 				}
 				message += '\n';
@@ -136,10 +139,14 @@ class KeysCallbacks {
 			}
 
 			if (key.access_url) {
-				if (key.key_type === 'px6') {
+				// MTProto-прокси px6 приходит ссылкой t.me/proxy — показываем
+				// его как наш собственный, остальные версии реквизитами
+				const isProxyLink = String(key.access_url).startsWith('https://t.me/proxy');
+
+				if (key.key_type === 'px6' && !isProxyLink) {
 					message += `${KeyMessages.px6Details(t, key.access_url)}\n\n`;
 					message += t('px6.how_to_add.short', { ns: 'message' });
-				} else if (key.key_type === 'mtproto') {
+				} else if (key.key_type === 'mtproto' || isProxyLink) {
 					message += `🔗 <a href="${key.access_url}">${t('proxy.open_link', { ns: 'message' })}</a>\n\n`;
 					const manualValues = KeyMessages.proxyManualValues(t, key.access_url);
 					if (manualValues) message += `${manualValues}\n\n`;
@@ -169,7 +176,7 @@ class KeysCallbacks {
 			}
 
 			// Для прокси — кнопка «Подключить» с tg://-ссылкой (один тап без браузера)
-			const proxyTgLink = key.key_type === 'mtproto' && key.access_url
+			const proxyTgLink = key.access_url && String(key.access_url).startsWith('https://t.me/proxy')
 				? MTProtoService.toTgLink(key.access_url)
 				: null;
 			const keyboard = KeyboardUtils.createKeyDetailsKeyboard(t, keyId, key.key_type, proxyTgLink);

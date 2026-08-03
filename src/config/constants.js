@@ -189,9 +189,7 @@ const CALLBACK_ACTIONS = {
 			TOGGLE_PX6: 'admsales_px6'
 		},
 		PX6: {
-			MENU: 'admpx6',
-			EDIT_MARKUP: 'admpx6markup',
-			EDIT_RATE: 'admpx6rate'
+			MENU: 'admpx6'
 		},
 		PLANS: {
 			LIST: 'admplans',        // admplans_<vless|mtproto>

@@ -181,6 +181,18 @@ class Px6Service {
 	 * обратно — ни нам, ни клиенту.
 	 */
 	static formatProxy(proxy) {
+		// У MTProto-версии логина нет, а pass — это secret. Отдаём ссылкой
+		// t.me/proxy: она и показывается, и открывает Telegram по нажатию —
+		// ровно как у нашего собственного MTProto-прокси.
+		if (Number(proxy.version) === VERSION.MTPROTO) {
+			const params = new URLSearchParams({
+				server: proxy.host,
+				port: String(proxy.port),
+				secret: proxy.pass || ''
+			});
+			return `https://t.me/proxy?${params.toString()}`;
+		}
+
 		const host = String(proxy.host || '').includes(':') ? `[${proxy.host}]` : proxy.host;
 		return proxy.user
 			? `${host}:${proxy.port}:${proxy.user}:${proxy.pass}`

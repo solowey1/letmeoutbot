@@ -79,8 +79,7 @@ class KeyboardUtils {
 	static createAdminPlanListKeyboard(t, plans) { return admin.createAdminPlanListKeyboard(t, plans); }
 	static createAdminPlanKeyboard(t, plan) { return admin.createAdminPlanKeyboard(t, plan); }
 	static createAdminPlanCancelKeyboard(t, planId) { return admin.createAdminPlanCancelKeyboard(t, planId); }
-	static createAdminPx6Keyboard(t, state) { return admin.createAdminPx6Keyboard(t, state); }
-	static createAdminPx6CancelKeyboard(t) { return admin.createAdminPx6CancelKeyboard(t); }
+	static createAdminPx6Keyboard(t) { return admin.createAdminPx6Keyboard(t); }
 
 	// broadcast
 	static createBroadcastAudienceKeyboard(t) { return broadcast.createBroadcastAudienceKeyboard(t); }

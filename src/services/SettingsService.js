@@ -14,12 +14,10 @@ class SettingsService {
 	static DEFAULTS = {
 		vpn_sales_enabled: true,
 		proxy_sales_enabled: true,
-		// px6 выключен по умолчанию: пока админ не задал курс звезды и
-		// наценку, цена посчиталась бы неверно и прокси продавались бы
-		// себе в убыток.
-		px6_sales_enabled: false,
-		px6_markup_percent: 100,
-		px6_star_rate: 0
+		// Прокси px6 — отдельный продукт со своим выключателем: свой
+		// MTProto-прокси и перепродажа px6 включаются независимо.
+		// По умолчанию выключено: нужен PX6_API_KEY.
+		px6_sales_enabled: false
 	};
 
 	constructor(database) {
@@ -64,13 +62,6 @@ class SettingsService {
 		this.cache[key] = value;
 	}
 
-	/** Готов ли px6 к продаже: включён и курс со наценкой заданы */
-	isPx6Ready() {
-		return this.get('px6_sales_enabled')
-			&& Number(this.get('px6_star_rate')) > 0
-			&& Number(this.get('px6_markup_percent')) >= 0;
-	}
-
 	async toggle(key) {
 		const next = !this.get(key);
 		await this.set(key, next);
@@ -79,11 +70,11 @@ class SettingsService {
 
 	/**
 	 * Разрешена ли сейчас продажа продукта.
-	 * @param {string} planType - 'vless' | 'mtproto'
+	 * @param {string} planType - 'vless' | 'mtproto' | 'px6'
 	 */
 	isSalesEnabled(planType) {
 		if (planType === 'mtproto') return this.get('proxy_sales_enabled');
-		if (planType === 'px6') return this.isPx6Ready();
+		if (planType === 'px6') return this.get('px6_sales_enabled');
 		return this.get('vpn_sales_enabled');
 	}
 }

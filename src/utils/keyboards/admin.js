@@ -71,7 +71,7 @@ function createAdminKeyboard(t) {
 
 const A = CALLBACK_ACTIONS.ADMIN;
 
-function createAdminSettingsKeyboard(t, { vpnSales, proxySales }) {
+function createAdminSettingsKeyboard(t, { vpnSales, proxySales, px6Sales }) {
 	const flag = (on) => (on ? '🟢' : '🔴');
 	const state = (on) => t(on ? 'buttons.admin.sales_on' : 'buttons.admin.sales_off');
 
@@ -83,6 +83,10 @@ function createAdminSettingsKeyboard(t, { vpnSales, proxySales }) {
 		[Markup.button.callback(
 			`${flag(proxySales)} ${t('buttons.admin.sales_proxy')}: ${state(proxySales)}`,
 			A.SALES.TOGGLE_PROXY
+		)],
+		[Markup.button.callback(
+			`${flag(px6Sales)} ${t('buttons.admin.sales_px6')}: ${state(px6Sales)}`,
+			A.SALES.TOGGLE_PX6
 		)],
 		[Markup.button.callback(t('buttons.admin.plans_vpn'), `${A.PLANS.LIST}_vless`)],
 		[Markup.button.callback(t('buttons.admin.plans_proxy'), `${A.PLANS.LIST}_mtproto`)],
@@ -121,21 +125,9 @@ function createAdminPlanKeyboard(t, plan) {
 	return Markup.inlineKeyboard(rows);
 }
 
-function createAdminPx6Keyboard(t, { enabled }) {
+function createAdminPx6Keyboard(t) {
 	return Markup.inlineKeyboard([
-		[Markup.button.callback(
-			`${enabled ? '🟢' : '🔴'} ${t('buttons.admin.sales_px6')}: ${t(enabled ? 'buttons.admin.sales_on' : 'buttons.admin.sales_off')}`,
-			A.SALES.TOGGLE_PX6
-		)],
-		[Markup.button.callback(t('buttons.admin.px6_markup'), A.PX6.EDIT_MARKUP)],
-		[Markup.button.callback(t('buttons.admin.px6_rate'), A.PX6.EDIT_RATE)],
 		[btn(t, 'back', A.SETTINGS)]
-	]);
-}
-
-function createAdminPx6CancelKeyboard(t) {
-	return Markup.inlineKeyboard([
-		[Markup.button.callback(t('buttons.cancel'), A.PX6.MENU)]
 	]);
 }
 
@@ -155,5 +147,4 @@ module.exports = {
 	createAdminPlanKeyboard,
 	createAdminPlanCancelKeyboard,
 	createAdminPx6Keyboard,
-	createAdminPx6CancelKeyboard,
 };

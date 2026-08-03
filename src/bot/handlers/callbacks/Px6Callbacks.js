@@ -18,7 +18,7 @@ class Px6Callbacks {
 	async _guard(ctx) {
 		const t = ctx.i18n.t;
 
-		if (!this.px6?.isConfigured || !this.settings?.isPx6Ready()) {
+		if (!this.px6?.isConfigured || !this.settings?.isSalesEnabled('px6')) {
 			await ctx.editMessageText(
 				t('payments.sales_disabled', { ns: 'message' }),
 				{ ...KeyboardUtils.createBackToMenuKeyboard(t), parse_mode: 'HTML' }

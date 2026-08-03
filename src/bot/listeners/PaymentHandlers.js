@@ -307,6 +307,12 @@ class PaymentHandlers {
 		const t = ctx.i18n?.t || ((key) => key);
 		const p = result.proxy || {};
 
+		// MTProto-прокси px6 выдаётся ссылкой t.me/proxy — показываем его так же,
+		// как наш собственный: ссылка, значения для ручного ввода и кнопка
+		if (String(result.accessUrl).startsWith('https://t.me/proxy')) {
+			return this.sendProxyAccessMessage(ctx, result);
+		}
+
 		let message = `🎉 <b>${t('payments.success_title', { ns: 'message' })}</b>\n\n`;
 		message += `✅ ${t('px6.success', { ns: 'message' })}\n\n`;
 		message += `<b>${t('px6.field_host', { ns: 'message' })}:</b> <code>${p.host || ''}</code>\n`;

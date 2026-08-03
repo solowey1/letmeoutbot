@@ -31,6 +31,7 @@ const PlanService = require('../services/PlanService');
 const SettingsService = require('../services/SettingsService');
 const Px6Service = require('../services/Px6Service');
 const Px6PricingService = require('../services/Px6PricingService');
+const CurrencyService = require('../services/CurrencyService');
 
 class TelegramBot {
 	constructor() {
@@ -57,7 +58,8 @@ class TelegramBot {
 		this.paymentService = new PaymentService(this.db);
 		this.settingsService = new SettingsService(this.db);
 		this.px6Service = new Px6Service(config.px6.apiKey);
-		this.px6PricingService = new Px6PricingService(this.px6Service, this.settingsService);
+		this.currencyService = new CurrencyService();
+		this.px6PricingService = new Px6PricingService(this.px6Service, this.currencyService);
 		this.keysService = new KeysService(this.db, this.xrayService, this.mtprotoService, this.px6Service);
 		this.notificationService = new NotificationService(this.bot, this.i18nService, this.db);
 		this.adminNotificationService = new AdminNotificationService(this.bot, this.db, this.i18nService);
@@ -74,7 +76,7 @@ class TelegramBot {
 		this.broadcastCallbacks = new BroadcastCallbacks(this.db, this.broadcastService);
 
 		// Инициализируем обработчики
-		this.CallbackHandler = new CallbackHandler(this.db, this.paymentService, this.keysService, this.bot, this.broadcastCallbacks, this.settingsService, this.px6Service, this.px6PricingService);
+		this.CallbackHandler = new CallbackHandler(this.db, this.paymentService, this.keysService, this.bot, this.broadcastCallbacks, this.settingsService, this.px6Service, this.px6PricingService, this.currencyService);
 		this.commandHandlers = new CommandHandlers(this.db);
 		this.paymentHandlers = new PaymentHandlers(
 			this.paymentService,

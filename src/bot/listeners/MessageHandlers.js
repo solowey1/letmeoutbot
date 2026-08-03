@@ -102,7 +102,7 @@ class MessageHandlers {
 	async handleAdminPlanInput(ctx) {
 		const t = ctx.i18n.t;
 		const userId = ctx.from.id;
-		const { planId, field, setting } = adminEditState.get(userId);
+		const { planId, field } = adminEditState.get(userId);
 		const text = ctx.message.text?.trim();
 
 		if (text === '/cancel') {
@@ -118,9 +118,7 @@ class MessageHandlers {
 
 		let result;
 		try {
-			result = field === 'setting'
-				? await this.adminCallbacks.applySettingEdit(setting, text)
-				: await this.adminCallbacks.applyPlanEdit(planId, field, text);
+			result = await this.adminCallbacks.applyPlanEdit(planId, field, text);
 		} catch (error) {
 			console.error('Ошибка сохранения тарифа:', error.message);
 			adminEditState.delete(userId);
@@ -139,11 +137,6 @@ class MessageHandlers {
 		}
 
 		adminEditState.delete(userId);
-
-		if (field === 'setting') {
-			await ctx.reply(`✅ ${t('admin.settings.saved', { ns: 'message' })}`);
-			return;
-		}
 
 		await ctx.reply(
 			`✅ ${t('admin.settings.saved', { ns: 'message' })}\n\n${AdminMessages.planDetails(t, result.plan)}`,

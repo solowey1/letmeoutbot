@@ -13,7 +13,7 @@ const ProxyCallbacks = require('../handlers/callbacks/ProxyCallbacks');
 const Px6Callbacks = require('../handlers/callbacks/Px6Callbacks');
 
 class CallbackHandler {
-	constructor(database, paymentService, keysService, bot, broadcastCallbacks = null, settingsService = null, px6Service = null, pricingService = null) {
+	constructor(database, paymentService, keysService, bot, broadcastCallbacks = null, settingsService = null, px6Service = null, pricingService = null, currencyService = null) {
 		this.db = database;
 		this.paymentService = paymentService;
 		this.keysService = keysService;
@@ -25,7 +25,7 @@ class CallbackHandler {
 		this.KeysCallbacks = new KeysCallbacks(database, paymentService, keysService);
 		this.languageCallbacks = new LanguageCallbacks(database, paymentService, keysService);
 		this.broadcastCallbacks = broadcastCallbacks;
-		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService, broadcastCallbacks, settingsService);
+		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService, broadcastCallbacks, settingsService, currencyService);
 		this.referralCallbacks = new ReferralCallbacks(database, bot);
 		this.giftCallbacks = new GiftCallbacks(database, keysService);
 		this.proxyCallbacks = new ProxyCallbacks(database, paymentService, keysService, settingsService);
@@ -184,11 +184,7 @@ class CallbackHandler {
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.SALES.TOGGLE_PROXY) {
 				await this.adminCallbacks.handleToggleSales(ctx, 'proxy_sales_enabled');
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.SALES.TOGGLE_PX6) {
-				await this.adminCallbacks.handleToggleSales(ctx, 'px6_sales_enabled', 'px6');
-			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.PX6.EDIT_MARKUP) {
-				await this.adminCallbacks.handleAdminPx6Edit(ctx, 'px6_markup_percent');
-			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.PX6.EDIT_RATE) {
-				await this.adminCallbacks.handleAdminPx6Edit(ctx, 'px6_star_rate');
+				await this.adminCallbacks.handleToggleSales(ctx, 'px6_sales_enabled');
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.PX6.MENU) {
 				await this.adminCallbacks.handleAdminPx6(ctx);
 			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.PLANS.LIST}_`)) {
