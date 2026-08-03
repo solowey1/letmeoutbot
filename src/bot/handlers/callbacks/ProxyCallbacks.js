@@ -31,7 +31,23 @@ class ProxyCallbacks {
 			return;
 		}
 
-		await ctx.editMessageText(t('proxy.menu_intro', { ns: 'message' }), {
+		// Текст собирается под то, что реально в списке: рассказывать про
+		// IPv4/IPv6, когда их нет в меню, значит обещать несуществующее
+		const mtprotoBullet = ownEnabled && px6Enabled
+			? 'menu_mtproto_both'
+			: (ownEnabled ? 'menu_mtproto_own' : 'menu_mtproto_ext');
+
+		const lines = [
+			t('proxy.menu_header', { ns: 'message' }),
+			'',
+			t(`proxy.${mtprotoBullet}`, { ns: 'message' })
+		];
+
+		if (px6Enabled) lines.push(t('proxy.menu_ip', { ns: 'message' }));
+
+		lines.push('', t('proxy.menu_footer', { ns: 'message' }));
+
+		await ctx.editMessageText(lines.join('\n'), {
 			...KeyboardUtils.createProxyMenuKeyboard(t, { ownEnabled, px6Enabled }),
 			parse_mode: 'HTML'
 		});

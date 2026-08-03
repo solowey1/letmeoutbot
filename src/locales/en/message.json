@@ -321,7 +321,12 @@
     ]
   },
   "proxy": {
-    "menu_intro": "🌐 <b>Proxy</b>\n\nA proxy routes one app’s traffic instead of the whole device, unlike a VPN. Pick the type that matches your task:\n\n• <b>MTProto</b> — for Telegram only, connects in one tap. MTProto (NL) runs on our own server in the Netherlands; other countries come from a partner.\n• <b>IPv6 / IPv4 / IPv4 Shared</b> — regular HTTP(S) and SOCKS5 proxies for browsers, apps and scrapers. Not needed for Telegram — use MTProto there.\n\nThe next screen explains exactly what you are buying.",
+    "menu_header": "🌐 <b>Proxy</b>\n\nA proxy routes one app’s traffic instead of the whole device, unlike a VPN. Pick the type that matches your task:",
+    "menu_mtproto_both": "• <b>MTProto</b> — for Telegram only, connects in one tap. MTProto (NL) runs on our own server in the Netherlands; other countries come from a partner.",
+    "menu_mtproto_own": "• <b>MTProto (NL)</b> — for Telegram only, connects in one tap. Our own server in the Netherlands.",
+    "menu_mtproto_ext": "• <b>MTProto</b> — for Telegram only, connects in one tap. The IP sits in the country you choose.",
+    "menu_ip": "• <b>IPv6 / IPv4 / IPv4 Shared</b> — regular HTTP(S) and SOCKS5 proxies for browsers, apps and scrapers. Not needed for Telegram — use MTProto there.",
+    "menu_footer": "The next screen explains exactly what you are buying.",
     "intro": "📡 <b>MTProto (NL)</b> — our Telegram proxy\n\nIt only affects Telegram: it routes the messenger’s own traffic rather than the whole device — so banks and marketplaces that block users on a VPN never see it, and everything else keeps working as usual. Server in the Netherlands, one-tap connection via a link.\n\nNot suitable for browsers, apps or scrapers — pick IPv4 or IPv6 for those.\n\nChoose a period:",
     "success": "Proxy activated!",
     "link_label": "Proxy link:",
