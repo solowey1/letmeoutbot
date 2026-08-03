@@ -61,7 +61,17 @@
       "broadcast_new": "New Broadcast",
       "broadcast_history": "History",
       "broadcast_schedule": "Schedule",
-      "settings": "Settings"
+      "settings": "Settings",
+      "sales_vpn": "VPN sales",
+      "sales_proxy": "Proxy sales",
+      "sales_on": "on",
+      "sales_off": "off",
+      "plans_vpn": "💰 VPN plans",
+      "plans_proxy": "💰 Proxy plans",
+      "edit_price": "✏️ Change price",
+      "edit_limit": "✏️ Change limit",
+      "plan_enable": "🟢 Enable plan",
+      "plan_disable": "🔴 Disable plan"
     },
     "apps": {
       "android": "Android",

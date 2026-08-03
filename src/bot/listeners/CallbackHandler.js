@@ -12,7 +12,7 @@ const GiftCallbacks = require('../handlers/callbacks/GiftCallbacks');
 const ProxyCallbacks = require('../handlers/callbacks/ProxyCallbacks');
 
 class CallbackHandler {
-	constructor(database, paymentService, keysService, bot, broadcastCallbacks = null) {
+	constructor(database, paymentService, keysService, bot, broadcastCallbacks = null, settingsService = null) {
 		this.db = database;
 		this.paymentService = paymentService;
 		this.keysService = keysService;
@@ -24,7 +24,7 @@ class CallbackHandler {
 		this.KeysCallbacks = new KeysCallbacks(database, paymentService, keysService);
 		this.languageCallbacks = new LanguageCallbacks(database, paymentService, keysService);
 		this.broadcastCallbacks = broadcastCallbacks;
-		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService, broadcastCallbacks);
+		this.adminCallbacks = new AdminCallbacks(database, paymentService, keysService, broadcastCallbacks, settingsService);
 		this.referralCallbacks = new ReferralCallbacks(database, bot);
 		this.giftCallbacks = new GiftCallbacks(database, keysService);
 		this.proxyCallbacks = new ProxyCallbacks(database, paymentService, keysService);
@@ -176,6 +176,26 @@ class CallbackHandler {
 				await this.broadcastCallbacks.handleCancel(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.SETTINGS) {
 				await this.adminCallbacks.handleAdminSettings(ctx);
+			// ── Настройки: продажи и тарифы ──
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.SALES.TOGGLE_VPN) {
+				await this.adminCallbacks.handleToggleSales(ctx, 'vpn_sales_enabled');
+			} else if (callbackData === CALLBACK_ACTIONS.ADMIN.SALES.TOGGLE_PROXY) {
+				await this.adminCallbacks.handleToggleSales(ctx, 'proxy_sales_enabled');
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.PLANS.LIST}_`)) {
+				const type = callbackData.slice(CALLBACK_ACTIONS.ADMIN.PLANS.LIST.length + 1);
+				await this.adminCallbacks.handleAdminPlanList(ctx, type);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.PLANS.EDIT_PRICE}_`)) {
+				const planId = callbackData.slice(CALLBACK_ACTIONS.ADMIN.PLANS.EDIT_PRICE.length + 1);
+				await this.adminCallbacks.handleAdminPlanEdit(ctx, planId, 'price');
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.PLANS.EDIT_LIMIT}_`)) {
+				const planId = callbackData.slice(CALLBACK_ACTIONS.ADMIN.PLANS.EDIT_LIMIT.length + 1);
+				await this.adminCallbacks.handleAdminPlanEdit(ctx, planId, 'limit');
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.PLANS.TOGGLE}_`)) {
+				const planId = callbackData.slice(CALLBACK_ACTIONS.ADMIN.PLANS.TOGGLE.length + 1);
+				await this.adminCallbacks.handleAdminPlanToggle(ctx, planId);
+			} else if (callbackData.startsWith(`${CALLBACK_ACTIONS.ADMIN.PLANS.VIEW}_`)) {
+				const planId = callbackData.slice(CALLBACK_ACTIONS.ADMIN.PLANS.VIEW.length + 1);
+				await this.adminCallbacks.handleAdminPlanView(ctx, planId);
 			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.MENU) {
 				await this.referralCallbacks.handleReferralMenu(ctx);
 			} else if (callbackData === CALLBACK_ACTIONS.REFERRAL.INVITE) {

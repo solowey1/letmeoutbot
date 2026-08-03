@@ -65,9 +65,74 @@ function createAdminKeyboard(t) {
 	]);
 }
 
+// ══════════════════════════════════════════════
+// Настройки: продажи и тарифы
+// ══════════════════════════════════════════════
+
+const A = CALLBACK_ACTIONS.ADMIN;
+
+function createAdminSettingsKeyboard(t, { vpnSales, proxySales }) {
+	const flag = (on) => (on ? '🟢' : '🔴');
+	const state = (on) => t(on ? 'buttons.admin.sales_on' : 'buttons.admin.sales_off');
+
+	return Markup.inlineKeyboard([
+		[Markup.button.callback(
+			`${flag(vpnSales)} ${t('buttons.admin.sales_vpn')}: ${state(vpnSales)}`,
+			A.SALES.TOGGLE_VPN
+		)],
+		[Markup.button.callback(
+			`${flag(proxySales)} ${t('buttons.admin.sales_proxy')}: ${state(proxySales)}`,
+			A.SALES.TOGGLE_PROXY
+		)],
+		[Markup.button.callback(t('buttons.admin.plans_vpn'), `${A.PLANS.LIST}_vless`)],
+		[Markup.button.callback(t('buttons.admin.plans_proxy'), `${A.PLANS.LIST}_mtproto`)],
+		[btn(t, 'back', A.MENU)]
+	]);
+}
+
+function createAdminPlanListKeyboard(t, plans) {
+	const rows = plans.map(plan => [
+		Markup.button.callback(
+			`${plan.disabled ? '🔴' : '🟢'} ${plan.name} — ${plan.price} ⭐`,
+			`${A.PLANS.VIEW}_${plan.id}`
+		)
+	]);
+	rows.push([btn(t, 'back', A.SETTINGS)]);
+	return Markup.inlineKeyboard(rows);
+}
+
+function createAdminPlanKeyboard(t, plan) {
+	const rows = [
+		[Markup.button.callback(t('buttons.admin.edit_price'), `${A.PLANS.EDIT_PRICE}_${plan.id}`)]
+	];
+
+	// У прокси нет объёма трафика — лимит редактировать нечего
+	if (plan.type !== 'mtproto') {
+		rows.push([Markup.button.callback(t('buttons.admin.edit_limit'), `${A.PLANS.EDIT_LIMIT}_${plan.id}`)]);
+	}
+
+	rows.push([Markup.button.callback(
+		plan.disabled ? t('buttons.admin.plan_enable') : t('buttons.admin.plan_disable'),
+		`${A.PLANS.TOGGLE}_${plan.id}`
+	)]);
+	rows.push([btn(t, 'back', `${A.PLANS.LIST}_${plan.type}`)]);
+
+	return Markup.inlineKeyboard(rows);
+}
+
+function createAdminPlanCancelKeyboard(t, planId) {
+	return Markup.inlineKeyboard([
+		[Markup.button.callback(t('buttons.cancel'), `${A.PLANS.VIEW}_${planId}`)]
+	]);
+}
+
 module.exports = {
 	createAdminKeyboard,
 	createWithdrawalAdminKeyboard,
 	createWithdrawalManualConfirmKeyboard,
 	createWithdrawalListKeyboard,
+	createAdminSettingsKeyboard,
+	createAdminPlanListKeyboard,
+	createAdminPlanKeyboard,
+	createAdminPlanCancelKeyboard,
 };

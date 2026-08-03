@@ -74,6 +74,10 @@ class KeyboardUtils {
 	static createWithdrawalAdminKeyboard(t, withdrawalId) { return admin.createWithdrawalAdminKeyboard(t, withdrawalId); }
 	static createWithdrawalManualConfirmKeyboard(t, withdrawalId) { return admin.createWithdrawalManualConfirmKeyboard(t, withdrawalId); }
 	static createWithdrawalListKeyboard(t, withdrawals) { return admin.createWithdrawalListKeyboard(t, withdrawals); }
+	static createAdminSettingsKeyboard(t, state) { return admin.createAdminSettingsKeyboard(t, state); }
+	static createAdminPlanListKeyboard(t, plans) { return admin.createAdminPlanListKeyboard(t, plans); }
+	static createAdminPlanKeyboard(t, plan) { return admin.createAdminPlanKeyboard(t, plan); }
+	static createAdminPlanCancelKeyboard(t, planId) { return admin.createAdminPlanCancelKeyboard(t, planId); }
 
 	// broadcast
 	static createBroadcastAudienceKeyboard(t) { return broadcast.createBroadcastAudienceKeyboard(t); }

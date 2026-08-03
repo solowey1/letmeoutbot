@@ -4,17 +4,26 @@ const { MenuMessages } = require('../../services/messages');
 const { ADMIN_IDS, CALLBACK_ACTIONS } = require('../../config/constants');
 const pendingBroadcast = require('../../utils/broadcastState');
 const awaitingWallet = require('../../utils/tonWalletState');
+const adminEditState = require('../../utils/adminEditState');
 const { isValidTonAddress } = require('../../services/TonService');
+const { AdminMessages } = require('../../services/messages');
 
 class MessageHandlers {
-	constructor(database, bot, broadcastCallbacks = null) {
+	constructor(database, bot, broadcastCallbacks = null, adminCallbacks = null) {
 		this.db = database;
 		this.bot = bot;
 		this.broadcastCallbacks = broadcastCallbacks;
+		this.adminCallbacks = adminCallbacks;
 	}
 
 	async handleMessage(ctx) {
 		const userId = ctx.from.id;
+
+		// Ввод новой цены/лимита тарифа из админки
+		if (this.adminCallbacks && ADMIN_IDS.includes(userId) && adminEditState.has(userId)) {
+			await this.handleAdminPlanInput(ctx);
+			return;
+		}
 
 		// Обработка сообщения для новой системы рассылок (BroadcastCallbacks)
 		if (this.broadcastCallbacks && ADMIN_IDS.includes(userId)) {
@@ -83,6 +92,56 @@ class MessageHandlers {
 		if (!ctx.message.text) return;
 
 		await this.showMainMenu(ctx);
+	}
+
+	/**
+	 * Ввод нового значения цены/лимита тарифа админом.
+	 * Состояние снимается в любом исходе, кроме неверного формата —
+	 * там админ остаётся в режиме ввода и может просто повторить.
+	 */
+	async handleAdminPlanInput(ctx) {
+		const t = ctx.i18n.t;
+		const userId = ctx.from.id;
+		const { planId, field } = adminEditState.get(userId);
+		const text = ctx.message.text?.trim();
+
+		if (text === '/cancel') {
+			adminEditState.delete(userId);
+			await ctx.reply(t('admin.settings.edit_cancelled', { ns: 'message' }));
+			return;
+		}
+
+		if (!text) {
+			await ctx.reply(t('admin.settings.invalid_value', { ns: 'message' }));
+			return;
+		}
+
+		let result;
+		try {
+			result = await this.adminCallbacks.applyPlanEdit(planId, field, text);
+		} catch (error) {
+			console.error('Ошибка сохранения тарифа:', error.message);
+			adminEditState.delete(userId);
+			await ctx.reply(t('admin.loading_error', { ns: 'message' }));
+			return;
+		}
+
+		if (!result.ok) {
+			if (result.error === 'invalid') {
+				await ctx.reply(t('admin.settings.invalid_value', { ns: 'message' }));
+				return;
+			}
+			adminEditState.delete(userId);
+			await ctx.reply(t('keys.plan_not_found', { ns: 'error' }));
+			return;
+		}
+
+		adminEditState.delete(userId);
+
+		await ctx.reply(
+			`✅ ${t('admin.settings.saved', { ns: 'message' })}\n\n${AdminMessages.planDetails(t, result.plan)}`,
+			{ parse_mode: 'HTML', ...KeyboardUtils.createAdminPlanKeyboard(t, result.plan) }
+		);
 	}
 
 	async _getUsersForAudience(audience) {

@@ -7,13 +7,16 @@ const MTProtoService = require('../../../services/MTProtoService');
 const { btn } = require('../../../utils/keyboards/common');
 const { AdminMessages, KeyMessages } = require('../../../services/messages');
 const pendingBroadcast = require('../../../utils/broadcastState');
+const adminEditState = require('../../../utils/adminEditState');
+const PlanService = require('../../../services/PlanService');
 
 class AdminCallbacks {
-	constructor(database, paymentService, keysService, broadcastCallbacks = null) {
+	constructor(database, paymentService, keysService, broadcastCallbacks = null, settingsService = null) {
 		this.db = database;
 		this.paymentService = paymentService;
 		this.keysService = keysService;
 		this.broadcastCallbacks = broadcastCallbacks;
+		this.settingsService = settingsService;
 	}
 
 	async handleAdminPanel(ctx) {
@@ -367,6 +370,18 @@ class AdminCallbacks {
 		await ctx.reply(t('admin.broadcast.prompt', { ns: 'message' }));
 	}
 
+	// ============== НАСТРОЙКИ: ПРОДАЖИ И ТАРИФЫ ==============
+
+	/** editMessageText, для которого «message is not modified» — не ошибка */
+	async _edit(ctx, message, keyboard) {
+		try {
+			await ctx.editMessageText(message, { ...keyboard, parse_mode: 'HTML' });
+		} catch (editError) {
+			if (editError.description && editError.description.includes('message is not modified')) return;
+			throw editError;
+		}
+	}
+
 	async handleAdminSettings(ctx) {
 		const t = ctx.i18n.t;
 
@@ -375,26 +390,182 @@ class AdminCallbacks {
 			return;
 		}
 
+		adminEditState.delete(ctx.from.id);
+
 		const message = [
 			`⚙️ <b>${t('admin.settings.title', { ns: 'message' })}</b>`,
 			'',
-			t('admin.settings.description', { ns: 'message' })
+			t('admin.settings.sales_hint', { ns: 'message' })
 		].join('\n');
 
-		const keyboard = KeyboardUtils.createAdminKeyboard(t);
+		const keyboard = KeyboardUtils.createAdminSettingsKeyboard(t, {
+			vpnSales: this.settingsService.get('vpn_sales_enabled'),
+			proxySales: this.settingsService.get('proxy_sales_enabled')
+		});
 
 		try {
-			await ctx.editMessageText(message, {
-				...keyboard,
-				parse_mode: 'HTML'
-			});
-		} catch (editError) {
-			if (editError.description && editError.description.includes('message is not modified')) {
-				console.log('Настройки: сообщение не изменилось');
-			} else {
-				console.error('Ошибка редактирования настроек:', editError.message);
-			}
+			await this._edit(ctx, message, keyboard);
+		} catch (error) {
+			console.error('Ошибка редактирования настроек:', error.message);
 		}
+	}
+
+	async handleToggleSales(ctx, key) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		try {
+			const next = await this.settingsService.toggle(key);
+			await ctx.answerCallbackQuery(
+				t(next ? 'admin.settings.sales_enabled' : 'admin.settings.sales_disabled', { ns: 'message' })
+			);
+		} catch (error) {
+			console.error('Ошибка переключения продаж:', error.message);
+			await ctx.answerCallbackQuery(t('admin.loading_error', { ns: 'message' }), { show_alert: true });
+			return;
+		}
+
+		await this.handleAdminSettings(ctx);
+	}
+
+	async handleAdminPlanList(ctx, type) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		adminEditState.delete(ctx.from.id);
+
+		const plans = PlanService.getPlansForAdmin(type);
+		const title = type === 'mtproto'
+			? t('buttons.admin.plans_proxy')
+			: t('buttons.admin.plans_vpn');
+
+		const message = [
+			`💰 <b>${title}</b>`,
+			'',
+			t('admin.settings.plans_hint', { ns: 'message' })
+		].join('\n');
+
+		try {
+			await this._edit(ctx, message, KeyboardUtils.createAdminPlanListKeyboard(t, plans));
+		} catch (error) {
+			console.error('Ошибка списка тарифов:', error.message);
+		}
+	}
+
+	async handleAdminPlanView(ctx, planId) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		const plan = PlanService.getPlanById(planId);
+		if (!plan) {
+			await ctx.answerCallbackQuery(t('keys.plan_not_found', { ns: 'error' }), { show_alert: true });
+			return;
+		}
+
+		adminEditState.delete(ctx.from.id);
+
+		try {
+			await this._edit(ctx, AdminMessages.planDetails(t, plan), KeyboardUtils.createAdminPlanKeyboard(t, plan));
+		} catch (error) {
+			console.error('Ошибка карточки тарифа:', error.message);
+		}
+	}
+
+	async handleAdminPlanEdit(ctx, planId, field) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		const plan = PlanService.getPlanById(planId);
+		if (!plan) {
+			await ctx.answerCallbackQuery(t('keys.plan_not_found', { ns: 'error' }), { show_alert: true });
+			return;
+		}
+
+		adminEditState.set(ctx.from.id, { planId, field });
+
+		const prompt = field === 'price'
+			? t('admin.settings.enter_price', { ns: 'message', name: plan.name, current: plan.price })
+			: t('admin.settings.enter_limit', { ns: 'message', name: plan.name, current: plan.dataLimitGB });
+
+		try {
+			await this._edit(ctx, prompt, KeyboardUtils.createAdminPlanCancelKeyboard(t, planId));
+		} catch (error) {
+			console.error('Ошибка запроса значения:', error.message);
+		}
+	}
+
+	async handleAdminPlanToggle(ctx, planId) {
+		const t = ctx.i18n.t;
+
+		if (!ADMIN_IDS.includes(ctx.from.id)) {
+			await ctx.answerCallbackQuery(AdminMessages.accessDenied(t));
+			return;
+		}
+
+		const plan = PlanService.getPlanById(planId);
+		if (!plan) {
+			await ctx.answerCallbackQuery(t('keys.plan_not_found', { ns: 'error' }), { show_alert: true });
+			return;
+		}
+
+		const nextDisabled = !plan.disabled;
+		try {
+			await this.db.updatePlanFields(planId, { enabled: !nextDisabled });
+			plan.disabled = nextDisabled;
+			await ctx.answerCallbackQuery(
+				t(nextDisabled ? 'admin.settings.plan_disabled' : 'admin.settings.plan_enabled', { ns: 'message' })
+			);
+		} catch (error) {
+			console.error('Ошибка переключения тарифа:', error.message);
+			await ctx.answerCallbackQuery(t('admin.loading_error', { ns: 'message' }), { show_alert: true });
+			return;
+		}
+
+		await this.handleAdminPlanView(ctx, planId);
+	}
+
+	/**
+	 * Применить введённое админом значение цены/лимита.
+	 * Вызывается из MessageHandlers.
+	 * @returns {{ok: boolean, plan?: object, error?: string}}
+	 */
+	async applyPlanEdit(planId, field, rawValue) {
+		const plan = PlanService.getPlanById(planId);
+		if (!plan) return { ok: false, error: 'not_found' };
+
+		const value = Number(String(rawValue).trim().replace(',', '.'));
+		if (!Number.isFinite(value) || value < 0) return { ok: false, error: 'invalid' };
+
+		if (field === 'price') {
+			// Telegram Stars — целое число, минимум 1 за платный тариф
+			const price = Math.round(value);
+			if (price < 1) return { ok: false, error: 'invalid' };
+			await this.db.updatePlanFields(planId, { price });
+			plan.price = price;
+		} else {
+			// Лимит вводится в ГБ, 0 = безлимит
+			const bytes = Math.round(value * 1024 * 1024 * 1024);
+			await this.db.updatePlanFields(planId, { data_limit: bytes });
+			PlanService.applyDataLimit(plan, bytes);
+		}
+
+		return { ok: true, plan };
 	}
 
 	async handlePendingWithdrawals(ctx) {

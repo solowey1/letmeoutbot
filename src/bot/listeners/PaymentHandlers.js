@@ -10,11 +10,12 @@ const MTProtoService = require('../../services/MTProtoService');
 const config = require('../../config');
 
 class PaymentHandlers {
-	constructor(paymentService, keysService, database, adminNotificationService = null) {
+	constructor(paymentService, keysService, database, adminNotificationService = null, settingsService = null) {
 		this.paymentService = paymentService;
 		this.keysService = keysService;
 		this.db = database;
 		this.adminNotificationService = adminNotificationService;
+		this.settingsService = settingsService;
 		this.referralService = new ReferralService(database);
 	}
 
@@ -25,6 +26,19 @@ class PaymentHandlers {
 			if (config.maintenanceMode) {
 				await ctx.answerPreCheckoutQuery(false, t('payments.maintenance', { ns: 'message' }));
 				return;
+			}
+
+			// Счёт мог быть выставлен до того, как продажи выключили в админке:
+			// это последний рубеж перед списанием Stars.
+			if (this.settingsService) {
+				const paymentId = this.paymentService.extractPaymentIdFromPayload(ctx.preCheckoutQuery.invoice_payload);
+				const payment = paymentId ? await this.paymentService.getPayment(paymentId) : null;
+				const plan = payment ? PlanService.getPlanById(payment.plan_id) : null;
+
+				if (plan && (!this.settingsService.isSalesEnabled(plan.type) || plan.disabled)) {
+					await ctx.answerPreCheckoutQuery(false, t('payments.sales_disabled', { ns: 'message' }));
+					return;
+				}
 			}
 
 			// Отвечаем сразу — Telegram требует ответ в течение 10 секунд.

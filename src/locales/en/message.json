@@ -148,7 +148,25 @@
     },
     "settings": {
       "title": "Bot Settings",
-      "description": "Configuration is managed via environment variables (.env)."
+      "description": "Configuration is managed via environment variables (.env).",
+      "sales_hint": "Manage sales and plans. Disabling sales hides the plans from users and blocks payment.",
+      "plans_hint": "Pick a plan to change its price, limit, or take it off sale.",
+      "sales_enabled": "✅ Sales enabled",
+      "sales_disabled": "🔴 Sales disabled",
+      "plan_enabled": "✅ Plan enabled",
+      "plan_disabled": "🔴 Plan disabled",
+      "field_price": "Price",
+      "field_limit": "Data limit",
+      "field_duration": "Duration, days",
+      "field_status": "Status",
+      "status_enabled": "on sale",
+      "status_disabled": "off sale",
+      "hidden_note": "Internal plan — not shown in the purchase list.",
+      "enter_price": "✏️ <b>{{name}}</b>\n\nCurrent price: <b>{{current}} ⭐</b>\n\nSend the new price in Stars (whole number).\n/cancel to abort.",
+      "enter_limit": "✏️ <b>{{name}}</b>\n\nCurrent limit: <b>{{current}} GB</b>\n\nSend the new limit in GB (0 = unlimited).\n/cancel to abort.",
+      "invalid_value": "⚠️ A number is required. Try again or send /cancel.",
+      "edit_cancelled": "Edit cancelled.",
+      "saved": "Saved"
     },
     "notifications": {
       "new_purchase": {
@@ -404,7 +422,9 @@
       "details": "Order details:",
       "vpn_key": "VPN key:",
       "thanks": "Thank you for your purchase! 🎉"
-    }
+    },
+    "sales_disabled": "🔴 Sales are temporarily paused. Please check back later.",
+    "plan_unavailable": "🔴 This plan is currently unavailable. Please pick another one."
   },
   "referral": {
     "title": "🎁 Referral Program",

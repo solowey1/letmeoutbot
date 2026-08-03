@@ -1274,16 +1274,62 @@ class SupabaseDatabase {
 	async getPlanPrices() {
 		const { data, error } = await this.supabase
 			.from('plans')
-			.select('id, price, enabled');
+			.select('id, price, enabled, data_limit, duration');
 		if (error) throw error;
 		return data;
 	}
 
 	async updatePlanPrice(planId, price) {
+		return this.updatePlanFields(planId, { price });
+	}
+
+	/**
+	 * Обновить поля тарифа. Upsert, а не update: тариф, которого ещё нет
+	 * в таблице (описан только в constants.js), создаётся при первом
+	 * редактировании из админки.
+	 * @param {string} planId
+	 * @param {object} fields - price / data_limit / duration / enabled
+	 */
+	async updatePlanFields(planId, fields) {
 		const { error } = await this.supabase
 			.from('plans')
-			.update({ price })
-			.eq('id', planId);
+			.upsert({ id: planId, ...fields }, { onConflict: 'id' });
+		if (error) throw error;
+	}
+
+	/**
+	 * Досоздать строки для тарифов, которых ещё нет в таблице.
+	 * Существующие строки не трогаем — цена из БД всегда главнее кода.
+	 * @param {Array<object>} plans - планы из constants.js
+	 */
+	async upsertMissingPlans(plans) {
+		const rows = plans.map(p => ({
+			id: p.id,
+			price: p.price,
+			enabled: !p.hidden,
+			data_limit: p.dataLimit,
+			duration: p.duration
+		}));
+		const { error } = await this.supabase
+			.from('plans')
+			.upsert(rows, { onConflict: 'id', ignoreDuplicates: true });
+		if (error) throw error;
+	}
+
+	// ============== SETTINGS ==============
+
+	async getSettings() {
+		const { data, error } = await this.supabase
+			.from('bot_settings')
+			.select('key, value');
+		if (error) throw error;
+		return data;
+	}
+
+	async setSetting(key, value) {
+		const { error } = await this.supabase
+			.from('bot_settings')
+			.upsert({ key, value: String(value), updated_at: new Date().toISOString() }, { onConflict: 'key' });
 		if (error) throw error;
 	}
 

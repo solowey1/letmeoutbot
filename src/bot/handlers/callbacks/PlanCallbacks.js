@@ -5,10 +5,11 @@ const config = require('../../../config');
 const STAR_CUSTOM_EMOJI_ID = '5920433463428650761';
 
 class PlanCallbacks {
-	constructor(database, paymentService, keysService) {
+	constructor(database, paymentService, keysService, settingsService = null) {
 		this.db = database;
 		this.paymentService = paymentService;
 		this.keysService = keysService;
+		this.settingsService = settingsService;
 	}
 
 	// ============== ШАГ 1: список тарифов ==============
@@ -17,6 +18,15 @@ class PlanCallbacks {
 		const t = ctx.i18n.t;
 		const { ADMIN_IDS } = require('../../../config/constants');
 		const isAdmin = ADMIN_IDS.includes(ctx.from.id);
+
+		if (this.settingsService && !this.settingsService.isSalesEnabled('vless')) {
+			await ctx.editMessageText(
+				t('payments.sales_disabled', { ns: 'message' }),
+				{ ...KeyboardUtils.createBackToMenuKeyboard(t), parse_mode: 'HTML' }
+			);
+			return;
+		}
+
 		const plans = PlanService.getPlans(isAdmin);
 
 		const keyboard = KeyboardUtils.createPlansKeyboard(t, plans);
@@ -208,6 +218,24 @@ class PlanCallbacks {
 		try {
 			const plan = PlanService.getPlanById(planId);
 			if (!plan) throw new Error(t('keys.plan_not_found', { ns: 'error' }));
+
+			// Единственная точка выставления счёта — и для покупки, и для
+			// продления, поэтому выключатель продаж проверяется здесь.
+			if (this.settingsService && !this.settingsService.isSalesEnabled(plan.type)) {
+				await ctx.editMessageText(
+					t('payments.sales_disabled', { ns: 'message' }),
+					KeyboardUtils.createBackToMenuKeyboard(t)
+				);
+				return;
+			}
+
+			if (plan.disabled) {
+				await ctx.editMessageText(
+					t('payments.plan_unavailable', { ns: 'message' }),
+					KeyboardUtils.createBackToMenuKeyboard(t)
+				);
+				return;
+			}
 
 			const localizedPlan = PlanService.formatPlanForDisplay(t, plan);
 

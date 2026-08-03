@@ -178,7 +178,21 @@ const CALLBACK_ACTIONS = {
 			BUYERS: 'admin_broadcast_buyers',
 			NON_BUYERS: 'admin_broadcast_non_buyers'
 		},
-		SETTINGS: 'admin_settings'
+		SETTINGS: 'admin_settings',
+		// Префиксы намеренно не пересекаются: планы в callback_data идут
+		// суффиксом (admprice_vless_10gb), и admplan_ был бы префиксом
+		// admprice_/admlimit_ при общем корне.
+		SALES: {
+			TOGGLE_VPN: 'admsales_vpn',
+			TOGGLE_PROXY: 'admsales_proxy'
+		},
+		PLANS: {
+			LIST: 'admplans',        // admplans_<vless|mtproto>
+			VIEW: 'admplan',         // admplan_<planId>
+			EDIT_PRICE: 'admprice',  // admprice_<planId>
+			EDIT_LIMIT: 'admlimit',  // admlimit_<planId>
+			TOGGLE: 'admtoggle'      // admtoggle_<planId>
+		}
 	},
 	BASIC: {
 		HOME: 'home',
